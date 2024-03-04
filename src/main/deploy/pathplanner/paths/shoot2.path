@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.9193841464606024,
+        "y": 3.976377952755906
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.9243431349854522,
+        "y": 3.9911690436810736
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.0442156268927936,
+        "y": 5.407084660323167
+      },
+      "prevControl": {
+        "x": 2.0442156268976706,
+        "y": 5.40708466032521
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "shoot2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "turn",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "SwerveDriveSpeakerAuto"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 174.5962086397503,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 3.2071854672786686,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
