@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants.PortConstants;
+import frc.robot.subsystems.DriveTrain.DriveTrain;
 
 public class Shooter extends SubsystemBase{
 
@@ -21,6 +22,8 @@ public class Shooter extends SubsystemBase{
   
   public double speed;
   public double setpoint;
+
+  public DriveTrain m_drive;
 
   public double manual;
 
@@ -35,14 +38,14 @@ public class Shooter extends SubsystemBase{
     topMotor = new CANSparkMax(PortConstants.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     bottomMotor = new CANSparkMax(PortConstants.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     pitchMotor = new CANSparkMax(PortConstants.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchPID = new PIDController(3.5, 0, 0.05); //i used to be 0.8, IZone 0.06
-    //pulling a marcus because variable feedforward
+    pitchPID = new PIDController(3.5, 0, 0.05);
 
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
     speed = 0;
     manual = 0;
     SmartDashboard.putNumber("Shooter Pitch", 0);
+    m_drive = DriveTrain.getInstance();
   }
 
   public void setSpeed(double speed){
@@ -50,6 +53,13 @@ public class Shooter extends SubsystemBase{
     topMotor.set(speed);
     bottomMotor.set(-speed);
     SmartDashboard.putNumber("Shooter Speed", speed);
+  }
+
+  public double aimSpeaker(){
+    double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - 0.5, 2) + Math.pow(m_drive.odomPose.getY() - 5.5, 2));
+    double angle = Math.atan2(0.38, dist);
+    //setpoint = angle
+    return angle;
   }
 
   public void periodic(){
@@ -62,9 +72,7 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("Shooter Pitch", setpoint);
     double v = pitchPID.calculate(position, setpoint);
     v += 0.1 * Math.sqrt(position);
-    // if (Math.abs(position - setpoint) >= 0.005){
-    //   v += 0.02 * Math.signum(v);
-    //}
+
     SmartDashboard.putNumber("pitchPID", v);
     manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
     pitchMotor.set(-v);

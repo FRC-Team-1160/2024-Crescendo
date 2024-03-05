@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.AimSpeaker;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.Shooter.IncrementShooter;
+import frc.robot.commands.Shooter.Shoot;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
@@ -46,7 +48,7 @@ public class RobotContainer {
     // Controllers
     private Joystick m_mainStick = new Joystick(0);
     private Joystick m_secondStick = new Joystick(1);
-
+    private Joystick m_thirdStick = new Joystick(2);
 
 
     /**
@@ -132,8 +134,11 @@ public class RobotContainer {
                 )
             );
         
-        // new JoystickButton(m_mainStick, 8)
-        //     .toggleOnTrue(new SwerveDriveSpeaker(m_driveTrain));
+        new JoystickButton(m_thirdStick, 1)
+            .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
+
+        new JoystickButton(m_thirdStick, 2)
+            .onTrue(new Shoot(m_shooter, 0.6));
     }
 
     /**

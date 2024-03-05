@@ -195,7 +195,12 @@ public class DriveTrain extends SubsystemBase {
 
     m_gyro.zeroYaw();
 
-    m_moduleStates = new SwerveModuleState[4];
+    m_moduleStates = new SwerveModuleState[]{
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+    };
 
     m_modulePositions = new SwerveModulePosition[] {
       new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
@@ -209,7 +214,7 @@ public class DriveTrain extends SubsystemBase {
     m_field = new Field2d();
 
     if (RobotBase.isReal()){
-      m_anglePID = new PIDController(0.2, 0, 0.05);
+      m_anglePID = new PIDController(0.1, 0, 0.0);
     } else {
       m_anglePID = new PIDController(0.2, 0 , 0.01);
     }
@@ -242,22 +247,22 @@ public class DriveTrain extends SubsystemBase {
       }
     });
 
-    SmartDashboard.putData("Odom Drive", new Sendable() {
+    SmartDashboard.putData("Swerve States", new Sendable() {
       @Override
       public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("SwerveDrive");
     
-        builder.addDoubleProperty("Front Left Angle", () -> m_modulePositions[0].angle.getDegrees(), null);
-        builder.addDoubleProperty("Front Left Velocity", () -> m_frontLeftWheel.getSpeed() * Math.PI * 0.2 * 4, null);
+        builder.addDoubleProperty("Front Left Angle", () -> m_moduleStates[0].angle.getDegrees(), null);
+        builder.addDoubleProperty("Front Left Velocity", () -> m_moduleStates[0].speedMetersPerSecond * Math.PI * 0.2 * 4, null);
     
-        builder.addDoubleProperty("Front Right Angle", () -> m_modulePositions[1].angle.getDegrees(), null);
-        builder.addDoubleProperty("Front Right Velocity", () -> m_frontRightWheel.getSpeed() * Math.PI * 0.2 * 4, null);
+        builder.addDoubleProperty("Front Right Angle", () -> m_moduleStates[1].angle.getDegrees(), null);
+        builder.addDoubleProperty("Front Right Velocity", () -> m_moduleStates[1].speedMetersPerSecond * Math.PI * 0.2 * 4, null);
     
-        builder.addDoubleProperty("Back Left Angle", () -> m_modulePositions[2].angle.getDegrees(), null);
-        builder.addDoubleProperty("Back Left Velocity", () -> m_backLeftWheel.getSpeed() * Math.PI * 0.2 * 4, null);
+        builder.addDoubleProperty("Back Left Angle", () -> m_moduleStates[2].angle.getDegrees(), null);
+        builder.addDoubleProperty("Back Left Velocity", () -> m_moduleStates[2].speedMetersPerSecond * Math.PI * 0.2 * 4, null);
     
-        builder.addDoubleProperty("Back Right Angle", () -> m_modulePositions[3].angle.getDegrees(), null);
-        builder.addDoubleProperty("Back Right Velocity", () -> m_backRightWheel.getSpeed() * Math.PI * 0.2 * 4, null);
+        builder.addDoubleProperty("Back Right Angle", () -> m_moduleStates[3].angle.getDegrees(), null);
+        builder.addDoubleProperty("Back Right Velocity", () -> m_moduleStates[3].speedMetersPerSecond * Math.PI * 0.2 * 4, null);
     
         builder.addDoubleProperty("Robot Angle", () -> getGyroAngle(), null);
       }
@@ -317,7 +322,7 @@ public class DriveTrain extends SubsystemBase {
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
     //SmartDashboard.putNumber("OUTA", m_speeds.omegaRadiansPerSecond);
     m_speeds = discretize(m_speeds);
-    SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(m_speeds));
+    m_moduleStates = (m_kinematics.toSwerveModuleStates(m_speeds));
 
     SmartDashboard.putNumber("m0", m_moduleStates[0].speedMetersPerSecond);
 
@@ -326,7 +331,7 @@ public class DriveTrain extends SubsystemBase {
     m_moduleStates[2] = SwerveModuleState.optimize(m_moduleStates[2], Rotation2d.fromRotations(m_backLeftWheel.getAngle()));
     m_moduleStates[3] = SwerveModuleState.optimize(m_moduleStates[3], Rotation2d.fromRotations(m_backRightWheel.getAngle()));
 
-    SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, 5);
+    SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, 1);
 
     adv_statesPub.set(m_moduleStates);
 
@@ -466,9 +471,9 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    x = Math.cos(dir) * 1 * Math.pow(mag, 2);
-    y = Math.sin(dir) * 1 * Math.pow(mag, 2);
-    a = Math.signum(a) * 0.5 * (Math.pow(a, 2) / (1 + Math.sqrt(mag) / 2));
+    x = Math.cos(dir) * 0.3 * Math.pow(mag, 2);
+    y = Math.sin(dir) * 0.3 * Math.pow(mag, 2);
+    a = Math.signum(a) * 0.3 * (Math.pow(a, 2) / (1 + Math.sqrt(mag) / 2));
 
     SmartDashboard.putNumber("inX", x);
     SmartDashboard.putNumber("inY", y);

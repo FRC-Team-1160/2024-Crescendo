@@ -2,34 +2,36 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.DriveTrain;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 import edu.wpi.first.wpilibj.RobotBase;
 
-public class SwerveDriveSpeaker extends Command {
+public class AimSpeaker extends Command {
   /** Creates a new SwerveDrive. */
   private double x;
   private double y;
   DriveTrain m_drive;
+  Shooter m_shooter;
   private Joystick m_mainStick = new Joystick(0);
 
-  public SwerveDriveSpeaker(DriveTrain m_drive) {
+  public AimSpeaker(DriveTrain m_drive, Shooter m_shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_drive);
+    addRequirements(m_drive, m_shooter);
     this.m_drive = m_drive;
+    this.m_shooter = m_shooter;
     
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // double joystickX = m_mainStick.getRawAxis(5);
-    // double joystickY = m_mainStick.getRawAxis(4);
-    // double joystickA = -m_mainStick.getRawAxis(0);
+    m_shooter.setSpeed(0.6);
+
   }
 
   @Override
@@ -47,6 +49,9 @@ public class SwerveDriveSpeaker extends Command {
     } else {
       m_drive.setSwerveDrive(0, 0, 0);
     }
+
+    m_shooter.aimSpeaker();
+
   }
 
 
