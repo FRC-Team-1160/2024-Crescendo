@@ -68,10 +68,12 @@ public class Transport extends SubsystemBase {
 
     public void setBelt(int state){
         beltState = state;
-        switch (state){
-            case 0: belt.set(0.0);
-            case 1: belt.set(0.2);
-            case 2: belt.set(0.8);
+        if (state == 1){
+            belt.set(-0.3);
+        } else if (state == 2){
+            belt.set(-1.0);
+        } else {
+            belt.set(0.0);
         }
 
     }
@@ -91,6 +93,7 @@ public class Transport extends SubsystemBase {
         SmartDashboard.putNumber("Color Sensor Prox", prox);
         Color color = m_colorSensor.getColor();
         SmartDashboard.putNumberArray("Color", new double[] {color.red, color.green, color.blue});
-        noteStored = (prox < 10.0); //CHECK VALUE
+        noteStored = (prox > 200.0); //nothing = 120, note ~350
+        SmartDashboard.putNumber("Belt State", beltState);
     }
 }

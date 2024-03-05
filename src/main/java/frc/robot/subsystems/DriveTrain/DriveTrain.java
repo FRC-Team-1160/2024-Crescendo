@@ -432,7 +432,7 @@ public class DriveTrain extends SubsystemBase {
     }
     System.out.print(angle + "\t\t");
     System.out.println(target);
-    double max = 0.25;
+    double max = 0.2;
     double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
     if (Math.abs(angSpeed) < 0.01){
       angSpeed = 0;
@@ -448,7 +448,7 @@ public class DriveTrain extends SubsystemBase {
     double joystickX = -m_mainStick.getRawAxis(1);
     double joystickY = -m_mainStick.getRawAxis(0);
     double joystickA = -m_mainStick.getRawAxis(2);
-
+    // double joystickA = -m_secondStick.getRawAxis(0);
     double x = 0.0;
     double y = 0.0;
     double a = 0.0;
@@ -471,9 +471,9 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    x = Math.cos(dir) * 0.3 * Math.pow(mag, 2);
-    y = Math.sin(dir) * 0.3 * Math.pow(mag, 2);
-    a = Math.signum(a) * 0.3 * (Math.pow(a, 2) / (1 + Math.sqrt(mag) / 2));
+    x = Math.cos(dir) * 0.2 * Math.pow(mag, 2);
+    y = Math.sin(dir) * 0.2 * Math.pow(mag, 2);
+    a = Math.signum(a) * 0.2 * (Math.pow(a, 2) / (1 + Math.sqrt(mag) / 2));
 
     SmartDashboard.putNumber("inX", x);
     SmartDashboard.putNumber("inY", y);

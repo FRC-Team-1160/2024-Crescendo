@@ -57,9 +57,16 @@ public class Shooter extends SubsystemBase{
 
   public double aimSpeaker(){
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - 0.5, 2) + Math.pow(m_drive.odomPose.getY() - 5.5, 2));
-    double angle = Math.atan2(0.38, dist);
+    double angle = Math.atan2(0.38, dist) * 0.107 / (Math.PI / 4);
     //setpoint = angle
     return angle;
+  }
+
+  public double revSpeaker(){
+    double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - 0.5, 2) + Math.pow(m_drive.odomPose.getY() - 5.5, 2));
+    double s = Math.min(0.5 + dist/10.0, 1.0);
+    //speed = s
+    return s;
   }
 
   public void periodic(){

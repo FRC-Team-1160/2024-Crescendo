@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AimSpeaker;
 import frc.robot.commands.DriveTrain.SwerveDrive;
+import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Shooter.IncrementShooter;
 import frc.robot.commands.Shooter.Shoot;
 import frc.robot.subsystems.Climber;
@@ -126,6 +127,9 @@ public class RobotContainer {
         new JoystickButton(m_secondStick, 8)
             .onTrue(new InstantCommand(() -> m_transport.toggleBelt(), m_transport));
 
+        new JoystickButton(m_secondStick, 9)
+            .onTrue(new IntakeNote(m_intake, m_transport));
+
         new JoystickButton(m_secondStick, 10)
             .onTrue(new SequentialCommandGroup(
                 new InstantCommand(() -> m_intake.toggleMotor(), m_intake),
@@ -138,7 +142,7 @@ public class RobotContainer {
             .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
 
         new JoystickButton(m_thirdStick, 2)
-            .onTrue(new Shoot(m_shooter, 0.6));
+            .onTrue(new Shoot(m_shooter, m_transport, 0.6));
     }
 
     /**

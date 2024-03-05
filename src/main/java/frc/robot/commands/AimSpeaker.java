@@ -50,7 +50,8 @@ public class AimSpeaker extends Command {
       m_drive.setSwerveDrive(0, 0, 0);
     }
 
-    m_shooter.aimSpeaker();
+    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimSpeaker());
+    SmartDashboard.putNumber("Shooter Rev", m_shooter.revSpeaker());
 
   }
 
