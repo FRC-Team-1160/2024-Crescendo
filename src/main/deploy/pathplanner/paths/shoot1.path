@@ -16,32 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.202086711865733,
-        "y": 6.226040913620289
+        "x": 1.7916949794013546,
+        "y": 6.104348618953648
       },
       "prevControl": {
-        "x": 2.20208671187061,
-        "y": 6.226040913622332
-      },
-      "nextControl": {
-        "x": 2.202086711860856,
-        "y": 6.226040913618246
-      },
-      "isLocked": false,
-      "linkedName": "shoot1"
-    },
-    {
-      "anchor": {
-        "x": 2.142885055000881,
-        "y": 6.304976456106759
-      },
-      "prevControl": {
-        "x": 2.1724858834308685,
-        "y": 6.265508684862503
+        "x": 1.7916949794062316,
+        "y": 6.104348618955691
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shoot1"
     }
   ],
   "rotationTargets": [],
@@ -77,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "1",
   "previewStartingState": {
     "rotation": 52.853313301978204,
     "velocity": 0
