@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "rev"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shoot2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Rev"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pickup2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SwerveDriveSpeakerAuto"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "getout2"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
