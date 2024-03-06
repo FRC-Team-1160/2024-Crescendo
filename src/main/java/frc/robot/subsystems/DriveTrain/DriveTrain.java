@@ -19,6 +19,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -39,7 +40,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PortConstants;
-
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.RobotBase;
 
 
@@ -472,9 +473,9 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    x = Math.cos(dir) * 0.2 * Math.pow(mag, 2);
-    y = Math.sin(dir) * 0.2 * Math.pow(mag, 2);
-    a = Math.signum(a) * 0.2 * (Math.pow(a, 2) / (1 + Math.sqrt(mag) / 2));
+    x = Math.cos(dir) * 0.6 * Math.pow(mag, 2);
+    y = Math.sin(dir) * 0.6 * Math.pow(mag, 2);
+    a = Math.signum(a) * 0.6 * (Math.pow(a, 2) / (1 + Math.sqrt(mag) / 2));
 
     SmartDashboard.putNumber("inX", x);
     SmartDashboard.putNumber("inY", y);

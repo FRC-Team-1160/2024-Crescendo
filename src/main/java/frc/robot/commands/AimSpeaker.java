@@ -4,12 +4,10 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
-import edu.wpi.first.wpilibj.RobotBase;
 
 public class AimSpeaker extends Command {
   /** Creates a new SwerveDrive. */
@@ -17,7 +15,6 @@ public class AimSpeaker extends Command {
   private double y;
   DriveTrain m_drive;
   Shooter m_shooter;
-  private Joystick m_mainStick = new Joystick(0);
 
   public AimSpeaker(DriveTrain m_drive, Shooter m_shooter) {
     // Use addRequirements() here to declare subsystem dependencies.

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -72,6 +73,7 @@ public class Shooter extends SubsystemBase{
   }
 
   public void periodic(){
+
     speed = SmartDashboard.getNumber("Shooter Speed", 0);
     SmartDashboard.putNumber("Shooter RPM", topMotor.getEncoder().getVelocity());
     setSpeed(speed);
