@@ -1,12 +1,42 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerTrajectory.State;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.proto.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveTrain.SwerveDrive;
+import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
+import frc.robot.commands.Intake.IntakeRun;
 import frc.robot.commands.Shooter.IncrementShooter;
+import frc.robot.commands.Shooter.SetShooter;
+import frc.robot.commands.Shooter.Shoot;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
@@ -15,6 +45,7 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Intake.Transport;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 // Commands
 
@@ -43,6 +74,8 @@ public class RobotContainer {
     public final Climber m_climber = Climber.getInstance();
     public final Transport m_transport = Transport.getInstance();
 
+    private final SendableChooser<Command> autoChooser;
+
     // Controllers
     private Joystick m_mainStick = new Joystick(0);
     private Joystick m_secondStick = new Joystick(1);
@@ -56,6 +89,10 @@ public class RobotContainer {
 
       // Configure the button bindings
       configureButtonBindings();
+
+
+      autoChooser = AutoBuilder.buildAutoChooser();
+
   
       // Configure default commands
 
@@ -63,14 +100,23 @@ public class RobotContainer {
 
     }
 
-      
-  
-    /**
-     * Use this method to define your button->command mappings.  Buttons can be created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-     * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
+
+    public Command IntakeRun() {
+        return new IntakeRun(m_intake);
+    }
+
+    public Command SwerveDriveSpeakerAuto() {
+        return new SwerveDriveSpeakerAuto(m_driveTrain);
+    }
+
+    public Command Rev() {
+        return new SetShooter(m_shooter, 0.6);
+    }
+
+    public Command Shoot() {
+        return new Shoot(m_shooter, 0.6);
+    }
+    
     
     private void configureButtonBindings() {
       // new JoystickButton(m_mainStick, Button.kA.value)
@@ -135,16 +181,9 @@ public class RobotContainer {
         // new JoystickButton(m_mainStick, 8)
         //     .toggleOnTrue(new SwerveDriveSpeaker(m_driveTrain));
     }
-
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-
     
     public Command getAutonomousCommand() {
-        return null;
+        return autoChooser.getSelected();
     }
     
 }

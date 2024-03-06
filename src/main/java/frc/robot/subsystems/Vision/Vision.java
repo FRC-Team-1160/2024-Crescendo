@@ -122,7 +122,7 @@ public class Vision extends SubsystemBase{
     //   }
     
     if (m_drive.odomPose != null && noteCenters != null){
-        Pose2d odomPose = m_drive.odomPose;
+        Pose2d odomPose = m_drive.odomPose.get();
         double rot = odomPose.getRotation().getRadians();
         ArrayList<Pose3d> poses3d = new ArrayList<Pose3d>();
         for (Point p : noteCenters){

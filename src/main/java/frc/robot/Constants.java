@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants. This class should not be used for any other
@@ -12,6 +14,17 @@ package frc.robot;
  */
 public final class Constants {
   // Units are m kg s unless otherwise specified
+
+  public static final class RobotConstants {
+    public static final double MAX_VEL = 0;
+    public static final double MAX_ACEL = 0;
+    public static final double MAX_ANG_VEL = 0;
+    public static final double MAX_ANG_ACEL = 0;
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+                new TrapezoidProfile.Constraints(
+                        MAX_ANG_ACEL,
+                        MAX_ANG_ACEL);
+  }
 
   public static final class PortConstants {
     // CAN ID 

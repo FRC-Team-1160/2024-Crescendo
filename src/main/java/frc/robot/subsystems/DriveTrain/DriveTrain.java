@@ -14,6 +14,9 @@ package frc.robot.subsystems.DriveTrain;
 //SWITCH TO PHOENIX6
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.hardware.CANcoder;
 
@@ -81,7 +84,7 @@ public class DriveTrain extends SubsystemBase {
 
   private Translation2d m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation;
 
-  private SwerveDriveKinematics m_kinematics;
+  public SwerveDriveKinematics m_kinematics;
 
   public SwerveDrivePoseEstimator m_poseEstimator;
 
@@ -91,7 +94,7 @@ public class DriveTrain extends SubsystemBase {
 
   public SwerveModulePosition[] m_modulePositions;
 
-  public Pose2d odomPose;
+  public Supplier<Pose2d> odomPose;
 
   public Field2d m_field;
 
@@ -356,13 +359,13 @@ public class DriveTrain extends SubsystemBase {
     //   new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, new Rotation2d())
     // };
 
-    odomPose = m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
+    odomPose = () -> m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
     SmartDashboard.putData("Gyro", m_gyro);
 
-    m_field.setRobotPose(odomPose);
+    m_field.setRobotPose(odomPose.get());
 
     adv_gyroPub.set(new Rotation2d(getGyroAngle()));
-    adv_posePub.set(odomPose);
+    adv_posePub.set(odomPose.get());
     SmartDashboard.putData("Field", m_field);
 
     // SmartDashboard.putData("Swerve Drive", new Sendable() {
@@ -416,7 +419,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
-    double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
+    double target = Math.atan2(targetY - odomPose.get().getY(), targetX - odomPose.get().getX());
     //double diff = getGyroAngle() * Math.PI / 180.0 - angle;
     double angle = getGyroAngle() * Math.PI / 180.0;
     if (target > Math.PI * 2){
