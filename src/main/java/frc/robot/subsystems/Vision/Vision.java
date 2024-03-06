@@ -75,7 +75,7 @@ public class Vision extends SubsystemBase{
         if (Math.abs(m_pose.getZ()) < 1){
           m_photonPoseEstimator.setReferencePose(m_pose);
         }
-        System.out.println("VISION POSE Z " + m_pose.getZ());
+        // System.out.println("VISION POSE Z " + m_pose.getZ());
         if (m_drive != null){
           m_drive.m_poseEstimator.addVisionMeasurement(m_pose.toPose2d(), Timer.getFPGATimestamp());
         }

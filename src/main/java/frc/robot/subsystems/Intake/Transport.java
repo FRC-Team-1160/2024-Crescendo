@@ -71,7 +71,7 @@ public class Transport extends SubsystemBase {
         if (state == 1){
             belt.set(-0.3);
         } else if (state == 2){
-            belt.set(-1.0);
+            belt.set(-0.6);
         } else {
             belt.set(0.0);
         }

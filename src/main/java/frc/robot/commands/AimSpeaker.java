@@ -30,7 +30,6 @@ public class AimSpeaker extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.setSpeed(0.6);
 
   }
 
@@ -44,21 +43,27 @@ public class AimSpeaker extends Command {
     SmartDashboard.putNumber("Forward", x);
     SmartDashboard.putNumber("Sideways", y);
 
-    if (m_mainStick.getRawButton(1) || RobotBase.isSimulation()){
-      m_drive.aimSwerveDrive(x, y, 0.5, 5.5);
-    } else {
-      m_drive.setSwerveDrive(0, 0, 0);
-    }
+    m_drive.aimSwerveDrive(x, y, 16.54 - 0.3, 5.5);
 
-    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimSpeaker());
-    SmartDashboard.putNumber("Shooter Rev", m_shooter.revSpeaker());
+    // if (m_mainStick.getRawButton(1) || RobotBase.isSimulation()){
+    //   m_drive.aimSwerveDrive(x, y, 0.5, 5.5);
+    // } else {
+    //   m_drive.setSwerveDrive(0, 0, 0);
+    // }x
+    double x = SmartDashboard.getNumber("GetX", 16.54);
+    double z = SmartDashboard.getNumber("GetZ", 2.0);
+    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));
+    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
 
   }
 
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    SmartDashboard.putNumber("Shooter Speed", 0);
+    m_shooter.setSpeed(0);
+  }
 
   // Returns true when the command should end.
   @Override

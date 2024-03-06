@@ -142,7 +142,10 @@ public class RobotContainer {
             .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
 
         new JoystickButton(m_thirdStick, 2)
-            .onTrue(new Shoot(m_shooter, m_transport, 0.6));
+            .onTrue(new Shoot(m_shooter, m_transport));
+
+        new JoystickButton(m_thirdStick, 4)
+            .onTrue(new IntakeNote(m_intake, m_transport));
     }
 
     /**

@@ -55,22 +55,25 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("Shooter Speed", speed);
   }
 
-  public double aimSpeaker(){
-    double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - 0.5, 2) + Math.pow(m_drive.odomPose.getY() - 5.5, 2));
-    double angle = Math.atan2(0.38, dist) * 0.107 / (Math.PI / 4);
-    //setpoint = angle
+  public double aimTarget(double x, double y, double z){
+    double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
+    double angle = Math.min(0.16, Math.atan2(z, dist) * 0.11 / (Math.PI / 4));
+    setpoint = angle;
+    SmartDashboard.putNumber("Shooter Pitch", angle);
     return angle;
   }
 
-  public double revSpeaker(){
-    double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - 0.5, 2) + Math.pow(m_drive.odomPose.getY() - 5.5, 2));
-    double s = Math.min(0.5 + dist/10.0, 1.0);
-    //speed = s
+  public double revTarget(double x, double y){
+    double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
+    double s = Math.min(0.5 + dist/5.0, 1.0);
+    SmartDashboard.putNumber("Shooter Speed", s);
+    setSpeed(s);
     return s;
   }
 
   public void periodic(){
     speed = SmartDashboard.getNumber("Shooter Speed", 0);
+    SmartDashboard.putNumber("Shooter RPM", topMotor.getEncoder().getVelocity());
     setSpeed(speed);
     double position = pitchMotor.getAlternateEncoder(8192).getPosition();
     position = Math.max(position, 0);

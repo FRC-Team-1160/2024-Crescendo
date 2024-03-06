@@ -214,7 +214,7 @@ public class DriveTrain extends SubsystemBase {
     m_field = new Field2d();
 
     if (RobotBase.isReal()){
-      m_anglePID = new PIDController(0.1, 0, 0.0);
+      m_anglePID = new PIDController(0.4, 0, 0.01);
     } else {
       m_anglePID = new PIDController(0.2, 0 , 0.01);
     }
@@ -430,9 +430,10 @@ public class DriveTrain extends SubsystemBase {
     if (angle < 0){
       angle += Math.PI * 2;
     }
-    System.out.print(angle + "\t\t");
-    System.out.println(target);
-    double max = 0.2;
+
+    SmartDashboard.putNumber("AIMANGLE", angle);
+    SmartDashboard.putNumber("AIMTARGET", target);
+    double max = 0.15;
     double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
     if (Math.abs(angSpeed) < 0.01){
       angSpeed = 0;
