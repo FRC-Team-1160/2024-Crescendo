@@ -42,6 +42,6 @@ public class IntakeNote extends Command{
 
     @Override
     public boolean isFinished(){
-        return (m_timer.get() > 0.2);
+        return (m_timer.get() > 0.1);
     }
 }

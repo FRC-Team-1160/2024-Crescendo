@@ -64,50 +64,29 @@ public class DriveTrain extends SubsystemBase {
   private static DriveTrain m_instance;
 
   private TalonFX m_frontLeftSteerMotor, m_frontRightSteerMotor, m_backLeftSteerMotor, m_backRightSteerMotor;
-
   private Slot0Configs driveConfigs;
-
   private Slot0Configs steerConfigs;
-
-  //private TalonFXSensorCollection m_frontLeftRotationEncoder, m_frontRightRotationEncoder, m_backLeftRotationEncoder, m_backRightRotationEncoder;
-
   private TalonFX m_frontLeftDriveMotor, m_frontRightDriveMotor, m_backLeftDriveMotor, m_backRightDriveMotor;
-
-  //private TalonFXSensorCollection m_frontLeftDirectionEncoder, m_frontRightDirectionEncoder, m_backLeftDirectionEncoder, m_backRightDirectionEncoder;
-
-  public SwerveDriveWheel m_frontLeftWheel, m_frontRightWheel, m_backLeftWheel, m_backRightWheel;
-  
   public CANcoder m_frontLeftCoder, m_frontRightCoder, m_backLeftCoder, m_backRightCoder;
 
   private AHRS m_gyro;
 
+  public SwerveDriveWheel m_frontLeftWheel, m_frontRightWheel, m_backLeftWheel, m_backRightWheel;
   private Translation2d m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation;
-
   private SwerveDriveKinematics m_kinematics;
-
   public SwerveDrivePoseEstimator m_poseEstimator;
-
-  private Solenoid m_gate;
-
   public SwerveModuleState[] m_moduleStates;
-
   public SwerveModulePosition[] m_modulePositions;
 
   public Pose2d odomPose;
-
   public Field2d m_field;
 
   public StructArrayPublisher<SwerveModuleState> adv_statesPub;
-
   public StructPublisher<Rotation2d> adv_gyroPub;
-
   public StructPublisher<Pose2d> adv_posePub;
-
   public double sim_angle;
-
+  
   private PIDController m_anglePID;
-  double wkP, wkI, wkD;
-
   public SlewRateLimiter zlimiter;
 
   //initializes the drive train
@@ -147,13 +126,9 @@ public class DriveTrain extends SubsystemBase {
     // m_backLeftCoder.setPosition(0);
     // m_backRightCoder.setPosition(0);
 
-    //swerve wheel PID values
-    // wkP = 0.005;
-    // wkI = 0.000001;
-    // wkD = 0;
 
     driveConfigs = new Slot0Configs(); //TUNE VALUES
-    driveConfigs.kV = 2; //values taken from api ex for "basic use"
+    driveConfigs.kV = 2; 
     driveConfigs.kP = 1;
     driveConfigs.kI = 0;
     driveConfigs.kD = 10;
@@ -185,9 +160,9 @@ public class DriveTrain extends SubsystemBase {
     m_gyro = new AHRS(Port.kMXP);
 
     double offset = 23.75 * 0.0254;
-    m_frontLeftLocation = new Translation2d(offset, offset); //CHANGE (when mech is done smh)
-    m_frontRightLocation = new Translation2d(offset, -offset); //couldnt find what units translation2d uses, assume meters??
-    m_backLeftLocation = new Translation2d(-offset, offset); //23.75 inches
+    m_frontLeftLocation = new Translation2d(offset, offset); //might need changing
+    m_frontRightLocation = new Translation2d(offset, -offset); 
+    m_backLeftLocation = new Translation2d(-offset, offset); 
     m_backRightLocation = new Translation2d(-offset, -offset);
 
     // Creating kinematics object using the module locations
@@ -290,15 +265,6 @@ public class DriveTrain extends SubsystemBase {
     m_gyro.reset();
   }
 
-  public void setGate(boolean b) {
-    m_gate.set(b);
-  }
-
-  public boolean getGateStatus() {
-    return m_gate.get();
-  }
-
-
   //Thanks to Team 4738 for modified discretize code
   public ChassisSpeeds discretize(ChassisSpeeds speeds) {
     double dt = 0.02;
@@ -320,9 +286,7 @@ public class DriveTrain extends SubsystemBase {
   public void setSwerveDrive(double xSpeed, double ySpeed, double angSpeed){
     sim_angle += angSpeed * 20 * 0.0254 * 4 / 23.75 * 360;
     SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
-    //SmartDashboard.putNumber("INA", angSpeed);
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
-    //SmartDashboard.putNumber("OUTA", m_speeds.omegaRadiansPerSecond);
     m_speeds = discretize(m_speeds);
     m_moduleStates = (m_kinematics.toSwerveModuleStates(m_speeds));
 
@@ -337,12 +301,6 @@ public class DriveTrain extends SubsystemBase {
 
     adv_statesPub.set(m_moduleStates);
 
-    //check the angle thing is right
-
-    //meters per second is a lie (pretend its scaled 0 to 1)
-
-    //SCALED 0 TO 1 IS A LIE (its actually rots/sec) (i think)
-    
     m_frontLeftWheel.set(m_moduleStates[0].angle.getRotations(), m_moduleStates[0].speedMetersPerSecond);
     m_frontRightWheel.set(m_moduleStates[1].angle.getRotations(), m_moduleStates[1].speedMetersPerSecond);
     m_backLeftWheel.set(m_moduleStates[2].angle.getRotations(), m_moduleStates[2].speedMetersPerSecond);
@@ -355,14 +313,6 @@ public class DriveTrain extends SubsystemBase {
       new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_backRightWheel.getAngle()))
     };
 
-
-    // m_modulePositions = new SwerveModulePosition[] {
-    //   new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, new Rotation2d()),
-    //   new SwerveModulePosition(m_frontRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, new Rotation2d()),
-    //   new SwerveModulePosition(m_backLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, new Rotation2d()),
-    //   new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, new Rotation2d())
-    // };
-
     odomPose = m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
     SmartDashboard.putData("Gyro", m_gyro);
 
@@ -371,27 +321,6 @@ public class DriveTrain extends SubsystemBase {
     adv_gyroPub.set(new Rotation2d(getGyroAngle()));
     adv_posePub.set(odomPose);
     SmartDashboard.putData("Field", m_field);
-
-    // SmartDashboard.putData("Swerve Drive", new Sendable() {
-    //   @Override
-    //   public void initSendable(SendableBuilder builder) {
-    //     builder.setSmartDashboardType("SwerveDrive");
-    
-    //     builder.addDoubleProperty("Front Left Angle", () -> m_frontLeftWheel.getAngle() * 360, null);
-    //     builder.addDoubleProperty("Front Left Velocity", () -> m_frontLeftWheel.getSpeed() * Math.PI * 0.2, null);
-    
-    //     builder.addDoubleProperty("Front Right Angle", () -> m_frontRightWheel.getAngle() * 360, null);
-    //     builder.addDoubleProperty("Front Right Velocity", () -> m_frontRightWheel.getSpeed() * Math.PI * 0.2, null);
-    
-    //     builder.addDoubleProperty("Back Left Angle", () -> m_backRightWheel.getAngle() * 360, null);
-    //     builder.addDoubleProperty("Back Left Velocity", () -> m_backRightWheel.getSpeed() * Math.PI * 0.2, null);
-    
-    //     builder.addDoubleProperty("Back Right Angle", () -> m_backRightWheel.getAngle() * 360, null);
-    //     builder.addDoubleProperty("Back Right Velocity", () -> m_backRightWheel.getSpeed() * Math.PI * 0.2, null);
-    
-    //     builder.addDoubleProperty("Robot Angle", () -> getGyroAngle() * 360, null);
-    //   }
-    // });
 
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
@@ -424,7 +353,6 @@ public class DriveTrain extends SubsystemBase {
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
     double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
-    //double diff = getGyroAngle() * Math.PI / 180.0 - angle;
     double angle = getGyroAngle() * Math.PI / 180.0;
     if (target > Math.PI * 2){
       target -= Math.PI * 2;

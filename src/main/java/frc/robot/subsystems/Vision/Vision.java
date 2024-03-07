@@ -75,51 +75,12 @@ public class Vision extends SubsystemBase{
         if (Math.abs(m_pose.getZ()) < 1){
           m_photonPoseEstimator.setReferencePose(m_pose);
         }
-        // System.out.println("VISION POSE Z " + m_pose.getZ());
         if (m_drive != null){
           m_drive.m_poseEstimator.addVisionMeasurement(m_pose.toPose2d(), Timer.getFPGATimestamp());
         }
       }
     }
     adv_posePub.set(m_pose);
-
-    // var result2 = m_backCamera.getLatestResult();
-    // if (result2.hasTargets()){
-    //   var target = result2.getBestTarget();
-    //   SmartDashboard.putNumber("Note Yaw", target.getYaw());
-    //   SmartDashboard.putNumber("Note Pitch", target.getPitch());
-    //   if (m_drive.odomPose != null){
-    //     List<Pose2d> poses2d = new ArrayList<Pose2d>();
-    //     for (int i = 0; i < result2.getTargets().size(); i++){
-    //       target = result2.getTargets().get(i);
-    //       if (target.getPitch() < 0){
-    //         Pose2d pose = m_drive.odomPose;
-    //         double angle = (target.getYaw()  * Math.PI / 180.0) + pose.getRotation().getRadians();
-    //         double dist = 0.5 * Math.tan(Math.PI/2 + target.getPitch() * Math.PI / 180);
-    
-    //         Pose2d targetPose = new Pose2d(
-    //           pose.getX() + Math.cos(angle) * dist,
-    //           pose.getY() - Math.sin(angle) * dist,
-    //           new Rotation2d()
-    //         );
-    //         poses2d.add(targetPose);
-    //       }
-    //     }
-    //     if (poses2d.size() > 0){
-    //       Pose3d[] poses3d = new Pose3d[poses2d.size()];
-    //       for (int i = 0; i < poses2d.size(); i++){
-    //         poses3d[i] = new Pose3d(
-    //           poses2d.get(i).getX(),
-    //           poses2d.get(i).getY(),
-    //           0.03,
-    //           new Rotation3d()
-    //         );
-    //       }
-    //       adv_targetPub.set(poses3d);
-    //       tracked_note = new Pose3d(tracked_note.toPose2d().nearest(poses2d));
-    //       adv_trackedPub.set(tracked_note);
-    //     }
-    //   }
     
     if (m_drive.odomPose != null && noteCenters != null){
         Pose2d odomPose = m_drive.odomPose;

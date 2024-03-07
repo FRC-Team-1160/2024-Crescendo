@@ -76,28 +76,6 @@ public class RobotContainer {
      */
     
     private void configureButtonBindings() {
-      // new JoystickButton(m_mainStick, Button.kA.value)
-      //   .whileTrue(
-
-      //   );
-
-      // new JoystickButton(m_mainStick, Button.kStart.value)
-      //   .onTrue(
-
-      //   );
-
-      /*ew JoystickButton(m_mainStick, Button.kX.value)
-        .whenPressed(
-          new ToggleGate(m_driveTrain)
-        // );*/
-        // new JoystickButton(m_mainStick, 2)
-        //     .toggleOnTrue(new SwerveDriveShoot(m_driveTrain));
-
-        // new JoystickButton(m_mainStick, 4)
-        //     .toggleOnTrue(new IncrementShooter(m_shooter, 0.05)); 
-
-        // new JoystickButton(m_mainStick, 1)
-        //     .toggleOnTrue(new IncrementShooter(m_shooter, -0.05));
         
         new JoystickButton(m_mainStick, 14) //14
             .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro(), m_driveTrain));

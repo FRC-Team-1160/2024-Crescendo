@@ -46,7 +46,7 @@ public class AimSpeaker extends Command {
     //   m_drive.aimSwerveDrive(x, y, 0.5, 5.5);
     // } else {
     //   m_drive.setSwerveDrive(0, 0, 0);
-    // }x
+    // }
     double x = SmartDashboard.getNumber("GetX", 16.54);
     double z = SmartDashboard.getNumber("GetZ", 2.0);
     SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));

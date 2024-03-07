@@ -42,9 +42,6 @@ public class SwerveDrive extends Command {
     // }
     m_drive.setSwerveDrive(x, y, a);
 
-
-
-    //System.out.println("def");
   }
 
   // Called every time the scheduler runs while the command is scheduled.

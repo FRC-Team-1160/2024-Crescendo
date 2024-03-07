@@ -43,10 +43,8 @@ public class SwerveDriveWheel {
 
     public void set(double angle, double speed)
     {
-        //***NEW API, DOUBLE CHECK OR TEST***
         double a = m_anglePID.calculate(getAngle(), angle);
         SmartDashboard.putNumber("MANUAL TARGET", a);
-        //double v = m_speedPID.calculate(getSpeed(), speed);
         if (Math.abs(getAngle() - angle) > 0.005){
             steerMotor.set(-a);
         } else {
@@ -54,8 +52,6 @@ public class SwerveDriveWheel {
         }
         driveMotor.set(speed);
 
-        // steerMotor.setControl(new PositionDutyCycle(angle)); //CHECK UNITS 
-        // driveMotor.setControl(new VelocityDutyCycle(speed)); //rots/sec
         this.angle = angle;
         this.speed = speed;
         this.distance += speed * 6;
@@ -86,21 +82,9 @@ public class SwerveDriveWheel {
             if (v > 0.5){
                 v -= 1.0;
             }
-            // if (v < 0){
-            //     v += 1;
-            // }
+
             return v;
         } else {
-            // double v = (angle % 1d);
-            // if (v < -0.5){
-            //     v += 1.0;
-            // }
-            // if (v > 0.5){.
-
-
-            //     v -= 1.0;
-            // }
-            // return v;
             return angle;
         }
     }

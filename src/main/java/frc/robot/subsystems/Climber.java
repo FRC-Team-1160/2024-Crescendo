@@ -49,8 +49,6 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // left.set(leftPID.calculate(left.getEncoder().getPosition(), left_setpoint));
-    // right.set(rightPID.calculate(right.getEncoder().getPosition(), right_setpoint));
     if (Math.abs(m_secondStick.getRawAxis(1)) > 0.8){
       left.set(-Math.signum(m_secondStick.getRawAxis(1)) * 0.4);
     } else {
