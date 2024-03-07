@@ -101,6 +101,9 @@ public class RobotContainer {
         
         new JoystickButton(m_mainStick, 14) //14
             .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro(), m_driveTrain));
+            
+        new JoystickButton(m_mainStick, 9) //14
+            .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro(), m_driveTrain));
 
         new JoystickButton(m_secondStick, 3)
             .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0), m_shooter));
@@ -146,6 +149,9 @@ public class RobotContainer {
 
         new JoystickButton(m_thirdStick, 4)
             .onTrue(new IntakeNote(m_intake, m_transport));
+
+        new JoystickButton(m_thirdStick, 3)
+            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.25)));
     }
 
     /**

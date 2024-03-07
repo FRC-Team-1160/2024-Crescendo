@@ -18,7 +18,7 @@ public class IntakeNote extends Command{
 
     @Override
     public void initialize(){
-        // m_intake.setSolenoid(1);
+        m_intake.setSolenoid(1);
         m_intake.setMotor(true);
         m_transport.setWheels(true);
         m_transport.setBelt(1);
@@ -34,7 +34,7 @@ public class IntakeNote extends Command{
 
     @Override
     public void end(boolean interrupted){
-        // m_intake.setSolenoid(-1);
+        m_intake.setSolenoid(-1);
         m_intake.setMotor(false);
         m_transport.setWheels(false);
         m_transport.setBelt(0);

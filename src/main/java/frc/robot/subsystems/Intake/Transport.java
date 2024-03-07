@@ -90,10 +90,10 @@ public class Transport extends SubsystemBase {
     @Override
     public void periodic(){
         int prox = m_colorSensor.getProximity();
-        SmartDashboard.putNumber("Color Sensor Prox", prox);
-        Color color = m_colorSensor.getColor();
-        SmartDashboard.putNumberArray("Color", new double[] {color.red, color.green, color.blue});
+        // SmartDashboard.putNumber("Color Sensor Prox", prox);
+        // Color color = m_colorSensor.getColor();
+        // SmartDashboard.putNumberArray("Color", new double[] {color.red, color.green, color.blue});
         noteStored = (prox > 200.0); //nothing = 120, note ~350
-        SmartDashboard.putNumber("Belt State", beltState);
+        // SmartDashboard.putNumber("Belt State", beltState);
     }
 }
