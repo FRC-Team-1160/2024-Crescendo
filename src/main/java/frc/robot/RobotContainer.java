@@ -66,7 +66,6 @@ import frc.robot.commands.vision.LimelightStreamToggle;
  */
 public class RobotContainer {
 
-    // The robot's subsystems
     public final DriveTrain m_driveTrain = DriveTrain.getInstance(); 
     public final Vision m_vision = Vision.getInstance();
     public final Shooter m_shooter = Shooter.getInstance();
@@ -76,48 +75,29 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
-    // Controllers
     private Joystick m_mainStick = new Joystick(0);
     private Joystick m_secondStick = new Joystick(1);
 
-
-
-    /**
-     * The container for the robot.  Contains subsystems, OI devices, and commands.
-     */
     public RobotContainer() {
-
-      // Configure the button bindings
       configureButtonBindings();
-
-
       autoChooser = AutoBuilder.buildAutoChooser();
-
-  
-      // Configure default commands
-
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
 
     }
 
-
+    
     public Command IntakeRun() {
         return new IntakeRun(m_intake);
     }
-
     public Command SwerveDriveSpeakerAuto() {
         return new SwerveDriveSpeakerAuto(m_driveTrain);
     }
-
     public Command Rev() {
         return new SetShooter(m_shooter, 0.6);
     }
-
     public Command Shoot() {
         return new Shoot(m_shooter, 0.6);
-    }
-    
-    
+    } 
     private void configureButtonBindings() {
       // new JoystickButton(m_mainStick, Button.kA.value)
       //   .whileTrue(

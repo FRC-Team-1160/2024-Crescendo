@@ -18,7 +18,7 @@ public class AimShooter extends Command {
 
     @Override
     public void initialize(){
-        pose = m_drive.odomPose;
+        pose = m_drive.odomPose.get();
     }
 
     @Override

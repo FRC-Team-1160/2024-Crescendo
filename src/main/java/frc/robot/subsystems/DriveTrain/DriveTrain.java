@@ -22,6 +22,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -61,56 +62,31 @@ public class DriveTrain extends SubsystemBase {
    */
 
   private Joystick m_mainStick = new Joystick(0);
-  
   private static DriveTrain m_instance;
-
   private TalonFX m_frontLeftSteerMotor, m_frontRightSteerMotor, m_backLeftSteerMotor, m_backRightSteerMotor;
-
   private Slot0Configs driveConfigs;
-
   private Slot0Configs steerConfigs;
-
   //private TalonFXSensorCollection m_frontLeftRotationEncoder, m_frontRightRotationEncoder, m_backLeftRotationEncoder, m_backRightRotationEncoder;
-
   private TalonFX m_frontLeftDriveMotor, m_frontRightDriveMotor, m_backLeftDriveMotor, m_backRightDriveMotor;
-
   //private TalonFXSensorCollection m_frontLeftDirectionEncoder, m_frontRightDirectionEncoder, m_backLeftDirectionEncoder, m_backRightDirectionEncoder;
-
   public SwerveDriveWheel m_frontLeftWheel, m_frontRightWheel, m_backLeftWheel, m_backRightWheel;
-  
   public CANcoder m_frontLeftCoder, m_frontRightCoder, m_backLeftCoder, m_backRightCoder;
-
   private AHRS m_gyro;
-
   private Translation2d m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation;
-
   public SwerveDriveKinematics m_kinematics;
-
   public SwerveDrivePoseEstimator m_poseEstimator;
-
   private Solenoid m_gate;
-
   public SwerveModuleState[] m_moduleStates;
-
   public SwerveModulePosition[] m_modulePositions;
-
-  public Supplier<Pose2d> odomPose;
-
+  public Pose2d odomPose;
   public Field2d m_field;
-
   public StructArrayPublisher<SwerveModuleState> adv_statesPub;
-
   public StructPublisher<Rotation2d> adv_gyroPub;
-
   public StructPublisher<Pose2d> adv_posePub;
-
   public double sim_angle;
-
   private PIDController m_anglePID;
   double wkP, wkI, wkD;
-
   public SlewRateLimiter zlimiter;
-
   //initializes the drive train
   
   public static DriveTrain getInstance(){
@@ -120,7 +96,14 @@ public class DriveTrain extends SubsystemBase {
     return m_instance;
   }
 
+  public Pose2d getPose() { return odomPose; }
+  public void resetPose(Pose2d pose) { odomPose = pose; }
+  public ChassisSpeeds getSpeeds() { return m_kinematics.toChassisSpeeds(m_moduleStates); }
+  public void driveRobotRelative(ChassisSpeeds speeds) { m_kinematics.toSwerveModuleStates(ChassisSpeeds.discretize(speeds, 0.02)) }
+
+
   public DriveTrain() {
+    AutoBuilder.configureHolonomic(this::getPose, this::resetPose, this::getSpeeds, this::driveRobotRelative);
 
     zlimiter = new SlewRateLimiter(2);
 
@@ -362,10 +345,10 @@ public class DriveTrain extends SubsystemBase {
     odomPose = () -> m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
     SmartDashboard.putData("Gyro", m_gyro);
 
-    m_field.setRobotPose(odomPose.get());
+    m_field.setRobotPose(odomPose);
 
     adv_gyroPub.set(new Rotation2d(getGyroAngle()));
-    adv_posePub.set(odomPose.get());
+    adv_posePub.set(odomPose);
     SmartDashboard.putData("Field", m_field);
 
     // SmartDashboard.putData("Swerve Drive", new Sendable() {
@@ -419,7 +402,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
-    double target = Math.atan2(targetY - odomPose.get().getY(), targetX - odomPose.get().getX());
+    double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
     //double diff = getGyroAngle() * Math.PI / 180.0 - angle;
     double angle = getGyroAngle() * Math.PI / 180.0;
     if (target > Math.PI * 2){
