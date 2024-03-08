@@ -38,7 +38,8 @@ public class Shooter extends SubsystemBase{
     topMotor = new CANSparkMax(PortConstants.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     bottomMotor = new CANSparkMax(PortConstants.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     pitchMotor = new CANSparkMax(PortConstants.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchPID = new PIDController(3.5, 0, 0.05);
+    pitchPID = new PIDController(3.0, 0.1, 0.05);
+    pitchPID.setIZone(0.03);
 
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
@@ -86,10 +87,10 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("Pitch Encoder", position);
     setpoint = SmartDashboard.getNumber("Shooter Pitch", setpoint);
     SmartDashboard.putNumber("Shooter Pitch", setpoint);
-    double v = pitchPID.calculate(position, setpoint);
-    v += 0.1 * Math.sqrt(position);
-
-    SmartDashboard.putNumber("pitchPID", v);
+    double v = Math.max(-0.2, Math.min(0.2, pitchPID.calculate(position, setpoint)));
+    SmartDashboard.putNumber("PitchPID", v);
+    v += 0.08 * Math.sqrt(position);
+    SmartDashboard.putNumber("PIDwithFF", v);
     manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
     pitchMotor.set(-v);
 
