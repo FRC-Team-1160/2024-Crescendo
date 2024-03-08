@@ -19,7 +19,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 
 
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,7 +39,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PortConstants;
-import frc.robot.subsystems.Shooter;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 
@@ -60,7 +59,7 @@ public class DriveTrain extends SubsystemBase {
 
   private Joystick m_mainStick = new Joystick(0);
   private Joystick m_secondStick = new Joystick(1);
-
+  
   private static DriveTrain m_instance;
 
   private TalonFX m_frontLeftSteerMotor, m_frontRightSteerMotor, m_backLeftSteerMotor, m_backRightSteerMotor;
@@ -82,10 +81,11 @@ public class DriveTrain extends SubsystemBase {
   public Field2d m_field;
 
   public StructArrayPublisher<SwerveModuleState> adv_statesPub;
+  public StructArrayPublisher<SwerveModuleState> adv_targetStatesPub;
   public StructPublisher<Rotation2d> adv_gyroPub;
   public StructPublisher<Pose2d> adv_posePub;
   public double sim_angle;
-  
+
   private PIDController m_anglePID;
   public SlewRateLimiter zlimiter;
 
@@ -200,6 +200,7 @@ public class DriveTrain extends SubsystemBase {
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable adv_swerve = inst.getTable("adv_swerve");
     adv_statesPub = adv_swerve.getStructArrayTopic("States", SwerveModuleState.struct).publish();
+    adv_targetStatesPub = adv_swerve.getStructArrayTopic("Target States", SwerveModuleState.struct).publish();
     adv_gyroPub = adv_swerve.getStructTopic("Gyro", Rotation2d.struct).publish();
     adv_posePub = adv_swerve.getStructTopic("Pose", Pose2d.struct).publish();
 
@@ -299,7 +300,7 @@ public class DriveTrain extends SubsystemBase {
 
     SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, 1);
 
-    adv_statesPub.set(m_moduleStates);
+    adv_targetStatesPub.set(m_moduleStates);
 
     m_frontLeftWheel.set(m_moduleStates[0].angle.getRotations(), m_moduleStates[0].speedMetersPerSecond);
     m_frontRightWheel.set(m_moduleStates[1].angle.getRotations(), m_moduleStates[1].speedMetersPerSecond);
@@ -316,6 +317,13 @@ public class DriveTrain extends SubsystemBase {
     odomPose = m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
     SmartDashboard.putData("Gyro", m_gyro);
 
+    adv_statesPub.set(new SwerveModuleState[]{
+      new SwerveModuleState(m_frontLeftWheel.getSpeed(), Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
+      new SwerveModuleState(m_frontRightWheel.getSpeed(), Rotation2d.fromRotations(m_frontRightWheel.getAngle())),
+      new SwerveModuleState(m_backLeftWheel.getSpeed(), Rotation2d.fromRotations(m_backLeftWheel.getAngle())),
+      new SwerveModuleState(m_backRightWheel.getSpeed(), Rotation2d.fromRotations(m_backRightWheel.getAngle()))
+    });
+
     m_field.setRobotPose(odomPose);
 
     adv_gyroPub.set(new Rotation2d(getGyroAngle()));
@@ -324,29 +332,29 @@ public class DriveTrain extends SubsystemBase {
 
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
-    SmartDashboard.putNumber("FLMotorAngle", m_frontLeftWheel.getAngle());
-    SmartDashboard.putNumber("FLCoderAngle", m_frontLeftCoder.getPosition().getValue());
-    SmartDashboard.putNumber("FLTargetAngle", m_moduleStates[0].angle.getRotations());
-    SmartDashboard.putNumber("FLAngle", m_frontLeftWheel.getAngle());
-    SmartDashboard.putNumber("FLTarget", m_moduleStates[0].speedMetersPerSecond);
+    // SmartDashboard.putNumber("FLMotorAngle", m_frontLeftWheel.getAngle());
+    // SmartDashboard.putNumber("FLCoderAngle", m_frontLeftCoder.getPosition().getValue());
+    // SmartDashboard.putNumber("FLTargetAngle", m_moduleStates[0].angle.getRotations());
+    // SmartDashboard.putNumber("FLAngle", m_frontLeftWheel.getAngle());
+    // SmartDashboard.putNumber("FLTarget", m_moduleStates[0].speedMetersPerSecond);
 
-    SmartDashboard.putNumber("FRMotorAngle", m_frontRightWheel.getAngle());
-    SmartDashboard.putNumber("FRCoderAngle", m_frontRightCoder.getPosition().getValue());
-    SmartDashboard.putNumber("FRTargetAngle", m_moduleStates[1].angle.getRotations());
-    SmartDashboard.putNumber("FRAngle", m_frontRightWheel.getAngle());
-    SmartDashboard.putNumber("FRTarget", m_moduleStates[1].speedMetersPerSecond);
+    // SmartDashboard.putNumber("FRMotorAngle", m_frontRightWheel.getAngle());
+    // SmartDashboard.putNumber("FRCoderAngle", m_frontRightCoder.getPosition().getValue());
+    // SmartDashboard.putNumber("FRTargetAngle", m_moduleStates[1].angle.getRotations());
+    // SmartDashboard.putNumber("FRAngle", m_frontRightWheel.getAngle());
+    // SmartDashboard.putNumber("FRTarget", m_moduleStates[1].speedMetersPerSecond);
 
-    SmartDashboard.putNumber("BLMotorAngle", m_backLeftWheel.getAngle());
-    SmartDashboard.putNumber("BLCoderAngle", m_backLeftCoder.getPosition().getValue());
-    SmartDashboard.putNumber("BLTargetAngle", m_moduleStates[2].angle.getRotations());
-    SmartDashboard.putNumber("BLAngle", m_backLeftWheel.getAngle());
-    SmartDashboard.putNumber("BLTarget", m_moduleStates[2].speedMetersPerSecond);
+    // SmartDashboard.putNumber("BLMotorAngle", m_backLeftWheel.getAngle());
+    // SmartDashboard.putNumber("BLCoderAngle", m_backLeftCoder.getPosition().getValue());
+    // SmartDashboard.putNumber("BLTargetAngle", m_moduleStates[2].angle.getRotations());
+    // SmartDashboard.putNumber("BLAngle", m_backLeftWheel.getAngle());
+    // SmartDashboard.putNumber("BLTarget", m_moduleStates[2].speedMetersPerSecond);
 
-    SmartDashboard.putNumber("BRMotorAngle", m_backRightWheel.getAngle());
-    SmartDashboard.putNumber("BRCoderAngle", m_backRightCoder.getPosition().getValue());
-    SmartDashboard.putNumber("BRTargetAngle", m_moduleStates[3].angle.getRotations());
-    SmartDashboard.putNumber("BRAngle", m_backRightWheel.getAngle());
-    SmartDashboard.putNumber("BRTarget", m_moduleStates[3].speedMetersPerSecond);
+    // SmartDashboard.putNumber("BRMotorAngle", m_backRightWheel.getAngle());
+    // SmartDashboard.putNumber("BRCoderAngle", m_backRightCoder.getPosition().getValue());
+    // SmartDashboard.putNumber("BRTargetAngle", m_moduleStates[3].angle.getRotations());
+    // SmartDashboard.putNumber("BRAngle", m_backRightWheel.getAngle());
+    // SmartDashboard.putNumber("BRTarget", m_moduleStates[3].speedMetersPerSecond);
 
 
   }
@@ -378,8 +386,8 @@ public class DriveTrain extends SubsystemBase {
     // double joystickA = m_mainStick.getRawAxis(4);
     double joystickX = -m_mainStick.getRawAxis(1);
     double joystickY = -m_mainStick.getRawAxis(0);
-    // double joystickA = -m_mainStick.getRawAxis(2);
-    double joystickA = -m_secondStick.getRawAxis(0);
+    double joystickA = -m_mainStick.getRawAxis(2);
+    // double joystickA = -m_secondStick.getRawAxis(0);
     double x = 0.0;
     double y = 0.0;
     double a = 0.0;
@@ -402,9 +410,9 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    x = Math.cos(dir) * 0.6 * Math.pow(mag, 2);
-    y = Math.sin(dir) * 0.6 * Math.pow(mag, 2);
-    a = Math.signum(a) * 0.6 * (Math.pow(a, 2) / (1 + Math.sqrt(mag) / 2));
+    x = Math.cos(dir) * 0.5 * Math.abs(Math.pow(mag, 3));
+    y = Math.sin(dir) * 0.5 * Math.abs(Math.pow(mag, 3));
+    a = Math.signum(a) * 0.4 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
 
     SmartDashboard.putNumber("inX", x);
     SmartDashboard.putNumber("inY", y);
@@ -418,6 +426,6 @@ public class DriveTrain extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Absolute", m_frontLeftCoder.getAbsolutePosition().getValue());
     SmartDashboard.putNumber("regular", m_frontLeftCoder.getPosition().getValue());
-
+    SmartDashboard.putBoolean("Gyro Rotating", m_gyro.isRotating());
   }
 }
