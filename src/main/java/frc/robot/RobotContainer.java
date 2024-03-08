@@ -14,8 +14,8 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 import frc.robot.subsystems.Intake.Intake;
-import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Intake.Transport;
+import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -50,6 +50,7 @@ public class RobotContainer {
     private Joystick m_mainStick = new Joystick(0);
     private Joystick m_secondStick = new Joystick(1);
     private Joystick m_thirdStick = new Joystick(2);
+    private Joystick m_fourthStick = new Joystick(3);
 
 
     /**
