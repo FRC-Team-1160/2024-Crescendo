@@ -36,7 +36,7 @@ public class SwerveDriveWheel {
         accumulator = 0;
         kFF = 0.05;
         distance = 0;
-        m_anglePID = new PIDController(0.5, 0.0, 0.001);
+        m_anglePID = new PIDController(1.2, 0.0, 0.005);
 
         m_anglePID.enableContinuousInput(-0.5, 0.5);
     }

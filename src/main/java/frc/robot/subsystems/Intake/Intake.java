@@ -73,7 +73,7 @@ public class Intake extends SubsystemBase{
 
     @Override
     public void periodic(){
-        SmartDashboard.putString("Solenoid State", m_solenoid.get().toString());
+        // SmartDashboard.putString("Solenoid State", m_solenoid.get().toString());
     }
 
 }
