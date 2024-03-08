@@ -45,6 +45,8 @@ public class Shooter extends SubsystemBase{
     speed = 0;
     manual = 0;
     SmartDashboard.putNumber("Shooter Pitch", 0);
+    SmartDashboard.putBoolean("Shooter Aimed", false);
+    SmartDashboard.putBoolean("Shooter Revved", false);
     m_drive = DriveTrain.getInstance();
   }
 
@@ -60,6 +62,7 @@ public class Shooter extends SubsystemBase{
     double angle = Math.min(0.16, Math.atan2(z, dist) * 0.11 / (Math.PI / 4));
     setpoint = angle;
     SmartDashboard.putNumber("Shooter Pitch", angle);
+    SmartDashboard.putBoolean("Shooter Aimed", (Math.abs(setpoint - angle) < 0.005));
     return angle;
   }
 
@@ -68,6 +71,7 @@ public class Shooter extends SubsystemBase{
     double s = Math.min(0.5 + dist/5.0, 1.0);
     s = 0.20;
     SmartDashboard.putNumber("Shooter Speed", s);
+    SmartDashboard.putBoolean("Shooter Revved", (topMotor.getEncoder().getVelocity() > 4000 * s));
     setSpeed(s);
     return s;
   }
@@ -90,6 +94,7 @@ public class Shooter extends SubsystemBase{
     pitchMotor.set(-v);
 
     SmartDashboard.putNumber("ManualWrist", manual);
+    
   }
 
 }

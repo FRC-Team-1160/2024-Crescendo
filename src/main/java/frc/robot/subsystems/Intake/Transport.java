@@ -67,13 +67,15 @@ public class Transport extends SubsystemBase {
 
     public void setBelt(int state){
         beltState = state;
-        if (state == 1){
-            belt.set(-0.3);
-        } else if (state == 2){
-            belt.set(-0.6);
-        } else {
-            belt.set(0.0);
+        switch(state) {
+            case 0 ->
+                belt.set(0.0);
+            case 1 ->
+                belt.set(-0.25);
+            case 2 ->
+                belt.set(-0.6);
         }
+
 
     }
 
@@ -91,6 +93,7 @@ public class Transport extends SubsystemBase {
         int prox = m_colorSensor.getProximity();
         SmartDashboard.putNumber("Color Sensor Prox", prox);
         noteStored = (prox > 200.0); //nothing = 120, note ~350
+        SmartDashboard.putBoolean("Note Stored", noteStored);
         SmartDashboard.putNumber("Belt State", beltState);
     }
 }
