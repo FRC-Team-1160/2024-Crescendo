@@ -66,7 +66,7 @@ public class Shooter extends SubsystemBase{
   public double revTarget(double x, double y){
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
     double s = Math.min(0.5 + dist/5.0, 1.0);
-    s = 0.25;    
+    s = 0.20;
     SmartDashboard.putNumber("Shooter Speed", s);
     setSpeed(s);
     return s;
