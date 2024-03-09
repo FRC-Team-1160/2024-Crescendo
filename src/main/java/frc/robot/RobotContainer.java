@@ -75,33 +75,21 @@ public class RobotContainer {
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.AIM)
             .onTrue(new AimSpeaker(m_driveTrain, m_shooter));
 
+        new JoystickButton(m_leftBoard, Constants.IO.Board.Left.AMP)
+            .onTrue(new InstantCommand(() -> m_shooter.presetAmp()));
+
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
             .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.8)));
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0)));
-        
+
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.INTAKE)
-            .onTrue(new IntakeNote(m_intake, m_transport));
+            .toggleOnTrue(new IntakeNote(m_intake, m_transport));
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.OUTTAKE)
-            .onTrue(new OuttakeNote(m_intake, m_transport, m_shooter));
-        
-        new JoystickButton(m_mainStick, 14) //14
-            .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro(), m_driveTrain));
-            
-        new JoystickButton(m_mainStick, 9) //14
-            .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro(), m_driveTrain));
+            .toggleOnTrue(new OuttakeNote(m_intake, m_transport, m_shooter));
 
-        new JoystickButton(m_codriverStick, 3)
-            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0), m_shooter));
-
-        new JoystickButton(m_codriverStick, 2)
-            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.5), m_shooter));
-
-        new JoystickButton(m_codriverStick, 5)
-            .onTrue(new InstantCommand(() -> m_intake.m_solenoid.set(DoubleSolenoid.Value.kForward), m_intake));
-            
-        new JoystickButton(m_codriverStick, 9)
-            .onTrue(new IntakeNote(m_intake, m_transport));
+        new JoystickButton(m_rightBoard, Constants.IO.Board.Right.UP_DOWN_INTAKE)
+            .onTrue(new InstantCommand(() -> m_intake.m_solenoid.set(DoubleSolenoid.Value.kForward)));
 
         new JoystickButton(m_codriverSimpStick, 1)
         .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));

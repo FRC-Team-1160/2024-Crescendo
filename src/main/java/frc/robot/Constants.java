@@ -92,6 +92,8 @@ public final class Constants {
         public static final int SHOOT = 1;
         public static final int AIM = 2;
 
+        public static final int AMP = 3;
+
         public static final int SHOOT_OVERRIDE = 5;
         public static final int REV = 6;
       }

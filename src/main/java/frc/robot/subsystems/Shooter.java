@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,12 +20,17 @@ public class Shooter extends SubsystemBase{
   
   public CANSparkMax topMotor;
   public CANSparkMax bottomMotor;
+  public SparkPIDController topPID;
+  public SparkPIDController bottomPID;
+
   public CANSparkMax pitchMotor;
   public PIDController pitchPID;
   
   public double setpoint;
 
   public DriveTrain m_drive;
+
+  public double speed;
 
   public double manual;
 
@@ -37,8 +45,17 @@ public class Shooter extends SubsystemBase{
     topMotor = new CANSparkMax(Port.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     bottomMotor = new CANSparkMax(Port.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     pitchMotor = new CANSparkMax(Port.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchPID = new PIDController(3.0, 0.1, 0.05);
-    pitchPID.setIZone(0.03);
+    pitchPID = new PIDController(0.1, 0.0, 0.00);
+
+    speed = 0;
+
+    topPID = topMotor.getPIDController();
+    bottomPID = bottomMotor.getPIDController();
+
+    topPID.setP(0.0002);
+    topPID.setFF(0.000177);
+    bottomPID.setP(0.0002);
+    bottomPID.setFF(0.000177);
 
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
@@ -51,8 +68,8 @@ public class Shooter extends SubsystemBase{
 
   public void setSpeed(double speed){
     speed = Math.max(-1, Math.min(1, speed));
-    topMotor.set(speed);
-    bottomMotor.set(-speed);
+    topPID.setReference(speed * 5500, ControlType.kVelocity);
+    bottomPID.setReference(speed * 5500, ControlType.kVelocity);
     SmartDashboard.putNumber("Shooter Speed", speed);
   }
 
@@ -67,12 +84,16 @@ public class Shooter extends SubsystemBase{
 
   public double revTarget(double x, double y){
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
-    double s = Math.min(0.5 + dist/5.0, 1.0);
-    s = 0.20;
+    double s = Math.min(0.4 + dist/6.0, 1.0);
     SmartDashboard.putNumber("Shooter Speed", s);
     SmartDashboard.putBoolean("Shooter Revved", (topMotor.getEncoder().getVelocity() > 4000 * s));
     setSpeed(s);
     return s;
+  }
+
+  public void presetAmp(){
+    setpoint = 16.5;
+    setSpeed(0.27);
   }
 
   public void periodic() {
@@ -85,8 +106,6 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("Shooter Pitch", setpoint);
     double v = Math.max(-0.2, Math.min(0.2, pitchPID.calculate(position, setpoint)));
     SmartDashboard.putNumber("PitchPID", v);
-    v += 0.08 * Math.sqrt(position);
-    SmartDashboard.putNumber("PIDwithFF", v);
     manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
     pitchMotor.set(-v);
 
