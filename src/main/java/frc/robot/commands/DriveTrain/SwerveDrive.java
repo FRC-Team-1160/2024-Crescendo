@@ -4,7 +4,6 @@
 
 package frc.robot.commands.DriveTrain;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
@@ -17,7 +16,6 @@ public class SwerveDrive extends Command {
   private double y;
   private double a;
   DriveTrain m_drive;
-  private Joystick m_mainStick = new Joystick(0);
 
   public SwerveDrive(DriveTrain m_drive) {
     // Use addRequirements() here to declare subsystem dependencies.

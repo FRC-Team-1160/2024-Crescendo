@@ -14,9 +14,6 @@ package frc.robot.subsystems.DriveTrain;
 //SWITCH TO PHOENIX6
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.hardware.CANcoder;
 
@@ -399,6 +396,27 @@ public class DriveTrain extends SubsystemBase {
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
     double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
+    double angle = getGyroAngle() * Math.PI / 180.0;
+    if (target > Math.PI * 2){
+      target -= Math.PI * 2;
+    }
+    if (angle < 0){
+      angle += Math.PI * 2;
+    }
+
+    SmartDashboard.putNumber("AIMANGLE", angle);
+    SmartDashboard.putNumber("AIMTARGET", target);
+    double max = 0.15;
+    double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
+    if (Math.abs(angSpeed) < 0.01){
+      angSpeed = 0;
+    }
+    setSwerveDrive(xSpeed, ySpeed, angSpeed);
+    return target;
+  }
+
+  public double aimReverse(double xSpeed, double ySpeed, double targetX, double targetY){
+    double target = Math.atan2(odomPose.getY() - targetY, odomPose.getX() - targetX);
     double angle = getGyroAngle() * Math.PI / 180.0;
     if (target > Math.PI * 2){
       target -= Math.PI * 2;

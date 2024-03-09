@@ -96,12 +96,16 @@ public final class Constants {
 
         public static final int SHOOT_OVERRIDE = 5;
         public static final int REV = 6;
+
+        public static final int LEFT_CLIMB = 1;
       }
       public static final class Right {
         public static final int UP_DOWN_INTAKE = 1;
         public static final int OVERRIDE = 4;
         public static final int OUTTAKE = 8;
         public static final int INTAKE = 9;
+
+        public static final int RIGHT_CLIMB = 1;
       }
     }
   }

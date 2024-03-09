@@ -1,12 +1,9 @@
 package frc.robot.commands.Intake;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants;
+
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.Transport;
 
@@ -39,10 +36,10 @@ public class IntakeNote extends Command{
 
     @Override
     public void end(boolean interrupted){
-        m_intake.setSolenoid(-1);
-        m_intake.setMotor(false);
-        m_transport.setWheels(false);
-        m_transport.setBelt(0);
+        m_intake.m_solenoid.set(DoubleSolenoid.Value.kReverse);
+        m_intake.m_feedMotor.set(0);
+        m_transport.setWheels(0);
+        m_transport.belt.set(0);
     }
 
     @Override
