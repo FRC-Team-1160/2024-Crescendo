@@ -49,8 +49,8 @@ public class AimSpeaker extends Command {
     // }
     double x = SmartDashboard.getNumber("GetX", 16.54);
     double z = SmartDashboard.getNumber("GetZ", 2.0);
-    // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));
-    // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
+    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));
+    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
 
   }
 

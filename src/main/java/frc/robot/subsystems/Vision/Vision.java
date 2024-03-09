@@ -28,9 +28,10 @@ public class Vision extends SubsystemBase{
   public PhotonCamera m_backCamera;
   public Pose3d m_pose;
   public DriveTrain m_drive;
+
   public Pose3d tracked_note;
-  
   public ArrayList<Point> noteCenters;
+  Timer tracking_timeout;
 
   PhotonPoseEstimator m_photonPoseEstimator;
   StructPublisher<Pose3d> adv_posePub;
@@ -62,7 +63,9 @@ public class Vision extends SubsystemBase{
     m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, new Transform3d());
     m_photonPoseEstimator.setReferencePose(m_pose);
 
-    tracked_note = new Pose3d();
+    tracked_note = null;
+    tracking_timeout = new Timer();
+    tracking_timeout.start();
   }
 
   @Override
@@ -75,7 +78,6 @@ public class Vision extends SubsystemBase{
         if (Math.abs(m_pose.getZ()) < 1){
           m_photonPoseEstimator.setReferencePose(m_pose);
         }
-        System.out.println("VISION POSE Z " + m_pose.getZ());
         if (m_drive != null){
           m_drive.m_poseEstimator.addVisionMeasurement(m_pose.toPose2d(), Timer.getFPGATimestamp());
         }
@@ -83,62 +85,37 @@ public class Vision extends SubsystemBase{
     }
     adv_posePub.set(m_pose);
 
-    // var result2 = m_backCamera.getLatestResult();
-    // if (result2.hasTargets()){
-    //   var target = result2.getBestTarget();
-    //   SmartDashboard.putNumber("Note Yaw", target.getYaw());
-    //   SmartDashboard.putNumber("Note Pitch", target.getPitch());
-    //   if (m_drive.odomPose != null){
-    //     List<Pose2d> poses2d = new ArrayList<Pose2d>();
-    //     for (int i = 0; i < result2.getTargets().size(); i++){
-    //       target = result2.getTargets().get(i);
-    //       if (target.getPitch() < 0){
-    //         Pose2d pose = m_drive.odomPose;
-    //         double angle = (target.getYaw()  * Math.PI / 180.0) + pose.getRotation().getRadians();
-    //         double dist = 0.5 * Math.tan(Math.PI/2 + target.getPitch() * Math.PI / 180);
-    
-    //         Pose2d targetPose = new Pose2d(
-    //           pose.getX() + Math.cos(angle) * dist,
-    //           pose.getY() - Math.sin(angle) * dist,
-    //           new Rotation2d()
-    //         );
-    //         poses2d.add(targetPose);
-    //       }
-    //     }
-    //     if (poses2d.size() > 0){
-    //       Pose3d[] poses3d = new Pose3d[poses2d.size()];
-    //       for (int i = 0; i < poses2d.size(); i++){
-    //         poses3d[i] = new Pose3d(
-    //           poses2d.get(i).getX(),
-    //           poses2d.get(i).getY(),
-    //           0.03,
-    //           new Rotation3d()
-    //         );
-    //       }
-    //       adv_targetPub.set(poses3d);
-    //       tracked_note = new Pose3d(tracked_note.toPose2d().nearest(poses2d));
-    //       adv_trackedPub.set(tracked_note);
-    //     }
-    //   }
-    
+    double min_dist = 99;
+
     if (m_drive.odomPose != null && noteCenters != null){
-        Pose2d odomPose = m_drive.odomPose;
-        double rot = odomPose.getRotation().getRadians();
-        ArrayList<Pose3d> poses3d = new ArrayList<Pose3d>();
-        for (Point p : noteCenters){
-          double f = 0.76 / (Math.tan(38 / 2 * Math.PI/180) * (p.y - 60)/60);
-          double h = -f * Math.tan(63 / 2 * Math.PI/180) * (p.x - 80)/80;
-          double x = f * Math.cos(rot) - h * Math.sin(rot);
-          double y = f * Math.sin(rot) + h * Math.cos(rot);
-          Pose3d pose = new Pose3d(
-            x + odomPose.getX(),
-            y + odomPose.getY(),
-            0.04,
-            new Rotation3d()
-          );
-          poses3d.add(pose);
+      Pose2d odomPose = m_drive.odomPose;
+      double rot = odomPose.getRotation().getRadians();
+      ArrayList<Pose3d> poses3d = new ArrayList<Pose3d>();
+      for (Point p : noteCenters){
+        double f = 0.76 / (Math.tan(38 / 2 * Math.PI/180) * (p.y - 60)/60);
+        double h = -f * Math.tan(63 / 2 * Math.PI/180) * (p.x - 80)/80;
+        double x = f * Math.cos(rot) - h * Math.sin(rot);
+        double y = f * Math.sin(rot) + h * Math.cos(rot);
+        double dist = Math.sqrt(f*f + h*h);
+        Pose3d pose = new Pose3d(
+          x + odomPose.getX(),
+          y + odomPose.getY(),
+          0.04,
+          new Rotation3d()
+        );
+        poses3d.add(pose);
+        if (dist < min_dist){
+          min_dist = dist;
+          tracked_note = pose;
+          tracking_timeout.reset();
         }
-        adv_targetPub.set(poses3d.toArray(new Pose3d[0]));
+      }
+      adv_targetPub.set(poses3d.toArray(new Pose3d[0]));
+      adv_trackedPub.set(tracked_note);
+    } else {
+      if (tracking_timeout.hasElapsed(0.5)){
+        tracked_note = null;
+      }
     }
     
 

@@ -31,18 +31,27 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.DriveTrain.SwerveDrive;
+import frc.robot.commands.AimSpeaker;
 import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
 import frc.robot.commands.Intake.IntakeRun;
 import frc.robot.commands.Shooter.IncrementShooter;
+import frc.robot.commands.Shooter.SetShooter;
+import frc.robot.commands.Intake.IntakeNote;
+import frc.robot.commands.DriveTrain.SwerveDrive;
+import frc.robot.commands.Intake.IntakeNote;
+import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
+import frc.robot.commands.Intake.IntakeRun;
+import frc.robot.commands.Shooter.IncrementShooter;
+import frc.robot.commands.Shooter.Shoot;
 import frc.robot.commands.Shooter.SetShooter;
 import frc.robot.commands.Shooter.Shoot;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
+import frc.robot.commands.Shooter.Shoot;
 import frc.robot.subsystems.Intake.Intake;
-import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Intake.Transport;
+import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -77,7 +86,13 @@ public class RobotContainer {
 
     private Joystick m_mainStick = new Joystick(0);
     private Joystick m_secondStick = new Joystick(1);
+    private Joystick m_thirdStick = new Joystick(2);
+    private Joystick m_fourthStick = new Joystick(3);
 
+
+    /**
+     * The container for the robot.  Contains subsystems, OI devices, and commands.
+     */
     public RobotContainer() {
       configureButtonBindings();
       autoChooser = AutoBuilder.buildAutoChooser();
@@ -96,33 +111,16 @@ public class RobotContainer {
         return new SetShooter(m_shooter, 0.6);
     }
     public Command Shoot() {
-        return new Shoot(m_shooter, 0.6);
+        return new Shoot(m_shooter, m_transport);
     } 
+
+    
     private void configureButtonBindings() {
-      // new JoystickButton(m_mainStick, Button.kA.value)
-      //   .whileTrue(
-
-      //   );
-
-      // new JoystickButton(m_mainStick, Button.kStart.value)
-      //   .onTrue(
-
-      //   );
-
-      /*ew JoystickButton(m_mainStick, Button.kX.value)
-        .whenPressed(
-          new ToggleGate(m_driveTrain)
-        // );*/
-        // new JoystickButton(m_mainStick, 2)
-        //     .toggleOnTrue(new SwerveDriveShoot(m_driveTrain));
-
-        // new JoystickButton(m_mainStick, 4)
-        //     .toggleOnTrue(new IncrementShooter(m_shooter, 0.05)); 
-
-        // new JoystickButton(m_mainStick, 1)
-        //     .toggleOnTrue(new IncrementShooter(m_shooter, -0.05));
         
         new JoystickButton(m_mainStick, 14) //14
+            .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro(), m_driveTrain));
+            
+        new JoystickButton(m_mainStick, 9) //14
             .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro(), m_driveTrain));
 
         new JoystickButton(m_secondStick, 3)
@@ -150,6 +148,9 @@ public class RobotContainer {
         new JoystickButton(m_secondStick, 8)
             .onTrue(new InstantCommand(() -> m_transport.toggleBelt(), m_transport));
 
+        new JoystickButton(m_secondStick, 9)
+            .onTrue(new IntakeNote(m_intake, m_transport));
+
         new JoystickButton(m_secondStick, 10)
             .onTrue(new SequentialCommandGroup(
                 new InstantCommand(() -> m_intake.toggleMotor(), m_intake),
@@ -161,6 +162,13 @@ public class RobotContainer {
         // new JoystickButton(m_mainStick, 8)
         //     .toggleOnTrue(new SwerveDriveSpeaker(m_driveTrain));
     }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+
     
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();

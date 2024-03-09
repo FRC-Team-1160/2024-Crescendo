@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.PortConstants;
 
+import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 
 public class Transport extends SubsystemBase {
@@ -17,12 +20,14 @@ public class Transport extends SubsystemBase {
     public CANSparkMax rightWheel;
     public CANSparkMax belt;
 
-    public boolean beltState;
+    public int beltState;
     public boolean wheelsState;
 
     public AnalogPotentiometer ultrasonic;
 
     public boolean noteStored;
+
+    public ColorSensorV3 m_colorSensor;
 
     public static Transport getInstance(){
         if (m_instance == null){
@@ -37,11 +42,10 @@ public class Transport extends SubsystemBase {
         rightWheel = new CANSparkMax(PortConstants.TRANSPORT_RIGHT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
         belt = new CANSparkMax(PortConstants.TRANSPORT_BELT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
         
-        ultrasonic = new AnalogPotentiometer(PortConstants.TRANSPORT_ULTRASONIC);
+        m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 
         noteStored = false;
-
-        beltState = false;
+        beltState = 0;
         wheelsState = false;
     }
 
@@ -61,22 +65,35 @@ public class Transport extends SubsystemBase {
         setWheels(wheelsState);
     }
 
-    public void setBelt(boolean state){
+    public void setBelt(int state){
         beltState = state;
-        if (state){
-            belt.set(-0.5);
-        } else {
-            belt.set(0);
+        switch(state) {
+            case 0 ->
+                belt.set(0.0);
+            case 1 ->
+                belt.set(-0.25);
+            case 2 ->
+                belt.set(-0.6);
         }
+
+
     }
 
     public void toggleBelt(){
-        beltState = !beltState;
+        if (beltState == 0){
+            beltState = 1;
+        } else {
+            beltState = 0;
+        }
         setBelt(beltState);
     }
 
     @Override
     public void periodic(){
-        noteStored = (ultrasonic.get() < 10.0); //CHECK VALUE
+        int prox = m_colorSensor.getProximity();
+        SmartDashboard.putNumber("Color Sensor Prox", prox);
+        noteStored = (prox > 200.0); //nothing = 120, note ~350
+        SmartDashboard.putBoolean("Note Stored", noteStored);
+        SmartDashboard.putNumber("Belt State", beltState);
     }
 }

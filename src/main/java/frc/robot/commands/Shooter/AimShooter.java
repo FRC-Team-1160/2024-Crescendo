@@ -23,7 +23,6 @@ public class AimShooter extends Command {
 
     @Override
     public void execute(){
-        //CHECK UNITS
         double angle = Math.atan2(1.9, Math.pow(pose.getX() - 0.5, 2) + Math.pow(pose.getY() - 5.5, 2));
         m_shooter.setpoint = angle;
     }
