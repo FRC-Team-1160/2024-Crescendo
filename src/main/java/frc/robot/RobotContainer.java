@@ -85,9 +85,6 @@ public class RobotContainer {
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.OUTTAKE)
             .onTrue(new OuttakeNote(m_intake, m_transport, m_shooter));
         
-        
-
-        
         new JoystickButton(m_mainStick, 14) //14
             .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro(), m_driveTrain));
             
