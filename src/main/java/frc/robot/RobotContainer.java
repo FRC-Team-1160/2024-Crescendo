@@ -1,23 +1,60 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerTrajectory.State;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.proto.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AimSpeaker;
+import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
+import frc.robot.commands.Intake.IntakeRun;
+import frc.robot.commands.Shooter.IncrementShooter;
+import frc.robot.commands.Shooter.SetShooter;
+import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.Intake.IntakeNote;
+import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
+import frc.robot.commands.Intake.IntakeRun;
 import frc.robot.commands.Shooter.IncrementShooter;
+import frc.robot.commands.Shooter.Shoot;
+import frc.robot.commands.Shooter.SetShooter;
 import frc.robot.commands.Shooter.Shoot;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
+import frc.robot.commands.Shooter.Shoot;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.Transport;
 import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 // Commands
 
@@ -38,7 +75,6 @@ import frc.robot.commands.vision.LimelightStreamToggle;
  */
 public class RobotContainer {
 
-    // The robot's subsystems
     public final DriveTrain m_driveTrain = DriveTrain.getInstance(); 
     public final Vision m_vision = Vision.getInstance();
     public final Shooter m_shooter = Shooter.getInstance();
@@ -46,7 +82,8 @@ public class RobotContainer {
     public final Climber m_climber = Climber.getInstance();
     public final Transport m_transport = Transport.getInstance();
 
-    // Controllers
+    private final SendableChooser<Command> autoChooser;
+
     private Joystick m_mainStick = new Joystick(0);
     private Joystick m_secondStick = new Joystick(1);
     private Joystick m_thirdStick = new Joystick(2);
@@ -57,24 +94,26 @@ public class RobotContainer {
      * The container for the robot.  Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-
-      // Configure the button bindings
       configureButtonBindings();
-  
-      // Configure default commands
-
+      autoChooser = AutoBuilder.buildAutoChooser();
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
 
     }
 
-      
-  
-    /**
-     * Use this method to define your button->command mappings.  Buttons can be created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-     * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
+    
+    public Command IntakeRun() {
+        return new IntakeRun(m_intake);
+    }
+    public Command SwerveDriveSpeakerAuto() {
+        return new SwerveDriveSpeakerAuto(m_driveTrain);
+    }
+    public Command Rev() {
+        return new SetShooter(m_shooter, 0.6);
+    }
+    public Command Shoot() {
+        return new Shoot(m_shooter, m_transport);
+    } 
+
     
     private void configureButtonBindings() {
         
@@ -120,17 +159,8 @@ public class RobotContainer {
                 )
             );
         
-        new JoystickButton(m_thirdStick, 1)
-            .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
-
-        new JoystickButton(m_thirdStick, 2)
-            .onTrue(new Shoot(m_shooter, m_transport));
-
-        new JoystickButton(m_thirdStick, 4)
-            .onTrue(new IntakeNote(m_intake, m_transport));
-
-        new JoystickButton(m_thirdStick, 3)
-            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.25)));
+        // new JoystickButton(m_mainStick, 8)
+        //     .toggleOnTrue(new SwerveDriveSpeaker(m_driveTrain));
     }
 
     /**
@@ -141,7 +171,7 @@ public class RobotContainer {
 
     
     public Command getAutonomousCommand() {
-        return null;
+        return autoChooser.getSelected();
     }
     
 }
