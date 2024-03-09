@@ -52,8 +52,8 @@ public class Robot extends TimedRobot {
       thread.setDaemon(true);
       thread.start();
     }
-    SmartDashboard.putNumber("GetX", 16.54);
-    SmartDashboard.putNumber("GetZ", 2.0);
+    SmartDashboard.putNumber("GetX", 15.7);
+    SmartDashboard.putNumber("GetZ", 1.8);
   }
 
   /**

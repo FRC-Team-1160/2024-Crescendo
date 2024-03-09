@@ -46,6 +46,7 @@ public class OuttakeNote extends Command{
         m_intake.m_feedMotor.set(0);
         m_transport.setWheels(0);
         m_transport.belt.set(0);
+        m_shooter.setSpeed(0);
     }
 
     @Override

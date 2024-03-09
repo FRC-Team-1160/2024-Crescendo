@@ -11,6 +11,7 @@ import frc.robot.commands.Intake.OuttakeNote;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.Shooter.Shoot;
+import frc.robot.commands.Shooter.AmpPreset;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
@@ -18,16 +19,6 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.Transport;
 import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
-// Commands
-
-/*
-import frc.robot.commands.drive.Drive;
-import frc.robot.commands.vision.LimelightCameraToggle;
-import frc.robot.commands.vision.LimelightLightToggle;
-import frc.robot.commands.vision.LimelightSnapshotToggle;
-import frc.robot.commands.vision.LimelightStreamToggle;
-*/
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -61,13 +52,14 @@ public class RobotContainer {
       configureButtonBindings();
       autoChooser = AutoBuilder.buildAutoChooser();
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
+      m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));
 
     }
-
-
     
     private void configureButtonBindings() {
 
+        new JoystickButton(m_mainStick, 14)
+            .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro()));
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.SHOOT)
         .or(new JoystickButton(m_leftBoard, Constants.IO.Board.Left.SHOOT_OVERRIDE))
             .onTrue(new Shoot(m_shooter, m_transport));
@@ -76,7 +68,7 @@ public class RobotContainer {
             .onTrue(new AimSpeaker(m_driveTrain, m_shooter));
 
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.AMP)
-            .onTrue(new InstantCommand(() -> m_shooter.presetAmp()));
+            .toggleOnTrue(new AmpPreset(m_shooter));
 
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
             .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.8)));
@@ -89,7 +81,9 @@ public class RobotContainer {
             .toggleOnTrue(new OuttakeNote(m_intake, m_transport, m_shooter));
 
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.UP_DOWN_INTAKE)
-            .onTrue(new InstantCommand(() -> m_intake.m_solenoid.set(DoubleSolenoid.Value.kForward)));
+            .onTrue(new InstantCommand(() -> m_intake.solenoid_default = DoubleSolenoid.Value.kForward));
+        new JoystickButton(m_rightBoard, Constants.IO.Board.Right.UP_DOWN_INTAKE)
+            .onFalse(new InstantCommand(() -> m_intake.solenoid_default = DoubleSolenoid.Value.kReverse));
 
         new JoystickButton(m_codriverSimpStick, 1)
         .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));

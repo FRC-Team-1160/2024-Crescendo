@@ -468,7 +468,7 @@ public class DriveTrain extends SubsystemBase {
     }
     x = Math.cos(dir) * 0.5 * Math.abs(Math.pow(mag, 3));
     y = Math.sin(dir) * 0.5 * Math.abs(Math.pow(mag, 3));
-    a = Math.signum(a) * 0.4 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
+    a = Math.signum(a) * 0.3 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
 
     SmartDashboard.putNumber("inX", x);
     SmartDashboard.putNumber("inY", y);

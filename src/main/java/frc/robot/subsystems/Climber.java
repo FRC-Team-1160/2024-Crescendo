@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Port;
@@ -29,6 +30,7 @@ public class Climber extends SubsystemBase {
   // private Joystick m_secondStick;
   private Joystick m_leftBoard;
   private Joystick m_rightBoard;
+  private Joystick m_simpStick;
   
   public static Climber getInstance(){
     if (m_instance == null){
@@ -48,18 +50,25 @@ public class Climber extends SubsystemBase {
     // m_secondStick = new Joystick(1);
     m_leftBoard = new Joystick(Constants.IO.LEFT_BOARD_PORT);
     m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
+
+    m_simpStick = new Joystick(Constants.IO.COPILOT_SIMP_PORT);
   }
 
 
   @Override
   public void periodic() {
-    if (Math.abs(m_leftBoard.getRawAxis(Constants.IO.Board.Left.LEFT_CLIMB)) > 0.8){
-      left.set(-Math.signum(m_leftBoard.getRawAxis(Constants.IO.Board.Left.LEFT_CLIMB)) * 1);
+    SmartDashboard.putNumber("LClimber", left.getEncoder().getPosition());
+    SmartDashboard.putNumber("RClimber", right.getEncoder().getPosition());
+    double l_input = m_simpStick.getRawAxis(1);
+    double r_input = m_simpStick.getRawAxis(3);
+
+    if (Math.abs(l_input) > 0.8){
+      left.set(-Math.signum(l_input) * 1);
     } else {
       left.set(0);
     }
-    if (Math.abs(m_rightBoard.getRawAxis(Constants.IO.Board.Right.RIGHT_CLIMB)) > 0.8){
-      right.set(Math.signum(m_rightBoard.getRawAxis(Constants.IO.Board.Right.RIGHT_CLIMB)) * 1);
+    if (Math.abs(r_input) > 0.8){
+      right.set(Math.signum(r_input) * 1);
     } else {
       right.set(0);
     }

@@ -52,9 +52,8 @@ public class Shooter extends SubsystemBase{
     bottomPID.setFF(0.000177);
 
     pitchMotor = new CANSparkMax(Port.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchPID = new PIDController(3.0, 0.1, 0.05);
-    pitchPID.setIZone(0.03);
-
+    pitchPID = new PIDController(3.5, 20.0, 0);
+    pitchPID.setIntegratorRange(-0.006, 0.006);
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
     manual = 0;
@@ -67,8 +66,13 @@ public class Shooter extends SubsystemBase{
 
   public void setSpeed(double speed){
     speed = Math.max(-1, Math.min(1, speed));
-    topPID.setReference(speed * 5500, ControlType.kVelocity);
-    bottomPID.setReference(-speed * 5500, ControlType.kVelocity);
+    if (speed == 0){
+      topPID.setReference(0, ControlType.kVoltage);
+      bottomPID.setReference(0, ControlType.kVoltage);
+    } else {
+      topPID.setReference(speed * 5500, ControlType.kVelocity);
+      bottomPID.setReference(-speed * 5500, ControlType.kVelocity);
+    }
     SmartDashboard.putNumber("Shooter Speed", speed);
   }
 
@@ -90,16 +94,10 @@ public class Shooter extends SubsystemBase{
     // return s;
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
     double s = Math.min(0.4 + dist/6.0, 1.0);
-    s = 0.25;
     SmartDashboard.putNumber("Shooter Speed", s);
     SmartDashboard.putBoolean("Shooter Revved", (topMotor.getEncoder().getVelocity() > 4000 * s));
     setSpeed(s);
     return s;
-  }
-
-  public void presetAmp(){
-    setpoint = 0.16;
-    setSpeed(0.3);
   }
 
   public void periodic(){
@@ -112,9 +110,9 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("Pitch Encoder", position);
     setpoint = SmartDashboard.getNumber("Shooter Pitch", setpoint);
     SmartDashboard.putNumber("Shooter Pitch", setpoint);
-    double v = Math.max(-0.2, Math.min(0.2, pitchPID.calculate(position, setpoint)));
+    double v = Math.max(-0.15, Math.min(0.15, pitchPID.calculate(position, setpoint)));
     SmartDashboard.putNumber("PitchPID", v);
-    v += 0.08 * Math.sqrt(position);
+    v += 0.092 * Math.sqrt(position);
     SmartDashboard.putNumber("PIDwithFF", v);
     manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
     pitchMotor.set(-v);
