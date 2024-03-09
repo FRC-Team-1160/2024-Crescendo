@@ -11,7 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.Constants.PortConstants;
+import frc.robot.Constants.Port;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 
 public class Shooter extends SubsystemBase{
@@ -20,15 +20,19 @@ public class Shooter extends SubsystemBase{
   
   public CANSparkMax topMotor;
   public CANSparkMax bottomMotor;
+  public SparkPIDController topPID;
+  public SparkPIDController bottomPID;
+
   public CANSparkMax pitchMotor;
   public PIDController pitchPID;
   public SparkPIDController b_pid;
   public SparkPIDController t_pid;
   
-  public double speed;
   public double setpoint;
 
   public DriveTrain m_drive;
+
+  public double speed;
 
   public double manual;
 
@@ -43,21 +47,11 @@ public class Shooter extends SubsystemBase{
     topMotor = new CANSparkMax(PortConstants.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     bottomMotor = new CANSparkMax(PortConstants.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     pitchMotor = new CANSparkMax(PortConstants.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-
-    b_pid = bottomMotor.getPIDController();
-    t_pid = topMotor.getPIDController();
-
-    b_pid.setP(0.0002);
-    t_pid.setP(0.0002);
-    b_pid.setFF(0.000177);
-    t_pid.setFF(0.000177);
-
-    pitchPID = new PIDController(4.0, 1.0, 0.05);
-    pitchPID.setIntegratorRange(0, 0.02);
+    pitchPID = new PIDController(3.0, 0.1, 0.05);
+    pitchPID.setIZone(0.03);
 
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
-    speed = 0;
     manual = 0;
     SmartDashboard.putNumber("Shooter Pitch", 0);
     SmartDashboard.putBoolean("Shooter Aimed", false);
@@ -66,9 +60,9 @@ public class Shooter extends SubsystemBase{
   }
 
   public void setSpeed(double speed){
-    this.speed = speed;
-    topMotor.set(speed);
-    bottomMotor.set(-speed);
+    speed = Math.max(-1, Math.min(1, speed));
+    topPID.setReference(speed * 5500, ControlType.kVelocity);
+    bottomPID.setReference(speed * 5500, ControlType.kVelocity);
     SmartDashboard.putNumber("Shooter Speed", speed);
   }
 
@@ -89,17 +83,19 @@ public class Shooter extends SubsystemBase{
     // setSpeed(s);
     // return s;
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
-    double s = Math.min(0.4 + dist / 6.0, 1) * 5500;
-    t_pid.setReference(s, ControlType.kVelocity);
-    b_pid.setReference(-s, ControlType.kVelocity);
-    SmartDashboard.putNumber("SSSS", s);
-
+    double s = Math.min(0.5 + dist/5.0, 1.0);
+    s = 0.25;
+    SmartDashboard.putNumber("Shooter Speed", s);
+    SmartDashboard.putBoolean("Shooter Revved", (topMotor.getEncoder().getVelocity() > 4000 * s));
+    setSpeed(s);
     return s;
   }
 
   public void periodic(){
+
+    speed = SmartDashboard.getNumber("Shooter Speed", 0.5);
     SmartDashboard.putNumber("Shooter RPM", topMotor.getEncoder().getVelocity());
-    setSpeed(SmartDashboard.getNumber("Shooter Speed", speed));
+    setSpeed(speed);
     double position = pitchMotor.getAlternateEncoder(8192).getPosition();
     position = Math.max(position, 0);
     SmartDashboard.putNumber("Pitch Encoder", position);
@@ -107,7 +103,7 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("Shooter Pitch", setpoint);
     double v = Math.max(-0.2, Math.min(0.2, pitchPID.calculate(position, setpoint)));
     SmartDashboard.putNumber("PitchPID", v);
-    v += 0.11 * Math.sqrt(position);
+    v += 0.08 * Math.sqrt(position);
     SmartDashboard.putNumber("PIDwithFF", v);
     manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
     pitchMotor.set(-v);

@@ -7,14 +7,15 @@ public class SetShooter extends Command {
     Shooter m_shooter;
     double speed;
 
-    public SetShooter(Shooter m_shooter){
+    public SetShooter(Shooter m_shooter, double speed){
         addRequirements(m_shooter);
         this.m_shooter = m_shooter;
+        this.speed = speed;
     }
 
     @Override
     public void initialize(){
-        m_shooter.setSpeed(0.5);
+        m_shooter.setSpeed(speed);
     }
 
     @Override

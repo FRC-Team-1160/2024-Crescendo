@@ -19,7 +19,7 @@ public class Shoot extends Command {
 
     @Override
     public void initialize(){
-        m_transport.setBelt(2);
+        m_transport.belt.set(-0.60);
         m_timer = new Timer();
         m_timer.start();
     }
@@ -31,7 +31,7 @@ public class Shoot extends Command {
 
     @Override
     public void end(boolean interrupted){
-        m_transport.setBelt(0);
+        m_transport.belt.set(0);
 
     }
 

@@ -14,11 +14,18 @@ package frc.robot.subsystems.DriveTrain;
 //SWITCH TO PHOENIX6
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,7 +45,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.PortConstants;
+import frc.robot.Constants;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -61,34 +68,31 @@ public class DriveTrain extends SubsystemBase {
   private Joystick m_secondStick = new Joystick(1);
   
   private static DriveTrain m_instance;
-
   private TalonFX m_frontLeftSteerMotor, m_frontRightSteerMotor, m_backLeftSteerMotor, m_backRightSteerMotor;
   private Slot0Configs driveConfigs;
   private Slot0Configs steerConfigs;
+  //private TalonFXSensorCollection m_frontLeftRotationEncoder, m_frontRightRotationEncoder, m_backLeftRotationEncoder, m_backRightRotationEncoder;
   private TalonFX m_frontLeftDriveMotor, m_frontRightDriveMotor, m_backLeftDriveMotor, m_backRightDriveMotor;
-  public CANcoder m_frontLeftCoder, m_frontRightCoder, m_backLeftCoder, m_backRightCoder;
-
-  private AHRS m_gyro;
-
+  //private TalonFXSensorCollection m_frontLeftDirectionEncoder, m_frontRightDirectionEncoder, m_backLeftDirectionEncoder, m_backRightDirectionEncoder;
   public SwerveDriveWheel m_frontLeftWheel, m_frontRightWheel, m_backLeftWheel, m_backRightWheel;
+  public CANcoder m_frontLeftCoder, m_frontRightCoder, m_backLeftCoder, m_backRightCoder;
+  private AHRS m_gyro;
   private Translation2d m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation;
-  private SwerveDriveKinematics m_kinematics;
+  public SwerveDriveKinematics m_kinematics;
   public SwerveDrivePoseEstimator m_poseEstimator;
+  private Solenoid m_gate;
   public SwerveModuleState[] m_moduleStates;
   public SwerveModulePosition[] m_modulePositions;
-
   public Pose2d odomPose;
   public Field2d m_field;
-
   public StructArrayPublisher<SwerveModuleState> adv_statesPub;
   public StructArrayPublisher<SwerveModuleState> adv_targetStatesPub;
   public StructPublisher<Rotation2d> adv_gyroPub;
   public StructPublisher<Pose2d> adv_posePub;
   public double sim_angle;
-
   private PIDController m_anglePID;
+  double wkP, wkI, wkD;
   public SlewRateLimiter zlimiter;
-
   //initializes the drive train
   
   public static DriveTrain getInstance(){
@@ -98,28 +102,57 @@ public class DriveTrain extends SubsystemBase {
     return m_instance;
   }
 
+  public Pose2d getPose() { return odomPose; }
+  public void resetPose(Pose2d pose) { odomPose = pose; }
+  public ChassisSpeeds getSpeeds() { return m_kinematics.toChassisSpeeds(m_moduleStates); }
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    
+  }
+
+
   public DriveTrain() {
+    AutoBuilder.configureHolonomic(
+      this::getPose,
+      this::resetPose,
+      this::getSpeeds,
+      this::setSwerveDrive,
+      new HolonomicPathFollowerConfig(
+        new PIDConstants(0.1),
+        new PIDConstants(0.5, 0.0, 0.001),
+        4.3,
+        16.7937861,
+        new ReplanningConfig()
+      ),
+      () -> {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
+      },
+      this
+    );
 
     zlimiter = new SlewRateLimiter(2);
 
     //directional motors
 
-    m_frontLeftDriveMotor = new TalonFX(PortConstants.FRONT_LEFT_DRIVE_MOTOR);
-    m_frontRightDriveMotor = new TalonFX(PortConstants.FRONT_RIGHT_DRIVE_MOTOR);
-    m_backLeftDriveMotor = new TalonFX(PortConstants.BACK_LEFT_DRIVE_MOTOR);
-    m_backRightDriveMotor = new TalonFX(PortConstants.BACK_RIGHT_DRIVE_MOTOR);
+    m_frontLeftDriveMotor = new TalonFX(Constants.Port.FRONT_LEFT_DRIVE_MOTOR);
+    m_frontRightDriveMotor = new TalonFX(Constants.Port.FRONT_RIGHT_DRIVE_MOTOR);
+    m_backLeftDriveMotor = new TalonFX(Constants.Port.BACK_LEFT_DRIVE_MOTOR);
+    m_backRightDriveMotor = new TalonFX(Constants.Port.BACK_RIGHT_DRIVE_MOTOR);
 
     //rotational motors
-    m_frontLeftSteerMotor = new TalonFX(PortConstants.FRONT_LEFT_STEER_MOTOR);
-    m_frontRightSteerMotor = new TalonFX(PortConstants.FRONT_RIGHT_STEER_MOTOR);
-    m_backLeftSteerMotor = new TalonFX(PortConstants.BACK_LEFT_STEER_MOTOR);
-    m_backRightSteerMotor = new TalonFX(PortConstants.BACK_RIGHT_STEER_MOTOR);
+    m_frontLeftSteerMotor = new TalonFX(Constants.Port.FRONT_LEFT_STEER_MOTOR);
+    m_frontRightSteerMotor = new TalonFX(Constants.Port.FRONT_RIGHT_STEER_MOTOR);
+    m_backLeftSteerMotor = new TalonFX(Constants.Port.BACK_LEFT_STEER_MOTOR);
+    m_backRightSteerMotor = new TalonFX(Constants.Port.BACK_RIGHT_STEER_MOTOR);
 
     //CAN coders
-    m_frontLeftCoder = new CANcoder(PortConstants.FRONT_LEFT_CODER);
-    m_frontRightCoder = new CANcoder(PortConstants.FRONT_RIGHT_CODER);
-    m_backLeftCoder = new CANcoder(PortConstants.BACK_LEFT_CODER);
-    m_backRightCoder = new CANcoder(PortConstants.BACK_RIGHT_CODER);
+    m_frontLeftCoder = new CANcoder(Constants.Port.FRONT_LEFT_CODER);
+    m_frontRightCoder = new CANcoder(Constants.Port.FRONT_RIGHT_CODER);
+    m_backLeftCoder = new CANcoder(Constants.Port.BACK_LEFT_CODER);
+    m_backRightCoder = new CANcoder(Constants.Port.BACK_RIGHT_CODER);
 
     // m_frontLeftCoder.setPosition(0);
     // m_frontRightCoder.setPosition(0);
@@ -288,8 +321,13 @@ public class DriveTrain extends SubsystemBase {
     sim_angle += angSpeed * 20 * 0.0254 * 4 / 23.75 * 360;
     SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
-    m_speeds = discretize(m_speeds);
-    m_moduleStates = (m_kinematics.toSwerveModuleStates(m_speeds));
+    //SmartDashboard.putNumber("OUTA", m_speeds.omegaRadiansPerSecond);
+    setSwerveDrive(m_speeds);
+  }
+
+  public void setSwerveDrive(ChassisSpeeds speeds) {
+    speeds = discretize(speeds);
+    SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(speeds));
 
     SmartDashboard.putNumber("m0", m_moduleStates[0].speedMetersPerSecond);
 
