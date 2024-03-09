@@ -23,6 +23,9 @@ import com.ctre.phoenix6.hardware.CANcoder;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -99,11 +102,33 @@ public class DriveTrain extends SubsystemBase {
   public Pose2d getPose() { return odomPose; }
   public void resetPose(Pose2d pose) { odomPose = pose; }
   public ChassisSpeeds getSpeeds() { return m_kinematics.toChassisSpeeds(m_moduleStates); }
-  public void driveRobotRelative(ChassisSpeeds speeds) { m_kinematics.toSwerveModuleStates(ChassisSpeeds.discretize(speeds, 0.02)) }
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    
+  }
 
 
   public DriveTrain() {
-    AutoBuilder.configureHolonomic(this::getPose, this::resetPose, this::getSpeeds, this::driveRobotRelative);
+    AutoBuilder.configureHolonomic(
+      this::getPose,
+      this::resetPose,
+      this::getSpeeds,
+      this::setSwerveDrive,
+      new HolonomicPathFollowerConfig(
+        new PIDConstants(0.1),
+        new PIDConstants(0.5, 0.0, 0.001),
+        4.3,
+        16.7937861,
+        new ReplanningConfig()
+      ),
+      () -> {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
+      },
+      this
+    );
 
     zlimiter = new SlewRateLimiter(2);
 
@@ -302,8 +327,12 @@ public class DriveTrain extends SubsystemBase {
     //SmartDashboard.putNumber("INA", angSpeed);
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
     //SmartDashboard.putNumber("OUTA", m_speeds.omegaRadiansPerSecond);
-    m_speeds = discretize(m_speeds);
-    SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(m_speeds));
+    setSwerveDrive(m_speeds);
+  }
+
+  public void setSwerveDrive(ChassisSpeeds speeds) {
+    speeds = discretize(speeds);
+    SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(speeds));
 
     SmartDashboard.putNumber("m0", m_moduleStates[0].speedMetersPerSecond);
 
@@ -342,7 +371,7 @@ public class DriveTrain extends SubsystemBase {
     //   new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, new Rotation2d())
     // };
 
-    odomPose = () -> m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
+    odomPose = m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
     SmartDashboard.putData("Gyro", m_gyro);
 
     m_field.setRobotPose(odomPose);
@@ -397,8 +426,6 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("BRTargetAngle", m_moduleStates[3].angle.getRotations());
     SmartDashboard.putNumber("BRAngle", m_backRightWheel.getAngle());
     SmartDashboard.putNumber("BRTarget", m_moduleStates[3].speedMetersPerSecond);
-
-
   }
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
