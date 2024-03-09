@@ -10,7 +10,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.PortConstants;
+import frc.robot.Constants.Port;
 
 public class Climber extends SubsystemBase {
   
@@ -36,8 +36,8 @@ public class Climber extends SubsystemBase {
   }
   
   public Climber() {
-    left = new CANSparkMax(PortConstants.CLIMBER_LEFT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    right = new CANSparkMax(PortConstants.CLIMBER_RIGHT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
+    left = new CANSparkMax(Port.CLIMBER_LEFT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
+    right = new CANSparkMax(Port.CLIMBER_RIGHT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     leftPID = new PIDController(0.01, 0, 0);
     rightPID = new PIDController(0.01, 0, 0);
     left_setpoint = left.getEncoder().getPosition();

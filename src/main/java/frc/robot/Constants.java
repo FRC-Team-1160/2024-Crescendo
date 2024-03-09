@@ -15,18 +15,19 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public final class Constants {
   // Units are m kg s unless otherwise specified
 
-  public static final class RobotConstants {
+  public static final class Auto {
     public static final double MAX_VEL = 0;
     public static final double MAX_ACEL = 0;
     public static final double MAX_ANG_VEL = 0;
     public static final double MAX_ANG_ACEL = 0;
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-                new TrapezoidProfile.Constraints(
-                        MAX_ANG_ACEL,
-                        MAX_ANG_ACEL);
+      new TrapezoidProfile.Constraints(
+        MAX_ANG_ACEL,
+        MAX_ANG_ACEL
+      );
   }
 
-  public static final class PortConstants {
+  public static final class Port {
     // CAN ID 
     public static final int FRONT_LEFT_STEER_MOTOR = 1;
     public static final int FRONT_RIGHT_STEER_MOTOR = 3;
@@ -60,23 +61,46 @@ public final class Constants {
 
   }
 
-  public static final class InputConstants {
-    public static final int LX_AXIS = 0;
-    public static final int LY_AXIS = 1;
-    public static final int RT_AXIS = 2;
-    public static final int LT_AXIS = 3;
-    public static final int RX_AXIS = 4;
-    public static final int RY_AXIS = 5;
+  public static final class IO {
+    public static final int MAIN_PORT = 0;
+    public static final int COPILOT_PORT = 1;
+    public static final int COPILOT_SIMP_PORT = 2;
+    public static final int LEFT_BOARD_PORT = 3;
+    public static final int RIGHT_BOARD_PORT = 4;
+    public static final class Logitech {
+      public static final int LX_AXIS = 0;
+      public static final int LY_AXIS = 1;
+      public static final int RT_AXIS = 2;
+      public static final int LT_AXIS = 3;
+      public static final int RX_AXIS = 4;
+      public static final int RY_AXIS = 5;
 
-    public static final int A = 1;
-    public static final int B = 2;
-    public static final int X = 3;
-    public static final int Y = 4;
-    public static final int LB = 5;
-    public static final int RB = 6;
-    public static final int BACK = 7;
-    public static final int START = 8;
-    public static final int LS = 9;
-    public static final int RS = 10;
+      public static final int A = 1;
+      public static final int B = 2;
+      public static final int X = 3;
+      public static final int Y = 4;
+      public static final int LB = 5;
+      public static final int RB = 6;
+      public static final int BACK = 7;
+      public static final int START = 8;
+      public static final int LS = 9;
+      public static final int RS = 10;
+    }
+
+    public static final class Board {
+      public static final class Left {
+        public static final int SHOOT = 1;
+        public static final int AIM = 2;
+
+        public static final int SHOOT_OVERRIDE = 5;
+        public static final int REV = 6;
+      }
+      public static final class Right {
+        public static final int UP_DOWN_INTAKE = 1;
+        public static final int OVERRIDE = 4;
+        public static final int OUTTAKE = 8;
+        public static final int INTAKE = 9;
+      }
+    }
   }
 }

@@ -8,7 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.Constants.PortConstants;
+import frc.robot.Constants.Port;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 
 public class Shooter extends SubsystemBase{
@@ -20,7 +20,6 @@ public class Shooter extends SubsystemBase{
   public CANSparkMax pitchMotor;
   public PIDController pitchPID;
   
-  public double speed;
   public double setpoint;
 
   public DriveTrain m_drive;
@@ -35,15 +34,14 @@ public class Shooter extends SubsystemBase{
   }
 
   private Shooter(){
-    topMotor = new CANSparkMax(PortConstants.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    bottomMotor = new CANSparkMax(PortConstants.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchMotor = new CANSparkMax(PortConstants.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
+    topMotor = new CANSparkMax(Port.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
+    bottomMotor = new CANSparkMax(Port.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
+    pitchMotor = new CANSparkMax(Port.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     pitchPID = new PIDController(3.0, 0.1, 0.05);
     pitchPID.setIZone(0.03);
 
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
-    speed = 0;
     manual = 0;
     SmartDashboard.putNumber("Shooter Pitch", 0);
     SmartDashboard.putBoolean("Shooter Aimed", false);
@@ -52,7 +50,7 @@ public class Shooter extends SubsystemBase{
   }
 
   public void setSpeed(double speed){
-    this.speed = speed;
+    speed = Math.max(-1, Math.min(1, speed));
     topMotor.set(speed);
     bottomMotor.set(-speed);
     SmartDashboard.putNumber("Shooter Speed", speed);
@@ -77,11 +75,9 @@ public class Shooter extends SubsystemBase{
     return s;
   }
 
-  public void periodic(){
-
-    speed = SmartDashboard.getNumber("Shooter Speed", 0.5);
+  public void periodic() {
     SmartDashboard.putNumber("Shooter RPM", topMotor.getEncoder().getVelocity());
-    setSpeed(speed);
+    setSpeed(SmartDashboard.getNumber("Shooter Speed", 0));
     double position = pitchMotor.getAlternateEncoder(8192).getPosition();
     position = Math.max(position, 0);
     SmartDashboard.putNumber("Pitch Encoder", position);
