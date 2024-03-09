@@ -40,7 +40,7 @@ public class AimSpeaker extends Command {
     SmartDashboard.putNumber("Forward", x);
     SmartDashboard.putNumber("Sideways", y);
 
-    m_drive.aimSwerveDrive(x, y, 16.54 - 0.3, 5.5);
+    m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
 
     // if (m_mainStick.getRawButton(1) || RobotBase.isSimulation()){
     //   m_drive.aimSwerveDrive(x, y, 0.5, 5.5);

@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +22,8 @@ public class Shooter extends SubsystemBase{
   public CANSparkMax bottomMotor;
   public CANSparkMax pitchMotor;
   public PIDController pitchPID;
+  public SparkPIDController b_pid;
+  public SparkPIDController t_pid;
   
   public double speed;
   public double setpoint;
@@ -38,8 +43,17 @@ public class Shooter extends SubsystemBase{
     topMotor = new CANSparkMax(PortConstants.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     bottomMotor = new CANSparkMax(PortConstants.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     pitchMotor = new CANSparkMax(PortConstants.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchPID = new PIDController(3.0, 0.1, 0.05);
-    pitchPID.setIZone(0.03);
+
+    b_pid = bottomMotor.getPIDController();
+    t_pid = topMotor.getPIDController();
+
+    b_pid.setP(0.0002);
+    t_pid.setP(0.0002);
+    b_pid.setFF(0.000177);
+    t_pid.setFF(0.000177);
+
+    pitchPID = new PIDController(4.0, 1.0, 0.05);
+    pitchPID.setIntegratorRange(0, 0.02);
 
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
@@ -60,7 +74,7 @@ public class Shooter extends SubsystemBase{
 
   public double aimTarget(double x, double y, double z){
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
-    double angle = Math.min(0.16, Math.atan2(z, dist) * 0.11 / (Math.PI / 4));
+    double angle = Math.min(0.17, Math.atan2(z, dist) * 0.107 / (Math.PI / 4)) - 0.001;
     setpoint = angle;
     SmartDashboard.putNumber("Shooter Pitch", angle);
     SmartDashboard.putBoolean("Shooter Aimed", (Math.abs(setpoint - angle) < 0.005));
@@ -68,20 +82,24 @@ public class Shooter extends SubsystemBase{
   }
 
   public double revTarget(double x, double y){
+    // double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
+    // double s = Math.min(0.5 + dist/5.0, 1.0);
+    // SmartDashboard.putNumber("Shooter Speed", s);
+    // SmartDashboard.putBoolean("Shooter Revved", (topMotor.getEncoder().getVelocity() > 4000 * s));
+    // setSpeed(s);
+    // return s;
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
-    double s = Math.min(0.5 + dist/5.0, 1.0);
-    s = 0.25;
-    SmartDashboard.putNumber("Shooter Speed", s);
-    SmartDashboard.putBoolean("Shooter Revved", (topMotor.getEncoder().getVelocity() > 4000 * s));
-    setSpeed(s);
+    double s = Math.min(0.4 + dist / 6.0, 1) * 5500;
+    t_pid.setReference(s, ControlType.kVelocity);
+    b_pid.setReference(-s, ControlType.kVelocity);
+    SmartDashboard.putNumber("SSSS", s);
+
     return s;
   }
 
   public void periodic(){
-
-    speed = SmartDashboard.getNumber("Shooter Speed", 0.5);
     SmartDashboard.putNumber("Shooter RPM", topMotor.getEncoder().getVelocity());
-    setSpeed(speed);
+    setSpeed(SmartDashboard.getNumber("Shooter Speed", speed));
     double position = pitchMotor.getAlternateEncoder(8192).getPosition();
     position = Math.max(position, 0);
     SmartDashboard.putNumber("Pitch Encoder", position);
@@ -89,7 +107,7 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("Shooter Pitch", setpoint);
     double v = Math.max(-0.2, Math.min(0.2, pitchPID.calculate(position, setpoint)));
     SmartDashboard.putNumber("PitchPID", v);
-    v += 0.08 * Math.sqrt(position);
+    v += 0.11 * Math.sqrt(position);
     SmartDashboard.putNumber("PIDwithFF", v);
     manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
     pitchMotor.set(-v);

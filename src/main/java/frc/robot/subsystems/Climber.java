@@ -50,12 +50,12 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     if (Math.abs(m_secondStick.getRawAxis(1)) > 0.8){
-      left.set(-Math.signum(m_secondStick.getRawAxis(1)) * 0.4);
+      left.set(-Math.signum(m_secondStick.getRawAxis(1)) * 1);
     } else {
       left.set(0);
     }
     if (Math.abs(m_secondStick.getRawAxis(5)) > 0.8){
-      right.set(Math.signum(m_secondStick.getRawAxis(5)) * 0.4);
+      right.set(Math.signum(m_secondStick.getRawAxis(5)) * 1);
     } else {
       right.set(0);
     }
