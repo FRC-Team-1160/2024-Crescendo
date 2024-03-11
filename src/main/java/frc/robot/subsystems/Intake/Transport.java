@@ -50,7 +50,7 @@ public class Transport extends SubsystemBase {
     public void periodic(){
         int prox = m_colorSensor.getProximity();
         SmartDashboard.putNumber("Color Sensor Prox", prox);
-        noteStored = (prox > 200.0); //nothing = 120, note ~350
+        noteStored = (prox > 200.0); //nothing ~100, note ~350
         SmartDashboard.putBoolean("Note Stored", noteStored);
     }
 }

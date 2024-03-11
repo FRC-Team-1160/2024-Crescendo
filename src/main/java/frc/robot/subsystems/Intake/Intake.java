@@ -36,7 +36,7 @@ public class Intake extends SubsystemBase{
         m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
         m_feedMotor = new CANSparkMax(Port.INTAKE_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
         m_transport = Transport.getInstance();
-        solenoid_default = !new JoystickButton(new Joystick(Constants.IO.RIGHT_BOARD_PORT), Constants.IO.Board.Right.UP_DOWN_INTAKE).getAsBoolean() ? DoubleSolenoid.Value.kReverse : DoubleSolenoid.Value.kForward;
+        solenoid_default = new JoystickButton(new Joystick(Constants.IO.RIGHT_BOARD_PORT), Constants.IO.Board.Right.UP_DOWN_INTAKE).getAsBoolean() ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse;
         m_solenoid.set(solenoid_default);
     }
 

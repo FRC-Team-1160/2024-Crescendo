@@ -99,38 +99,24 @@ public class DriveTrain extends SubsystemBase {
     return m_instance;
   }
 
-  public Pose2d getPose() { return odomPose; }
-  public void resetPose(Pose2d pose) { odomPose = pose; }
-  public ChassisSpeeds getSpeeds() { return m_kinematics.toChassisSpeeds(m_moduleStates); }
-  public void driveRobotRelative(ChassisSpeeds speeds) {
-    
-  }
-
-
   public DriveTrain() {
     AutoBuilder.configureHolonomic(
-      this::getPose,
-      this::resetPose,
-      this::getSpeeds,
+      () -> odomPose,
+      (Pose2d pose) -> odomPose = pose,
+      () -> m_kinematics.toChassisSpeeds(m_moduleStates),
       this::setSwerveDrive,
       new HolonomicPathFollowerConfig(
         new PIDConstants(0.1),
-        new PIDConstants(0.5, 0.0, 0.001),
-        4.3,
+        new PIDConstants(100.0, 0.0, 0.00),
+        1,
         16.7937861,
         new ReplanningConfig()
       ),
-      () -> {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
-      },
+      () -> false,
       this
     );
 
-    zlimiter = new SlewRateLimiter(2);
+    zlimiter = new SlewRateLimiter(5);
 
     //directional motors
 
@@ -216,7 +202,7 @@ public class DriveTrain extends SubsystemBase {
       new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle()))
     };
 
-    m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions, new Pose2d(new Translation2d(1.5, 5.5), new Rotation2d()));
+    m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions, new Pose2d(new Translation2d(0, 0), new Rotation2d()));
     
     m_field = new Field2d();
 
@@ -323,6 +309,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void setSwerveDrive(ChassisSpeeds speeds) {
+    SmartDashboard.putString("chassis", speeds.toString());
     speeds = discretize(speeds);
     SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(speeds));
 
@@ -442,8 +429,8 @@ public class DriveTrain extends SubsystemBase {
     // double joystickA = m_mainStick.getRawAxis(4);
     double joystickX = -m_mainStick.getRawAxis(1);
     double joystickY = -m_mainStick.getRawAxis(0);
-    double joystickA = -m_mainStick.getRawAxis(2);
-    // double joystickA = -m_secondStick.getRawAxis(0);
+    // double joystickA = -m_mainStick.getRawAxis(2);
+    double joystickA = -m_secondStick.getRawAxis(0);
     double x = 0.0;
     double y = 0.0;
     double a = 0.0;

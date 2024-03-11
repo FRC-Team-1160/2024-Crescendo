@@ -1,24 +1,29 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AimSpeaker;
-import frc.robot.commands.Intake.OuttakeNote;
-import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.DriveTrain.SwerveDrive;
-import frc.robot.commands.Shooter.Shoot;
+import frc.robot.commands.Intake.IntakeNote;
+import frc.robot.commands.Intake.OuttakeNote;
 import frc.robot.commands.Shooter.AmpPreset;
+import frc.robot.commands.Shooter.OverrideShooter;
+import frc.robot.commands.Shooter.Shoot;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.Transport;
 import frc.robot.subsystems.Vision.Vision;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -51,6 +56,8 @@ public class RobotContainer {
     public RobotContainer() {
       configureButtonBindings();
       autoChooser = AutoBuilder.buildAutoChooser();
+      SmartDashboard.putData("Auto Chooser", autoChooser);
+
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
       m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));
 
@@ -84,6 +91,9 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_intake.solenoid_default = DoubleSolenoid.Value.kForward));
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.UP_DOWN_INTAKE)
             .onFalse(new InstantCommand(() -> m_intake.solenoid_default = DoubleSolenoid.Value.kReverse));
+        
+        new JoystickButton(m_rightBoard, Constants.IO.Board.Right.OVERRIDE)
+            .whileTrue(new OverrideShooter(m_shooter));
 
         new JoystickButton(m_codriverSimpStick, 1)
         .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
@@ -109,6 +119,7 @@ public class RobotContainer {
 
     
     public Command getAutonomousCommand() {
+        m_driveTrain.m_poseEstimator.resetPosition(Rotation2d.fromDegrees(m_driveTrain.getGyroAngle()), m_driveTrain.m_modulePositions, PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
         return autoChooser.getSelected();
     }
     

@@ -36,7 +36,7 @@ public class IntakeNote extends Command{
 
     @Override
     public void end(boolean interrupted){
-        m_intake.m_solenoid.set(DoubleSolenoid.Value.kReverse);
+        m_intake.m_solenoid.set(m_intake.solenoid_default);
         m_intake.m_feedMotor.set(0);
         m_transport.setWheels(0);
         m_transport.belt.set(0);

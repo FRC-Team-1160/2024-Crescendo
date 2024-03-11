@@ -16,10 +16,10 @@ public final class Constants {
   // Units are m kg s unless otherwise specified
 
   public static final class Auto {
-    public static final double MAX_VEL = 0;
-    public static final double MAX_ACEL = 0;
-    public static final double MAX_ANG_VEL = 0;
-    public static final double MAX_ANG_ACEL = 0;
+    public static final double MAX_VEL = 0.5;
+    public static final double MAX_ACEL = 1;
+    public static final double MAX_ANG_VEL = 100;
+    public static final double MAX_ANG_ACEL = 100;
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(
         MAX_ANG_ACEL,

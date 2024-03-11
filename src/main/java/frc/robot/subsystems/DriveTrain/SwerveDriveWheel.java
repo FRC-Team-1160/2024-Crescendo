@@ -54,7 +54,7 @@ public class SwerveDriveWheel {
 
         this.angle = angle;
         this.speed = speed;
-        this.distance += speed * 6;
+        this.distance += speed;
     }
 
     public double getPosition(){

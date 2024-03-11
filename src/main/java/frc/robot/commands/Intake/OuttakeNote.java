@@ -26,17 +26,21 @@ public class OuttakeNote extends Command{
     @Override
     public void initialize(){
         m_intake.m_solenoid.set(DoubleSolenoid.Value.kForward);
-        m_intake.m_feedMotor.set(-0.9);
-        m_transport.setWheels(-1);
-        m_transport.belt.set(0.25);
-        m_shooter.setSpeed(-0.25);
+        m_intake.m_feedMotor.set(0);
+        m_transport.setWheels(0);
+        m_transport.belt.set(0);
+        m_shooter.setSpeed(0);
         m_timer = new Timer();
+        m_timer.start();
     }
 
     @Override
     public void execute(){
-        if (m_transport.noteStored && m_timer.get() == 0.0){
-            m_timer.start();
+        if (m_timer.hasElapsed(1.0)){
+            m_intake.m_feedMotor.set(-0.9);
+            m_transport.setWheels(-1);
+            m_transport.belt.set(0.25);
+            m_shooter.setSpeed(-0.25);
         }
     }
 
@@ -51,6 +55,6 @@ public class OuttakeNote extends Command{
 
     @Override
     public boolean isFinished(){
-        return (m_timer.hasElapsed(0.1));
+        return false;
     }
 }

@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.Constants.Port;
 
@@ -59,15 +60,18 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("LClimber", left.getEncoder().getPosition());
     SmartDashboard.putNumber("RClimber", right.getEncoder().getPosition());
-    double l_input = m_simpStick.getRawAxis(1);
-    double r_input = m_simpStick.getRawAxis(3);
+    // double l_input = m_simpStick.getRawAxis(1);
+    // double r_input = m_simpStick.getRawAxis(3);
+    double l_input = m_leftBoard.getRawAxis(Constants.IO.Board.Left.LEFT_CLIMB);
+    double r_input = m_rightBoard.getRawAxis(Constants.IO.Board.Right.RIGHT_CLIMB);
+    boolean override = new JoystickButton(m_rightBoard, Constants.IO.Board.Right.OVERRIDE).getAsBoolean();
 
     if (Math.abs(l_input) > 0.8){
       left.set(-Math.signum(l_input) * 1);
     } else {
       left.set(0);
     }
-    if (Math.abs(r_input) > 0.8){
+    if (Math.abs(r_input) > 0.8 && !override){
       right.set(Math.signum(r_input) * 1);
     } else {
       right.set(0);
