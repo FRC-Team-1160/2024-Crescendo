@@ -1,18 +1,24 @@
 package frc.robot;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AimSpeaker;
 import frc.robot.commands.DriveTrain.SwerveDrive;
+import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
+import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.OuttakeNote;
 import frc.robot.commands.Shooter.AmpPreset;
@@ -41,7 +47,7 @@ public class RobotContainer {
     public final Climber m_climber = Climber.getInstance();
     public final Transport m_transport = Transport.getInstance();
 
-    private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<Command> m_chooser;
 
     private Joystick m_mainStick = new Joystick(Constants.IO.MAIN_PORT);
     private Joystick m_codriverStick = new Joystick(Constants.IO.COPILOT_PORT);
@@ -55,9 +61,23 @@ public class RobotContainer {
      */
     public RobotContainer() {
       configureButtonBindings();
-      autoChooser = AutoBuilder.buildAutoChooser();
-      SmartDashboard.putData("Auto Chooser", autoChooser);
+    //   autoChooser = AutoBuilder.buildAutoChooser();
+    //   SmartDashboard.putData("Auto Chooser", autoChooser);
+      m_chooser = new SendableChooser<>();
 
+      m_chooser.addOption("Forward", new SequentialCommandGroup(
+        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(1.5, 5.5, new Rotation2d()))),
+        new SwerveDriveMoveAuto(m_driveTrain, 3.0, 5.5)
+      ));
+
+      m_chooser.addOption("Pos1", new SequentialCommandGroup(
+        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(1.5, 7, new Rotation2d()))),
+        new SwerveDriveSpeakerAuto(m_driveTrain),
+        new SwerveDriveMoveAuto(m_driveTrain, 3.0, 7.0, 180),
+        new SwerveDriveSpeakerAuto(m_driveTrain)
+      ));
+
+      SmartDashboard.putData(m_chooser);
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
       m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));
 
@@ -119,8 +139,7 @@ public class RobotContainer {
 
     
     public Command getAutonomousCommand() {
-        m_driveTrain.m_poseEstimator.resetPosition(Rotation2d.fromDegrees(m_driveTrain.getGyroAngle()), m_driveTrain.m_modulePositions, PathPlannerAuto.getStaringPoseFromAutoFile(autoChooser.getSelected().getName()));
-        return autoChooser.getSelected();
+        return m_chooser.getSelected();
     }
     
 }

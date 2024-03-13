@@ -10,8 +10,7 @@ import frc.robot.subsystems.DriveTrain.DriveTrain;
 
 public class SwerveDriveSpeakerAuto extends Command {
   /** Creates a new SwerveDrive. */
-  private double x;
-  private double y;
+
   DriveTrain m_drive;
   public double target;
 
@@ -43,7 +42,7 @@ public class SwerveDriveSpeakerAuto extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return target - DriveTrain.getInstance().getGyroAngle()/180.0*Math.PI <= 0.01;
+    return Math.abs(target - m_drive.getGyroAngle()/180.0*Math.PI) <= 0.05;
   }
 }
     

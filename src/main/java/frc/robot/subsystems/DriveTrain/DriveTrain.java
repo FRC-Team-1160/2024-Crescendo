@@ -283,6 +283,14 @@ public class DriveTrain extends SubsystemBase {
     m_gyro.reset();
   }
 
+  public void resetPose(Pose2d pose) {
+    m_poseEstimator.resetPosition(
+      pose.getRotation(),
+      m_modulePositions,
+      pose);
+    odomPose = pose;
+  }
+
   //Thanks to Team 4738 for modified discretize code
   public ChassisSpeeds discretize(ChassisSpeeds speeds) {
     double dt = 0.02;
