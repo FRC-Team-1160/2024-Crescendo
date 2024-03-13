@@ -32,15 +32,7 @@ public class SwerveDriveSpeakerAuto extends Command {
 
   @Override
   public void execute(){
-
-    double[] inputs = m_drive.inputSpeeds();
-    x = inputs[0];
-    y = inputs[1];
-
-    SmartDashboard.putNumber("Forward", x);
-    SmartDashboard.putNumber("Sideways", y);
-
-    target = m_drive.aimSwerveDrive(x, y, 0.5, 5.5);
+    target = m_drive.aimSwerveDrive(0, 0, 0.5, 5.5);
   }
 
 

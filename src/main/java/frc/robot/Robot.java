@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
 import frc.robot.subsystems.Vision.GripPipeline;
 import frc.robot.subsystems.Vision.PipelineListener;
 
@@ -86,7 +87,8 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    System.out.println("YES");
+    m_autonomousCommand = new SwerveDriveMoveAuto(m_robotContainer.m_driveTrain, 1.0, 0.0);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

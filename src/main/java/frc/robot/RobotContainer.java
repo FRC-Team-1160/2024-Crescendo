@@ -72,7 +72,7 @@ public class RobotContainer {
             .onTrue(new Shoot(m_shooter, m_transport));
         
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.AIM)
-            .onTrue(new AimSpeaker(m_driveTrain, m_shooter));
+            .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
 
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.AMP)
             .toggleOnTrue(new AmpPreset(m_shooter));

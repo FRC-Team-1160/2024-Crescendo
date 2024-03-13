@@ -18,12 +18,17 @@ public final class Constants {
   public static final class Auto {
     public static final double MAX_VEL = 0.5;
     public static final double MAX_ACEL = 1;
-    public static final double MAX_ANG_VEL = 100;
-    public static final double MAX_ANG_ACEL = 100;
+    public static final double MAX_ANG_VEL = 0.5;
+    public static final double MAX_ANG_ACEL = 1;
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(
-        MAX_ANG_ACEL,
+        MAX_ANG_VEL,
         MAX_ANG_ACEL
+      );
+    public static final TrapezoidProfile.Constraints kVelocityControllerConstraints =
+      new TrapezoidProfile.Constraints(
+        MAX_VEL,
+        MAX_ACEL
       );
   }
 
