@@ -22,7 +22,7 @@ public class SwerveDriveMoveAuto extends Command {
 
     public double target_x;
     public double target_y;
-    public double target_a;
+    public Double target_a;
 
     public double start_x; 
     public double start_y;
@@ -44,9 +44,9 @@ public class SwerveDriveMoveAuto extends Command {
     public SwerveDriveMoveAuto(DriveTrain m_drive, double x, double y){
         addRequirements(m_drive);
         this.m_drive = m_drive;
-        this.target_x = x;
-        this.target_y = y;
-        target_a = 999;
+        target_x = x;
+        target_y = y;
+        target_a = null;
     }
 
     @Override
@@ -60,9 +60,12 @@ public class SwerveDriveMoveAuto extends Command {
         y_pid = new PIDController(0.1, 0, 0);
         a_pid = new ProfiledPIDController(0.0001, 0, 0, Constants.Auto.kThetaControllerConstraints);
         a_pid.enableContinuousInput(-180, 180);
+        a_pid.setTolerance(5);
         m_timer = new Timer();
         m_timer.start();
-
+        if (target_a == null){
+            target_a = m_drive.getGyroAngle();
+        }
     }
 
     @Override
@@ -71,16 +74,17 @@ public class SwerveDriveMoveAuto extends Command {
             new TrapezoidProfile.State(Math.sqrt(Math.pow(m_drive.odomPose.getX() - start_x, 2) + Math.pow(m_drive.odomPose.getY() - start_y, 2)), 0),
             new TrapezoidProfile.State(dist, 0)
         ).position;
+
         double x = x_pid.calculate(m_drive.odomPose.getX(), start_x + (target_x - start_x) * pos/dist);
         double y = y_pid.calculate(m_drive.odomPose.getY(), start_y + (target_y - start_y) * pos/dist);
-        double a = 0;
-        if (target_a != 999){
-            a = -a_pid.calculate(m_drive.getGyroAngle(), target_a);
-        }
-        m_drive.setSwerveDrive(x, y, a);
+        double a = -a_pid.calculate(m_drive.getGyroAngle(), target_a);
 
-        System.out.println(target_a);
-        System.out.println(m_drive.getGyroAngle());
+        // m_drive.setSwerveDrive(x, y, a);
+        m_drive.aimAngle(x, y, target_a * Math.PI / 180.0);
+
+        SmartDashboard.putNumber("target_a", target_a);
+        SmartDashboard.putNumber("a_pid", a);
+        SmartDashboard.putNumber("a_diff", a_pid.getPositionError());
 
     }
 

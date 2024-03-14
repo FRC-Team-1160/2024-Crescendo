@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AimSpeaker;
@@ -77,6 +78,24 @@ public class RobotContainer {
         new SwerveDriveSpeakerAuto(m_driveTrain)
       ));
 
+      m_chooser.addOption("Turn", new SequentialCommandGroup(
+        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(1.5, 7, new Rotation2d()))),
+        new SwerveDriveMoveAuto(m_driveTrain, 3.0, 7.0, 90)
+      ));
+
+      m_chooser.addOption("Pos2", new SequentialCommandGroup(
+        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(1.5, 3, new Rotation2d()))),
+        new SwerveDriveSpeakerAuto(m_driveTrain),
+        new SwerveDriveMoveAuto(m_driveTrain, 3.0, 4.2, -135),
+        new SwerveDriveSpeakerAuto(m_driveTrain)
+      ));
+
+      m_chooser.addOption("One", new SequentialCommandGroup(
+        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(1.5, 5.5, new Rotation2d()))),
+        new SwerveDriveMoveAuto(m_driveTrain, 3.0, 5.5, 0),
+        new SwerveDriveSpeakerAuto(m_driveTrain)
+      ));
+
       SmartDashboard.putData(m_chooser);
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
       m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));
@@ -87,6 +106,10 @@ public class RobotContainer {
 
         new JoystickButton(m_mainStick, 14)
             .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro()));
+
+        new JoystickButton(m_mainStick, 1)
+            .whileTrue(new RunCommand(() -> m_driveTrain.aimAngle(m_driveTrain.inputSpeeds()[0], m_driveTrain.inputSpeeds()[1], 180), m_driveTrain));
+        
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.SHOOT)
         .or(new JoystickButton(m_leftBoard, Constants.IO.Board.Left.SHOOT_OVERRIDE))
             .onTrue(new Shoot(m_shooter, m_transport));

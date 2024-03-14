@@ -33,6 +33,11 @@ public class Shooter extends SubsystemBase{
 
   public double manual;
 
+  public boolean revved;
+  public boolean aimed;
+
+  public double rpm_speed;
+
   public static Shooter getInstance(){
     if (m_instance == null){
       m_instance = new Shooter();
@@ -62,6 +67,8 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putBoolean("Shooter Revved", false);
     m_drive = DriveTrain.getInstance();
     setSpeed(0);
+    revved = false;
+    aimed = false;
   }
 
   public void setSpeed(double speed){
@@ -81,7 +88,6 @@ public class Shooter extends SubsystemBase{
     double angle = Math.min(0.17, Math.atan2(z, dist) * 0.107 / (Math.PI / 4)) - 0.001;
     setpoint = angle;
     SmartDashboard.putNumber("Shooter Pitch", angle);
-    SmartDashboard.putBoolean("Shooter Aimed", (Math.abs(setpoint - angle) < 0.005));
     return angle;
   }
 
@@ -93,15 +99,15 @@ public class Shooter extends SubsystemBase{
     // setSpeed(s);
     // return s;
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
-    double s = Math.min(0.4 + dist/6.0, 1.0);
-    SmartDashboard.putNumber("Shooter Speed", s);
-    SmartDashboard.putBoolean("Shooter Revved", (topMotor.getEncoder().getVelocity() > 4000 * s));
-    setSpeed(s);
-    return s;
+    double rpm_speed = Math.min(0.4 + dist/6.0, 1.0);
+    SmartDashboard.putNumber("Shooter Speed", rpm_speed);
+    SmartDashboard.putBoolean("Shooter Revved", revved);
+    setSpeed(rpm_speed);
+    return rpm_speed;
   }
 
   public void periodic(){
-
+    revved = (topMotor.getEncoder().getVelocity() > 5000 * rpm_speed) && topMotor.getEncoder().getVelocity() > 100;
     speed = SmartDashboard.getNumber("Shooter Speed", 0.5);
     SmartDashboard.putNumber("Shooter RPM", topMotor.getEncoder().getVelocity());
     setSpeed(speed);
@@ -118,6 +124,10 @@ public class Shooter extends SubsystemBase{
     pitchMotor.set(-v);
 
     SmartDashboard.putNumber("ManualWrist", manual);
+
+    aimed = Math.abs(setpoint - position) < 0.008;
+    SmartDashboard.putBoolean("Aimed", aimed);
+
     
   }
 

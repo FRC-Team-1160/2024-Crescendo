@@ -281,14 +281,16 @@ public class DriveTrain extends SubsystemBase {
   public void resetGyro() {
     m_gyro.zeroYaw();
     m_gyro.reset();
+    sim_angle = 0;
   }
 
-  public void resetPose(Pose2d pose) {
+  public void resetPose(Pose2d n_pose) {
     m_poseEstimator.resetPosition(
-      pose.getRotation(),
+      n_pose.getRotation(),
       m_modulePositions,
-      pose);
-    odomPose = pose;
+      n_pose);
+    odomPose = n_pose;
+    sim_angle = n_pose.getRotation().getDegrees();
   }
 
   //Thanks to Team 4738 for modified discretize code
@@ -310,7 +312,7 @@ public class DriveTrain extends SubsystemBase {
    * @param angSpeed
    */
   public void setSwerveDrive(double xSpeed, double ySpeed, double angSpeed){
-    sim_angle += angSpeed * 20 * 0.0254 * 4 / 23.75 * 360;
+    sim_angle += angSpeed * 6 * 0.0254 * 4 / 23.75 * 360;
     SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
     //SmartDashboard.putNumber("OUTA", m_speeds.omegaRadiansPerSecond);
@@ -393,28 +395,18 @@ public class DriveTrain extends SubsystemBase {
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
     double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
-    double angle = getGyroAngle() * Math.PI / 180.0;
-    if (target > Math.PI * 2){
-      target -= Math.PI * 2;
-    }
-    if (angle < 0){
-      angle += Math.PI * 2;
-    }
-
-    SmartDashboard.putNumber("AIMANGLE", angle);
-    SmartDashboard.putNumber("AIMTARGET", target);
-    double max = 0.15;
-    double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
-    if (Math.abs(angSpeed) < 0.01){
-      angSpeed = 0;
-    }
-    setSwerveDrive(xSpeed, ySpeed, angSpeed);
-    return target;
+    return aimAngle(xSpeed, ySpeed, target);
   }
 
   public double aimReverse(double xSpeed, double ySpeed, double targetX, double targetY){
     double target = Math.atan2(odomPose.getY() - targetY, odomPose.getX() - targetX);
+    return aimAngle(xSpeed, ySpeed, target);
+  }
+
+  public double aimAngle(double xSpeed, double ySpeed, double target){
     double angle = getGyroAngle() * Math.PI / 180.0;
+    System.out.println(target);
+    System.out.println(angle);
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
     }
@@ -426,6 +418,7 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("AIMTARGET", target);
     double max = 0.15;
     double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
+    SmartDashboard.putNumber("angPID", angSpeed);
     if (Math.abs(angSpeed) < 0.01){
       angSpeed = 0;
     }
@@ -439,8 +432,8 @@ public class DriveTrain extends SubsystemBase {
     // double joystickA = m_mainStick.getRawAxis(4);
     double joystickX = -m_mainStick.getRawAxis(1);
     double joystickY = -m_mainStick.getRawAxis(0);
-    double joystickA = -m_mainStick.getRawAxis(2);
-    // double joystickA = -m_secondStick.getRawAxis(0);
+    // double joystickA = -m_mainStick.getRawAxis(2);
+    double joystickA = -m_secondStick.getRawAxis(0);
     double x = 0.0;
     double y = 0.0;
     double a = 0.0;
