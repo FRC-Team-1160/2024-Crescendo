@@ -16,14 +16,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AimSpeaker;
 import frc.robot.commands.AimSpeakerAuto;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
 import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
+import frc.robot.commands.Intake.IntakeAuto;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.OuttakeNote;
 import frc.robot.commands.Shooter.AmpPreset;
@@ -70,7 +73,9 @@ public class RobotContainer {
     //   autoChooser = AutoBuilder.buildAutoChooser();
     //   SmartDashboard.putData("Auto Chooser", autoChooser);
 
-      final double x1 = 1.5;
+      final double x0 = 0.5;
+      final double x_sub = 1.0;
+      final double x1 = 1.8;
       final double x2 = 3.0;
       final double x3 = 2.4;
 
@@ -97,41 +102,50 @@ public class RobotContainer {
         new SwerveDriveMoveAuto(m_driveTrain, x2, 4.0)
       ));
 
-      m_chooser.addOption("Pos1", new SequentialCommandGroup(
-        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 7, Rotation2d.fromDegrees(forward)))),
-        new AimSpeakerAuto(m_driveTrain, m_shooter),
-        new Shoot(m_shooter, m_transport),
-        new ParallelCommandGroup(
-            new IntakeNote(m_intake, m_transport),
-            new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, backward)
-        ),
-        new AimSpeakerAuto(m_driveTrain, m_shooter),
-        new Shoot(m_shooter, m_transport)
-      ));
+      m_chooser.addOption("Pos1", new ParallelRaceGroup(new WaitCommand(15.0),
+        new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 7, Rotation2d.fromDegrees(forward)))),
+            new SwerveDriveMoveAuto(m_driveTrain, x1, 7.0),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new Shoot(m_shooter, m_transport),
+            new ParallelCommandGroup(
+                new IntakeAuto(m_intake, m_transport),
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, backward)
+            ),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new Shoot(m_shooter, m_transport)
+      ))
+        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
 
-      m_chooser.addOption("Pos2", new SequentialCommandGroup(
-        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 5.5, Rotation2d.fromDegrees(forward)))),
-        new AimSpeakerAuto(m_driveTrain, m_shooter),
-        new Shoot(m_shooter, m_transport),
-        new ParallelCommandGroup(
-            new IntakeNote(m_intake, m_transport),
-            new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, backward)
-        ),
-        new AimSpeakerAuto(m_driveTrain, m_shooter),
-        new Shoot(m_shooter, m_transport)
-      ));
+      m_chooser.addOption("Pos2", new ParallelRaceGroup(new WaitCommand(15.0),
+        new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x_sub, 5.5, Rotation2d.fromDegrees(forward)))),
+            new SwerveDriveMoveAuto(m_driveTrain, x1, 5.5),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new Shoot(m_shooter, m_transport),
+            new ParallelCommandGroup(
+                new IntakeAuto(m_intake, m_transport), 
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, backward)
+            ),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new Shoot(m_shooter, m_transport)
+      ))
+        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
 
-      m_chooser.addOption("Pos3", new SequentialCommandGroup(
-        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 4.0, Rotation2d.fromDegrees(forward)))),
-        new AimSpeakerAuto(m_driveTrain, m_shooter),
-        new Shoot(m_shooter, m_transport),
-        new ParallelCommandGroup(
-            new IntakeNote(m_intake, m_transport),
-            new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, backward)
-        ),
-        new AimSpeakerAuto(m_driveTrain, m_shooter),
-        new Shoot(m_shooter, m_transport)
-      ));
+      m_chooser.addOption("Pos3", new ParallelRaceGroup(new WaitCommand(15.0),
+        new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 4.0, Rotation2d.fromDegrees(forward)))),
+            new SwerveDriveMoveAuto(m_driveTrain, x1, 4.0),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new Shoot(m_shooter, m_transport),
+            new ParallelCommandGroup(
+                new IntakeAuto(m_intake, m_transport),
+                new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, backward)
+            ),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new Shoot(m_shooter, m_transport)
+      ))
+        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
 
       m_chooser.addOption("One", new SequentialCommandGroup(
         new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 5.5, Rotation2d.fromDegrees(forward)))),

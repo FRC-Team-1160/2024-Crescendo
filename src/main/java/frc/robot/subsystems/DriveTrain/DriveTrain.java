@@ -39,6 +39,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -320,6 +321,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void setSwerveDrive(ChassisSpeeds speeds) {
+    SmartDashboard.putString("AllianceFMS", DriverStation.getAlliance().toString());
     SmartDashboard.putString("chassis", speeds.toString());
     sim_angle += speeds.omegaRadiansPerSecond;// * 20 * 0.0254 * 4 / 23.75 * 360 / 50;
     speeds = discretize(speeds);
@@ -456,13 +458,18 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    x = Math.cos(dir) * 0.5 * Math.abs(Math.pow(mag, 3));
-    y = Math.sin(dir) * 0.5 * Math.abs(Math.pow(mag, 3));
-    a = Math.signum(a) * 0.3 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
+    x = Math.cos(dir) * 0.75 * Math.abs(Math.pow(mag, 3));
+    y = Math.sin(dir) * 0.75 * Math.abs(Math.pow(mag, 3));
+    a = Math.signum(a) * 0.4 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
 
     SmartDashboard.putNumber("inX", x);
     SmartDashboard.putNumber("inY", y);
     SmartDashboard.putNumber("inA", a);
+
+    if (DriverStation.getAlliance().get() == Alliance.Red){
+      x *= -1;
+      y *= -1;
+    }
     
     return new double[]{x, y, a};
 

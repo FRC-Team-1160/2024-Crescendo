@@ -46,6 +46,6 @@ public class IntakeAuto extends Command{
 
     @Override
     public boolean isFinished(){
-        return (m_timer.hasElapsed(0.1) || timeout.hasElapsed(2.0));
+        return (m_timer.hasElapsed(0.1) || timeout.hasElapsed(5.0));
     }
 }

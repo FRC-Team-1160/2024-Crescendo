@@ -32,7 +32,7 @@ public class Intake extends SubsystemBase{
     }
 
     private Intake(){
-        m_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+        m_solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
         m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
         m_feedMotor = new CANSparkMax(Port.INTAKE_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
         m_transport = Transport.getInstance();

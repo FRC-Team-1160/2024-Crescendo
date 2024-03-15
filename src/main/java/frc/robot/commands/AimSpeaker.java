@@ -49,8 +49,7 @@ public class AimSpeaker extends Command {
     double target_x = 1.7;
     double target_z = 1.7;
     double back_x = 0;
-
-    if (DriverStation.getAlliance().get() == Alliance.Red){
+    if (m_drive.odomPose.getX() > 8.25){
       target_x = 15.8;
       back_x = 16.5;
     }
@@ -61,8 +60,6 @@ public class AimSpeaker extends Command {
     SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x - x*step, 5.5 - y*step));
 
   }
-
-
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {

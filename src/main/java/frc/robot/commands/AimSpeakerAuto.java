@@ -49,10 +49,10 @@ public class AimSpeakerAuto extends Command {
     double target_x = 1.7;
     double target_z = 1.7;
     double back_x = -0.1;
-
-    if (DriverStation.getAlliance().get() == Alliance.Red){
+    
+    if (m_drive.odomPose.getX() > 8.25){
       target_x = 15.8;
-      back_x = 16.6;
+      back_x = 16.5;
     }
     target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.5);
 
