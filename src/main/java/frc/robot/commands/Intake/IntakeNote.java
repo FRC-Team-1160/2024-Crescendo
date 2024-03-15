@@ -29,7 +29,7 @@ public class IntakeNote extends Command{
 
     @Override
     public void execute(){
-        if (m_transport.noteStored && m_timer.get() == 0.0){
+        if (m_transport.m_colorSensor.getProximity() > 200.0 && m_timer.get() == 0.0){
             m_timer.start();
         }
     }
