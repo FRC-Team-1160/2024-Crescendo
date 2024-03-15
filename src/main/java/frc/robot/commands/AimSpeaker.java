@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
@@ -44,12 +46,19 @@ public class AimSpeaker extends Command {
     double step = 2.0;
     m_drive.aimSwerveDrive(x, y, 16.54 + 0.1 - x*step, 5.5 - y*step);
 
-    double target_x = SmartDashboard.getNumber("GetX", 15.8);
-    double target_z = SmartDashboard.getNumber("GetZ", 1.7);
+    double target_x = 1.7;
+    double target_z = 1.7;
+    double back_x = 0;
+
+    if (DriverStation.getAlliance().get() == Alliance.Red){
+      target_x = 15.8;
+      back_x = 16.5;
+    }
+
     // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));
     // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
     SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x - x*step, 5.5 - y*step, target_z));
-    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.5 - x*step, 5.5 - y*step));
+    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x - x*step, 5.5 - y*step));
 
   }
 

@@ -4,6 +4,9 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
@@ -42,15 +45,21 @@ public class AimSpeakerAuto extends Command {
     SmartDashboard.putNumber("Sideways", y);
 
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
-    double step = 2.0;
-    target_a = m_drive.aimSwerveDrive(x, y, 16.54 + 0.1 - x*step, 5.5 - y*step);
 
-    double target_x = 15.8;
+    double target_x = 1.7;
     double target_z = 1.7;
+    double back_x = -0.1;
+
+    if (DriverStation.getAlliance().get() == Alliance.Red){
+      target_x = 15.8;
+      back_x = 16.6;
+    }
+    target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.5);
+
     // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));
     // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
-    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x - x*step, 5.5 - y*step, target_z));
-    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.5 - x*step, 5.5 - y*step));
+    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x, 5.5, target_z));
+    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x, 5.5));
 
   }
 
@@ -59,13 +68,12 @@ public class AimSpeakerAuto extends Command {
   @Override
   public void end(boolean interrupted) {
     SmartDashboard.putNumber("Shooter Speed", 0);
-    m_shooter.setSpeed(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(target_a - m_drive.getGyroAngle()/180.0*Math.PI) <= 0.05 && m_shooter.revved && m_shooter.aimed;
+    return Math.abs(target_a - m_drive.getGyroAngle()/180.0*Math.PI) <= 0.05 && ((m_shooter.revved && m_shooter.aimed) || RobotBase.isSimulation());
   }
 }
     

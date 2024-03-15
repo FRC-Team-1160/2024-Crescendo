@@ -56,11 +56,11 @@ public class SwerveDriveMoveAuto extends Command {
         start_y = m_drive.odomPose.getY();
         dist = Math.sqrt(Math.pow(target_x - start_x, 2) + Math.pow(target_y - start_y, 2));
         System.out.println(dist);
-        x_pid = new PIDController(0.1, 0, 0);
-        y_pid = new PIDController(0.1, 0, 0);
-        a_pid = new ProfiledPIDController(0.0001, 0, 0, Constants.Auto.kThetaControllerConstraints);
-        a_pid.enableContinuousInput(-180, 180);
-        a_pid.setTolerance(5);
+        x_pid = new PIDController(0.15, 0, 0);
+        y_pid = new PIDController(0.15, 0, 0);
+        // a_pid = new ProfiledPIDController(0.0001, 0, 0, Constants.Auto.kThetaControllerConstraints);
+        // a_pid.enableContinuousInput(-180, 180);
+        // a_pid.setTolerance(5);
         m_timer = new Timer();
         m_timer.start();
         if (target_a == null){
@@ -77,14 +77,14 @@ public class SwerveDriveMoveAuto extends Command {
 
         double x = x_pid.calculate(m_drive.odomPose.getX(), start_x + (target_x - start_x) * pos/dist);
         double y = y_pid.calculate(m_drive.odomPose.getY(), start_y + (target_y - start_y) * pos/dist);
-        double a = -a_pid.calculate(m_drive.getGyroAngle(), target_a);
+        // double a = -a_pid.calculate(m_drive.getGyroAngle(), target_a);
 
         // m_drive.setSwerveDrive(x, y, a);
         m_drive.aimAngle(x, y, target_a * Math.PI / 180.0);
 
         SmartDashboard.putNumber("target_a", target_a);
-        SmartDashboard.putNumber("a_pid", a);
-        SmartDashboard.putNumber("a_diff", a_pid.getPositionError());
+        // SmartDashboard.putNumber("a_pid", a);
+        // SmartDashboard.putNumber("a_diff", a_pid.getPositionError());
 
     }
 

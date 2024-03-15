@@ -4,6 +4,8 @@
 
 package frc.robot.commands.DriveTrain;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
@@ -31,7 +33,8 @@ public class SwerveDriveSpeakerAuto extends Command {
 
   @Override
   public void execute(){
-    target = m_drive.aimSwerveDrive(0, 0, 0.5, 5.5);
+    double target_x = (DriverStation.getAlliance().get() == Alliance.Red ? 16.0: 0.5);
+    target = m_drive.aimSwerveDrive(0, 0, target_x, 5.5);
   }
 
 
