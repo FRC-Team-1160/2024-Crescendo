@@ -70,21 +70,31 @@ public class RobotContainer {
     //   autoChooser = AutoBuilder.buildAutoChooser();
     //   SmartDashboard.putData("Auto Chooser", autoChooser);
 
-      final double x1 = isRedAlliance ? 15.0 : 1.5;
-      final double x2 = isRedAlliance ? 13.5 : 3.0;
-      final double x3 = isRedAlliance ? 13.0 : 2.5;
+      final double x1 = 1.5;
+      final double x2 = 3.0;
+      final double x3 = 2.4;
 
       final double forward = isRedAlliance ? 180 : 0;
       final double backward = isRedAlliance ? 0 : 180;
 
       m_chooser = new SendableChooser<>();
 
-      m_chooser.addOption("AFK", 
+      m_chooser.addOption("AFK1", 
         new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 5.5, Rotation2d.fromDegrees(forward)))));
 
-      m_chooser.addOption("Forward", new SequentialCommandGroup(
+      m_chooser.addOption("Forward1", new SequentialCommandGroup(
+        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 7.0, Rotation2d.fromDegrees(forward)))),
+        new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0)
+      ));
+
+      m_chooser.addOption("Forward2", new SequentialCommandGroup(
         new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 5.5, Rotation2d.fromDegrees(forward)))),
-        new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5)
+        new SwerveDriveMoveAuto(m_driveTrain, x3, 5.5)
+      ));
+
+      m_chooser.addOption("Forward3", new SequentialCommandGroup(
+        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 4.0, Rotation2d.fromDegrees(forward)))),
+        new SwerveDriveMoveAuto(m_driveTrain, x2, 4.0)
       ));
 
       m_chooser.addOption("Pos1", new SequentialCommandGroup(

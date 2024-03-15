@@ -5,7 +5,9 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -51,6 +53,9 @@ public class SwerveDriveMoveAuto extends Command {
 
     @Override
     public void initialize(){
+        if (DriverStation.getAlliance().get() == Alliance.Red){
+            target_x = 16.5 - target_x;
+        }
         m_profile = new TrapezoidProfile(Constants.Auto.kVelocityControllerConstraints);
         start_x = m_drive.odomPose.getX();
         start_y = m_drive.odomPose.getY();
