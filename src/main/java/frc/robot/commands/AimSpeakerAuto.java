@@ -73,6 +73,7 @@ public class AimSpeakerAuto extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    
     return Math.abs(target_a - m_drive.getGyroAngle()/180.0*Math.PI) <= 0.05 && ((m_shooter.revved && m_shooter.aimed) || RobotBase.isSimulation());
   }
 }

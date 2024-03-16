@@ -295,10 +295,10 @@ public class DriveTrain extends SubsystemBase {
     m_gyro.reset();
     double deg = n_pose.getRotation().getDegrees();
     if (deg > 180){
-      deg -= 180;
+      deg -= 360;
     }
     m_gyro.setAngleAdjustment(deg);
-    sim_angle = deg;
+    sim_angle = -deg;
   }
 
   //Thanks to Team 4738 for modified discretize code
@@ -414,8 +414,7 @@ public class DriveTrain extends SubsystemBase {
 
   public double aimAngle(double xSpeed, double ySpeed, double target){
     double angle = getGyroAngle() * Math.PI / 180.0;
-    System.out.println(target);
-    System.out.println(angle);
+
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
     }

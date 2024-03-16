@@ -32,12 +32,6 @@ public class SwerveDrive extends Command {
     y = inputs[1];
     a = inputs[2];
 
-    // if (m_mainStick.getRawButton(1) || RobotBase.isSimulation()){
-    //   m_drive.setSwerveDrive(x, y, a);
-    //   //System.out.println(x);
-    // } else {
-    //   m_drive.setSwerveDrive(0, 0, 0);
-    // }
     m_drive.setSwerveDrive(x, y, a);
 
   }

@@ -45,11 +45,11 @@ public class AimSpeaker extends Command {
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
     double step = 2.0;
 
-    double target_x = 0.7;
-    double target_z = 2.1;
+    double target_x = 0.5;
+    double target_z = 2.0;
     double back_x = 0;
-    target_x = SmartDashboard.getNumber("GetX", 0.7);
-    target_z = SmartDashboard.getNumber("GetZ", 2.1);
+    target_x = SmartDashboard.getNumber("GetX", 0.5);
+    target_z = SmartDashboard.getNumber("GetZ", 2.0);
     SmartDashboard.putNumber("GetX", target_x);
     SmartDashboard.putNumber("GetZ", target_z);
     if (m_drive.odomPose.getX() > 8.25){

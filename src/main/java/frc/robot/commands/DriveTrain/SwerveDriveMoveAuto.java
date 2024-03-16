@@ -53,16 +53,13 @@ public class SwerveDriveMoveAuto extends Command {
 
     @Override
     public void initialize(){
-        if (DriverStation.getAlliance().get() == Alliance.Red){
-            target_x = 16.5 - target_x;
-        }
+
         m_profile = new TrapezoidProfile(Constants.Auto.kVelocityControllerConstraints);
         start_x = m_drive.odomPose.getX();
         start_y = m_drive.odomPose.getY();
         dist = Math.sqrt(Math.pow(target_x - start_x, 2) + Math.pow(target_y - start_y, 2));
-        System.out.println(dist);
-        x_pid = new PIDController(0.2, 0, 0);
-        y_pid = new PIDController(0.2, 0, 0);
+        x_pid = new PIDController(0.25, 0, 0);
+        y_pid = new PIDController(0.25, 0, 0);
         // a_pid = new ProfiledPIDController(0.0001, 0, 0, Constants.Auto.kThetaControllerConstraints);
         // a_pid.enableContinuousInput(-180, 180);
         // a_pid.setTolerance(5);
