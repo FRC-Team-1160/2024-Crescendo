@@ -61,8 +61,8 @@ public class SwerveDriveMoveAuto extends Command {
         start_y = m_drive.odomPose.getY();
         dist = Math.sqrt(Math.pow(target_x - start_x, 2) + Math.pow(target_y - start_y, 2));
         System.out.println(dist);
-        x_pid = new PIDController(0.15, 0, 0);
-        y_pid = new PIDController(0.15, 0, 0);
+        x_pid = new PIDController(0.2, 0, 0);
+        y_pid = new PIDController(0.2, 0, 0);
         // a_pid = new ProfiledPIDController(0.0001, 0, 0, Constants.Auto.kThetaControllerConstraints);
         // a_pid.enableContinuousInput(-180, 180);
         // a_pid.setTolerance(5);
@@ -98,7 +98,7 @@ public class SwerveDriveMoveAuto extends Command {
 
     @Override
     public boolean isFinished(){
-        return (Math.sqrt(Math.pow(m_drive.odomPose.getX() - target_x, 2) + Math.pow(m_drive.odomPose.getY() - target_y, 2)) < 0.1);
+        return (Math.sqrt(Math.pow(m_drive.odomPose.getX() - target_x, 2) + Math.pow(m_drive.odomPose.getY() - target_y, 2)) < 0.15);
     }
 
 }

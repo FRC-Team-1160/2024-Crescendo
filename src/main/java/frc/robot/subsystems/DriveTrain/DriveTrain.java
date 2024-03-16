@@ -291,7 +291,14 @@ public class DriveTrain extends SubsystemBase {
       m_modulePositions,
       n_pose);
     odomPose = n_pose;
-    sim_angle = n_pose.getRotation().getDegrees();
+    m_gyro.zeroYaw();
+    m_gyro.reset();
+    double deg = n_pose.getRotation().getDegrees();
+    if (deg > 180){
+      deg -= 180;
+    }
+    m_gyro.setAngleAdjustment(deg);
+    sim_angle = deg;
   }
 
   //Thanks to Team 4738 for modified discretize code
@@ -458,9 +465,10 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    x = Math.cos(dir) * 0.75 * Math.abs(Math.pow(mag, 3));
-    y = Math.sin(dir) * 0.75 * Math.abs(Math.pow(mag, 3));
-    a = Math.signum(a) * 0.4 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
+    double spd = m_mainStick.getRawButton(1) ? 0.5 : 0.9;
+    x = Math.cos(dir) * Math.abs(Math.pow(mag, 3)) * spd;
+    y = Math.sin(dir) * Math.abs(Math.pow(mag, 3)) * spd;
+    a = Math.signum(a) * 0.45 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
 
     SmartDashboard.putNumber("inX", x);
     SmartDashboard.putNumber("inY", y);

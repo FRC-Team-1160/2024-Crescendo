@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase{
     // setSpeed(s);
     // return s;
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
-    double rpm_speed = Math.min(0.4 + dist/6.0, 1.0);
+    double rpm_speed = Math.min(0.6 + dist/5.0, 1.0);
     SmartDashboard.putNumber("Shooter Speed", rpm_speed);
     SmartDashboard.putBoolean("Shooter Revved", revved);
     setSpeed(rpm_speed);
