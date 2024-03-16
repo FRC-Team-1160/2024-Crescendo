@@ -46,13 +46,13 @@ public class AimSpeakerAuto extends Command {
 
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
 
-    double target_x = 1.7;
-    double target_z = 1.7;
-    double back_x = -0.1;
-    
+    double target_x = 0.5;
+    double target_z = 2.2;
+    double back_x = 0.0;
+
     if (m_drive.odomPose.getX() > 8.25){
-      target_x = 15.8;
-      back_x = 16.5;
+      target_x = 16.5 - target_x;
+      back_x = 16.5 - back_x;
     }
     target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.5);
 
@@ -67,7 +67,7 @@ public class AimSpeakerAuto extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putNumber("Shooter Speed", 0);
+    // SmartDashboard.putNumber("Shooter Speed", 0);
   }
 
   // Returns true when the command should end.

@@ -114,12 +114,14 @@ public class RobotContainer {
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 6.7, Rotation2d.fromDegrees(flipAngle(120))))),
             new SwerveDriveMoveAuto(m_driveTrain, x1, 7.0),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport),
                 new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, backward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport)
       ))
         .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
@@ -129,12 +131,14 @@ public class RobotContainer {
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x_sub, 5.5, Rotation2d.fromDegrees(flipAngle(180))))),
             new SwerveDriveMoveAuto(m_driveTrain, x1, 5.5),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport), 
                 new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, backward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport)
       ))
         .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
@@ -146,12 +150,14 @@ public class RobotContainer {
             new InstantCommand(() -> System.out.println(m_driveTrain.getGyroAngle())),
             new SwerveDriveMoveAuto(m_driveTrain, x1, 4.0),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport),
                 new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, backward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport)
       ))
         .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
@@ -175,7 +181,7 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro()));
 
         new JoystickButton(m_codriverStick, 1)
-            .whileTrue(new RunCommand(() -> m_driveTrain.aimAngle(m_driveTrain.inputSpeeds()[0], m_driveTrain.inputSpeeds()[1], backward), m_driveTrain));
+            .whileTrue(new RunCommand(() -> m_driveTrain.aimAngle(m_driveTrain.inputSpeeds()[0], m_driveTrain.inputSpeeds()[1], backward * Math.PI/180), m_driveTrain));
         
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.SHOOT)
         .or(new JoystickButton(m_leftBoard, Constants.IO.Board.Left.SHOOT_OVERRIDE))
@@ -204,6 +210,9 @@ public class RobotContainer {
         
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.OVERRIDE)
             .whileTrue(new OverrideShooter(m_shooter));
+        
+        // new JoystickButton(m_rightBoard, Constants.IO.Board.Right.MOVE_TAR)
+        //     .onTrue(new InstantCommand(() -> m_shooter.offset += m_rightBoard.getRawButton(Constants.IO.Board.Right.INC_OR_DEC_TAR) ? 0.04 : -0.04));
 
         new JoystickButton(m_codriverSimpStick, 1)
         .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));

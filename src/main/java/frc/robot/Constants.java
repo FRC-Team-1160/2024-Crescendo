@@ -110,6 +110,9 @@ public final class Constants {
         public static final int OUTTAKE = 8;
         public static final int INTAKE = 9;
 
+        public static final int INC_OR_DEC_TAR = 3;
+        public static final int MOVE_TAR = 6;
+
         public static final int RIGHT_CLIMB = 0;
       }
     }

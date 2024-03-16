@@ -269,7 +269,7 @@ public class DriveTrain extends SubsystemBase {
 
   public double getGyroAngle() {
     if (RobotBase.isReal()){
-      return -m_gyro.getYaw(); //GYRO REPORTS CW POSITIVE
+      return -(m_gyro.getAngle()); //GYRO REPORTS CW POSITIVE, RETURN CCW POSITIVE
     } else {
       if (Math.abs(sim_angle) > 180){
         sim_angle -= Math.signum(sim_angle) * 360;
@@ -464,7 +464,7 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    double spd = m_mainStick.getRawButton(1) ? 0.5 : 0.9;
+    double spd = m_mainStick.getRawButton(1) ? 0.5 : 0.90;
     x = Math.cos(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     y = Math.sin(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     a = Math.signum(a) * 0.45 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
