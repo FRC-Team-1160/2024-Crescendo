@@ -211,8 +211,8 @@ public class RobotContainer {
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.OVERRIDE)
             .whileTrue(new OverrideShooter(m_shooter));
         
-        // new JoystickButton(m_rightBoard, Constants.IO.Board.Right.MOVE_TAR)
-        //     .onTrue(new InstantCommand(() -> m_shooter.offset += m_rightBoard.getRawButton(Constants.IO.Board.Right.INC_OR_DEC_TAR) ? 0.04 : -0.04));
+        new JoystickButton(m_rightBoard, Constants.IO.Board.Right.MOVE_TAR)
+            .onTrue(new InstantCommand(() -> m_shooter.offset += m_rightBoard.getRawButton(Constants.IO.Board.Right.INC_OR_DEC_TAR) ? 0.04 : -0.04));
 
         new JoystickButton(m_codriverSimpStick, 1)
         .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
