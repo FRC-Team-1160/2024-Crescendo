@@ -274,7 +274,6 @@ public class DriveTrain extends SubsystemBase {
       if (Math.abs(sim_angle) > 180){
         sim_angle -= Math.signum(sim_angle) * 360;
       }
-      m_gyro.setAngleAdjustment(sim_angle);
       return sim_angle;
     }
   }
