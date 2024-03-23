@@ -107,8 +107,8 @@ public final class Constants {
       public static final class Right {
         public static final int UP_DOWN_INTAKE = 1;
         public static final int OVERRIDE = 4;
-        public static final int OUTTAKE = 8;
-        public static final int INTAKE = 9;
+        public static final int OUTTAKE = 9;
+        public static final int INTAKE = 8;
 
         public static final int INC_OR_DEC_TAR = 3;
         public static final int MOVE_TAR = 6;

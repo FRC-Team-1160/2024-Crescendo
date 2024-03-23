@@ -46,7 +46,7 @@ public class AimSpeaker extends Command {
     double step = 2.0;
 
     double target_x = 0.5;
-    double target_z = 2.2;
+    double target_z = 2.25;
     double back_x = 0;
     // target_x = SmartDashboard.getNumber("GetX", 0.5);
     // target_z = SmartDashboard.getNumber("GetZ", 2.2);
