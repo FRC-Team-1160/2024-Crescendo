@@ -30,7 +30,7 @@ public class SwerveDriveSpeakerAuto extends Command {
     // double joystickY = m_mainStick.getRawAxis(4);
     // double joystickA = -m_mainStick.getRawAxis(0);
   }
-
+  
   @Override
   public void execute(){
     double target_x = (DriverStation.getAlliance().get() == Alliance.Red ? 16.0: 0.5);

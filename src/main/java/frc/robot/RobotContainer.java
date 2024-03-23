@@ -28,6 +28,7 @@ import frc.robot.commands.AimSpeakerAuto;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
 import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
+import frc.robot.commands.DriveTrain.SwerveDriveSpeedAuto;
 import frc.robot.commands.Intake.IntakeAuto;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.OuttakeNote;
@@ -88,6 +89,7 @@ public class RobotContainer {
       final double x1 = isRedAlliance ? 16.5 - 1.8 : 1.8;
       final double x2 = isRedAlliance ? 16.5 - 3.0 : 3.0;
       final double x3 = isRedAlliance ? 16.5 - 2.4 : 2.4;
+      final double x_mid = isRedAlliance ? 16.5 - 8.0 : 8.0;
 
       m_chooser = new SendableChooser<>();
 
@@ -168,6 +170,12 @@ public class RobotContainer {
         new AimSpeakerAuto(m_driveTrain, m_shooter),
         new Shoot(m_shooter, m_transport)
       ));
+
+    //   m_chooser.addOption("Disruptor", new SequentialCommandGroup(
+    //     new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 2.0, Rotation2d.fromDegrees(forward)))),
+    //     new SwerveDriveSpeedAuto(m_driveTrain, x_mid, 2.0, 2.0, 2.5, 0.3),
+    //     new SwerveDriveSpeedAuto(m_driveTrain, x_mid, 7.0, 1.5, 2.0, 0.3)
+    //   ));
 
       SmartDashboard.putData("Auto Chooser", m_chooser);
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));

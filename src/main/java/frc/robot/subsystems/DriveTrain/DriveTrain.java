@@ -327,7 +327,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void setSwerveDrive(ChassisSpeeds speeds) {
-    SmartDashboard.putString("AllianceFMS", DriverStation.getAlliance().toString());
+    // SmartDashboard.putString("AllianceFMS", DriverStation.getAlliance().toString());
     SmartDashboard.putString("chassis", speeds.toString());
     sim_angle += speeds.omegaRadiansPerSecond;// * 20 * 0.0254 * 4 / 23.75 * 360 / 50;
     speeds = discretize(speeds);
@@ -371,8 +371,6 @@ public class DriveTrain extends SubsystemBase {
     adv_gyroPub.set(new Rotation2d(getGyroAngle()));
     adv_posePub.set(odomPose);
     SmartDashboard.putData("Field", m_field);
-
-    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
     // SmartDashboard.putNumber("FLMotorAngle", m_frontLeftWheel.getAngle());
     // SmartDashboard.putNumber("FLCoderAngle", m_frontLeftCoder.getPosition().getValue());
@@ -472,10 +470,10 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("inY", y);
     SmartDashboard.putNumber("inA", a);
 
-    if (DriverStation.getAlliance().get() == Alliance.Red){
-      x *= -1;
-      y *= -1;
-    }
+    // if (DriverStation.getAlliance().get() == Alliance.Red){
+    //   x *= -1;
+    //   y *= -1;
+    // }
     
     return new double[]{x, y, a};
 
