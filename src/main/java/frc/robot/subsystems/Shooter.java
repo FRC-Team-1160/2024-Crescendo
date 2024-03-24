@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel;
 
@@ -17,8 +19,10 @@ public class Shooter extends SubsystemBase{
 
   private static Shooter m_instance;
   
-  public CANSparkMax topMotor;
-  public CANSparkMax bottomMotor;
+  // public CANSparkMax topMotor;
+  // public CANSparkMax bottomMotor;
+  public TalonFX topMotor;
+  public TalonFX bottomMotor;
   public SparkPIDController topPID;
   public SparkPIDController bottomPID;
 
@@ -51,15 +55,18 @@ public class Shooter extends SubsystemBase{
 
   private Shooter(){
 
-    topMotor = new CANSparkMax(Port.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    bottomMotor = new CANSparkMax(Port.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    topPID = topMotor.getPIDController();
-    bottomPID = bottomMotor.getPIDController();
+    // topMotor = new CANSparkMax(Port.SHOOTER_TOP_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
+    // bottomMotor = new CANSparkMax(Port.SHOOTER_BOTTOM_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
+    // topPID = topMotor.getPIDController();
+    // bottomPID = bottomMotor.getPIDController();
 
-    topPID.setP(0.0002);
-    topPID.setFF(0.000177);
-    bottomPID.setP(0.0002);
-    bottomPID.setFF(0.000177);
+    topMotor = new TalonFX(Port.SHOOTER_TOP_MOTOR);
+    bottomMotor = new TalonFX(Port.SHOOTER_BOTTOM_MOTOR);
+
+    // topPID.setP(0.0002);
+    // topPID.setFF(0.000177);
+    // bottomPID.setP(0.0002);
+    // bottomPID.setFF(0.000177);
 
     pitchMotor = new CANSparkMax(Port.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     pitchPID = new PIDController(3.5, 20.0, 0);
@@ -80,11 +87,13 @@ public class Shooter extends SubsystemBase{
   public void setSpeed(double s) {
     speed = Math.max(-1, Math.min(1, s));
     if (speed == 0){
-      topPID.setReference(0, ControlType.kVoltage);
-      bottomPID.setReference(0, ControlType.kVoltage);
+      // topPID.setReference(0, ControlType.kVoltage);
+      // bottomPID.setReference(0, ControlType.kVoltage);
+      topMotor.setControl(new VelocityVoltage(0));
     } else {
-      topPID.setReference(speed * 5500, ControlType.kVelocity);
-      bottomPID.setReference(-speed * 5500, ControlType.kVelocity);
+      // topPID.setReference(speed * 5500, ControlType.kVelocity);
+      // bottomPID.setReference(-speed * 5500, ControlType.kVelocity);
+      bottomMotor.setControl(new VelocityVoltage(speed));
     }
   }
 
@@ -111,12 +120,14 @@ public class Shooter extends SubsystemBase{
   }
 
   public void periodic(){
-    double t_rpm = topMotor.getEncoder().getVelocity();
-    double b_rpm = bottomMotor.getEncoder().getVelocity();
+    // double t_rpm = topMotor.getEncoder().getVelocity();
+    // double b_rpm = bottomMotor.getEncoder().getVelocity();
+    double t_rpm = topMotor.getVelocity().getValue();
+    double b_rpm = bottomMotor.getVelocity().getValue();
     revved = (Math.min(t_rpm, b_rpm) > 5500 * rpm_speed - 200 && Math.min(t_rpm, b_rpm) > 100);
     SmartDashboard.putBoolean("Shooter Revved", revved);
-    SmartDashboard.putNumber("Shooter RPM", topMotor.getEncoder().getVelocity());
-    SmartDashboard.putNumber("Shooter RPM Bottom", bottomMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Shooter RPM Top", t_rpm);
+    SmartDashboard.putNumber("Shooter RPM Bottom", b_rpm);
     SmartDashboard.putNumber("Shooter Offset", offset);
     SmartDashboard.putNumber("Shooter Speed", speed);
     double position = pitchMotor.getAlternateEncoder(8192).getPosition();

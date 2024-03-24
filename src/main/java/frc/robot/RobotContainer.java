@@ -88,6 +88,7 @@ public class RobotContainer {
       m_pathChooser.addOption("Park", "Park");
       m_pathChooser.addOption("Two Note", "Two Note");
       m_pathChooser.addOption("Disruptor", "Disruptor");
+      m_pathChooser.addOption("Test", "Test");
 
       m_posChooser = buildAutoChooser(m_pathChooser.getSelected());
       SmartDashboard.putData("Auto Chooser", m_pathChooser);
@@ -149,7 +150,12 @@ public class RobotContainer {
 
         new JoystickButton(m_codriverSimpStick, 3)
             .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.25)));
-        
+        new JoystickButton(m_codriverSimpStick, 3)
+            .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0.0)));
+        new JoystickButton(m_codriverSimpStick, 5)
+            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(1000)));
+        new JoystickButton(m_codriverSimpStick, 5)
+            .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0.0)));
         // new JoystickButton(m_mainStick, 8)
         //     .toggleOnTrue(new SwerveDriveSpeaker(m_driveTrain));
     }
@@ -218,6 +224,10 @@ public class RobotContainer {
             new SwerveDriveMoveAuto(m_driveTrain, 8.6, 7.5,null,
             new TrapezoidProfile.Constraints(3.0, 5.0), 0.004)
           ));
+          break;
+        case "Test":
+          chooser.addOption("Square", new PathPlannerAuto("Square"));
+          chooser.addOption("Spin", new PathPlannerAuto("Spin"));
       }
       return chooser;
     }

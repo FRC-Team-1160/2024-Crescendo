@@ -14,12 +14,15 @@ package frc.robot.subsystems.DriveTrain;
 //SWITCH TO PHOENIX6
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -27,6 +30,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.struct.Rotation2dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -105,12 +109,12 @@ public class DriveTrain extends SubsystemBase {
   public DriveTrain() {
     AutoBuilder.configureHolonomic(
       () -> odomPose,
-      (Pose2d pose) -> odomPose = pose,
-      () -> m_kinematics.toChassisSpeeds(m_moduleStates),
-      this::setSwerveDrive,
+      (Pose2d pose) -> resetPose(pose),
+      () -> m_kinematics.toChassisSpeeds( m_moduleStates),
+      (ChassisSpeeds speeds) -> setSwerveDrive(new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -speeds.omegaRadiansPerSecond)),
       new HolonomicPathFollowerConfig(
-        new PIDConstants(0.1),
-        new PIDConstants(0, 0.0, 0.00),
+        new PIDConstants(0.5),
+        new PIDConstants(3, 0, 0.00),
         1,
         0.426562167,
         new ReplanningConfig()
@@ -118,6 +122,8 @@ public class DriveTrain extends SubsystemBase {
       () -> false,
       this
     );
+
+    PPHolonomicDriveController.setRotationTargetOverride(this::speakerAngle);
 
     zlimiter = new SlewRateLimiter(5);
 
@@ -330,7 +336,6 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void setSwerveDrive(ChassisSpeeds speeds) {
-    // SmartDashboard.putString("AllianceFMS", DriverStation.getAlliance().toString());
     SmartDashboard.putString("chassis", speeds.toString());
     sim_angle += speeds.omegaRadiansPerSecond;// * 20 * 0.0254 * 4 / 23.75 * 360 / 50;
     speeds = discretize(speeds);
@@ -400,6 +405,10 @@ public class DriveTrain extends SubsystemBase {
     // SmartDashboard.putNumber("BRTarget", m_moduleStates[3].speedMetersPerSecond);
 
 
+  }
+
+  public Optional<Rotation2d> speakerAngle(){
+    return Optional.of(Rotation2d.fromRadians(Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX())));
   }
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
