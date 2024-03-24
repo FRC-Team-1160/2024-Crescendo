@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 /**
@@ -18,8 +20,8 @@ public final class Constants {
   public static final class Auto {
     public static final double MAX_VEL = 1.0;
     public static final double MAX_ACEL = 1.5;
-    public static final double MAX_ANG_VEL = 0.2;
-    public static final double MAX_ANG_ACEL = 0.3;
+    public static final double MAX_ANG_VEL = 90;
+    public static final double MAX_ANG_ACEL = 90;
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(
         MAX_ANG_VEL,
@@ -30,6 +32,13 @@ public final class Constants {
         MAX_VEL,
         MAX_ACEL
       );
+
+    public static final class Start {
+      public static final Pose2d SUB1 = new Pose2d(0.8, 6.7, Rotation2d.fromDegrees(120));
+      public static final Pose2d SUB2 = new Pose2d(1.3, 5.5, Rotation2d.fromDegrees(180));
+      public static final Pose2d SUB3 = new Pose2d(0.8, 4.5, Rotation2d.fromDegrees(-120));
+      public static final Pose2d WALL = new Pose2d(0.5, 1.5, Rotation2d.fromDegrees(180));
+    }
   }
 
   public static final class Port {

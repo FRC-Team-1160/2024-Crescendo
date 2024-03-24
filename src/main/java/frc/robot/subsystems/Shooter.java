@@ -111,7 +111,9 @@ public class Shooter extends SubsystemBase{
   }
 
   public void periodic(){
-    revved = (topMotor.getEncoder().getVelocity() > 5500 * rpm_speed - 200) && topMotor.getEncoder().getVelocity() > 100;
+    double t_rpm = topMotor.getEncoder().getVelocity();
+    double b_rpm = bottomMotor.getEncoder().getVelocity();
+    revved = (Math.min(t_rpm, b_rpm) > 5500 * rpm_speed - 200 && Math.min(t_rpm, b_rpm) > 100);
     SmartDashboard.putBoolean("Shooter Revved", revved);
     SmartDashboard.putNumber("Shooter RPM", topMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("Shooter RPM Bottom", bottomMotor.getEncoder().getVelocity());

@@ -30,6 +30,8 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  public String path_choice;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -52,6 +54,8 @@ public class Robot extends TimedRobot {
       // VisionThread thread = new VisionThread(m_visionrunner);
       // thread.setDaemon(true);
       // thread.start();
+
+      path_choice = m_robotContainer.m_pathChooser.getSelected();
     }
   }
 
@@ -68,10 +72,16 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    
     CommandScheduler.getInstance().run();
     SmartDashboard.putData("Command Scheduler", CommandScheduler.getInstance());
+    if (m_robotContainer.m_pathChooser.getSelected() != path_choice){
+      path_choice = m_robotContainer.m_pathChooser.getSelected();
+      m_robotContainer.m_posChooser.close();
+      m_robotContainer.m_posChooser = m_robotContainer.buildAutoChooser(m_robotContainer.m_pathChooser.getSelected());
+      SmartDashboard.putData("Auto Start Position", m_robotContainer.m_posChooser);
 
-    //m_robotContainer.m_telemetry.run(m_robotContainer.m_driveTrain, m_robotContainer.m_vision);
+    }
 
   }
 

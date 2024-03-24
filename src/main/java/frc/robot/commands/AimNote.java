@@ -39,7 +39,7 @@ public class AimNote extends Command {
     SmartDashboard.putNumber("Sideways", y);
     Pose3d note = m_vision.tracked_note;
     if (note != null){
-      m_drive.aimSwerveDrive(x, y, note.getX(), note.getY());
+      m_drive.aimReverse(x, y, note.getX(), note.getY());
     }
 
     // if (m_mainStick.getRawButton(1) || RobotBase.isSimulation()){

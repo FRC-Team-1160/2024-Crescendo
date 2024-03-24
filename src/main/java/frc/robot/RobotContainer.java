@@ -8,7 +8,9 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -28,7 +30,6 @@ import frc.robot.commands.AimSpeakerAuto;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
 import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
-import frc.robot.commands.DriveTrain.SwerveDriveSpeedAuto;
 import frc.robot.commands.Intake.IntakeAuto;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.OuttakeNote;
@@ -58,7 +59,8 @@ public class RobotContainer {
     public final Climber m_climber = Climber.getInstance();
     public final Transport m_transport = Transport.getInstance();
 
-    private final SendableChooser<Command> m_chooser;
+    public SendableChooser<String> m_pathChooser;
+    public SendableChooser<Command> m_posChooser;
 
     private Joystick m_mainStick = new Joystick(Constants.IO.MAIN_PORT);
     private Joystick m_codriverStick = new Joystick(Constants.IO.COPILOT_PORT);
@@ -74,112 +76,26 @@ public class RobotContainer {
     /**
      * The container for the robot.  Contains subsystems, OI devices, and commands.
      */
-    public double flipAngle(double ang){
-        System.out.println(180 - ang);
-        return (isRedAlliance ? 180 - ang : ang);
+    public Pose2d flipPose(Pose2d pose){
+      return (isRedAlliance ? new Pose2d(16.54 - pose.getX(), pose.getY(), Rotation2d.fromDegrees(180 - pose.getRotation().getDegrees())) : pose);
     }
 
     public RobotContainer() {
       configureButtonBindings();
-    //   autoChooser = AutoBuilder.buildAutoChooser();
-    //   SmartDashboard.putData("Auto Chooser", autoChooser);
 
-      final double x0 = isRedAlliance ? 16.5 - 0.8 : 0.8;
-      final double x_sub = isRedAlliance ? 16.5 - 1.3 : 1.3;
-      final double x1 = isRedAlliance ? 16.5 - 1.8 : 1.8;
-      final double x2 = isRedAlliance ? 16.5 - 3.0 : 3.0;
-      final double x3 = isRedAlliance ? 16.5 - 2.4 : 2.4;
-      final double x_mid = isRedAlliance ? 16.5 - 8.0 : 8.0;
+      m_pathChooser = new SendableChooser<>();
+      m_pathChooser.setDefaultOption("AFK", "AFK");
+      m_pathChooser.addOption("Park", "Park");
+      m_pathChooser.addOption("Two Note", "Two Note");
+      m_pathChooser.addOption("Disruptor", "Disruptor");
 
-      m_chooser = new SendableChooser<>();
+      m_posChooser = buildAutoChooser(m_pathChooser.getSelected());
+      SmartDashboard.putData("Auto Chooser", m_pathChooser);
+      SmartDashboard.putData("Auto Start Position", m_posChooser);
 
-      m_chooser.addOption("AFK1", 
-        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 5.5, Rotation2d.fromDegrees(forward)))));
-
-      m_chooser.addOption("Forward1", new SequentialCommandGroup(
-        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 7.0, Rotation2d.fromDegrees(flipAngle(-120))))),
-        new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0)
-      ));
-
-      m_chooser.addOption("Forward2", new SequentialCommandGroup(
-        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 5.5, Rotation2d.fromDegrees(flipAngle(180))))),
-        new SwerveDriveMoveAuto(m_driveTrain, x3, 5.5)
-      ));
-
-      m_chooser.addOption("Forward3", new SequentialCommandGroup(
-        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 4.0, Rotation2d.fromDegrees(flipAngle(120))))),
-        new SwerveDriveMoveAuto(m_driveTrain, x2, 4.0)
-      ));
-
-      m_chooser.addOption("Pos1", new ParallelRaceGroup(new WaitCommand(15.0),
-        new SequentialCommandGroup(
-            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 6.7, Rotation2d.fromDegrees(flipAngle(120))))),
-            new SwerveDriveMoveAuto(m_driveTrain, x1, 7.0),
-            new AimSpeakerAuto(m_driveTrain, m_shooter),
-            new WaitCommand(0.5),
-            new Shoot(m_shooter, m_transport),
-            new ParallelCommandGroup(
-                new IntakeAuto(m_intake, m_transport),
-                new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, backward)
-            ),
-            new AimSpeakerAuto(m_driveTrain, m_shooter),
-            new WaitCommand(0.5),
-            new Shoot(m_shooter, m_transport)
-      ))
-        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
-
-      m_chooser.addOption("Pos2", new ParallelRaceGroup(new WaitCommand(15.0),
-        new SequentialCommandGroup(
-            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x_sub, 5.5, Rotation2d.fromDegrees(flipAngle(180))))),
-            new SwerveDriveMoveAuto(m_driveTrain, x1, 5.5),
-            new AimSpeakerAuto(m_driveTrain, m_shooter),
-            new WaitCommand(0.5),
-            new Shoot(m_shooter, m_transport),
-            new ParallelCommandGroup(
-                new IntakeAuto(m_intake, m_transport), 
-                new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, backward)
-            ),
-            new AimSpeakerAuto(m_driveTrain, m_shooter),
-            new WaitCommand(0.5),
-            new Shoot(m_shooter, m_transport)
-      ))
-        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
-
-      m_chooser.addOption("Pos3", new ParallelRaceGroup(new WaitCommand(15.0),
-        new SequentialCommandGroup(
-            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 4.5, Rotation2d.fromDegrees(flipAngle(-120))))),
-            new InstantCommand(() -> System.out.println(m_driveTrain.odomPose.getRotation().getDegrees())),
-            new InstantCommand(() -> System.out.println(m_driveTrain.getGyroAngle())),
-            new SwerveDriveMoveAuto(m_driveTrain, x1, 4.0),
-            new AimSpeakerAuto(m_driveTrain, m_shooter),
-            new WaitCommand(0.5),
-            new Shoot(m_shooter, m_transport),
-            new ParallelCommandGroup(
-                new IntakeAuto(m_intake, m_transport),
-                new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, backward)
-            ),
-            new AimSpeakerAuto(m_driveTrain, m_shooter),
-            new WaitCommand(0.5),
-            new Shoot(m_shooter, m_transport)
-      ))
-        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
-
-      m_chooser.addOption("One", new SequentialCommandGroup(
-        new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x1, 5.5, Rotation2d.fromDegrees(forward)))),
-        new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5),
-        new AimSpeakerAuto(m_driveTrain, m_shooter),
-        new Shoot(m_shooter, m_transport)
-      ));
-
-    //   m_chooser.addOption("Disruptor", new SequentialCommandGroup(
-    //     new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 2.0, Rotation2d.fromDegrees(forward)))),
-    //     new SwerveDriveSpeedAuto(m_driveTrain, x_mid, 2.0, 2.0, 2.5, 0.3),
-    //     new SwerveDriveSpeedAuto(m_driveTrain, x_mid, 7.0, 1.5, 2.0, 0.3)
-    //   ));
-
-      SmartDashboard.putData("Auto Chooser", m_chooser);
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
       m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));
+      m_shooter.setDefaultCommand(new InstantCommand(() -> m_shooter.setSpeed(0.0), m_shooter));
 
     }
     
@@ -223,7 +139,7 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_shooter.offset += m_rightBoard.getRawButton(Constants.IO.Board.Right.INC_OR_DEC_TAR) ? 0.04 : -0.04));
 
         new JoystickButton(m_codriverSimpStick, 1)
-        .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
+            .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
 
         new JoystickButton(m_codriverSimpStick, 2)
             .onTrue(new Shoot(m_shooter, m_transport));
@@ -246,7 +162,83 @@ public class RobotContainer {
 
     
     public Command getAutonomousCommand() {
-        return m_chooser.getSelected();
+      return m_posChooser.getSelected();
+    }
+
+    public SendableChooser<Command> buildAutoChooser(String path) {
+      SendableChooser<Command> chooser = new SendableChooser<>();
+      switch(path){
+        case "AFK":
+          chooser.addOption("Sub1", new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB1))));
+          chooser.addOption("Sub2", new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB2))));
+          chooser.addOption("Sub3", new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB3))));
+          chooser.addOption("Wall", new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.WALL))));
+          break;
+        case "Park":
+          chooser.addOption("Sub1", new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB1))),
+            new SwerveDriveMoveAuto(m_driveTrain, 2.7, Constants.Auto.Start.SUB1.getY(), null)
+
+          ));
+          chooser.addOption("Sub2", new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB2))),
+            new SwerveDriveMoveAuto(m_driveTrain, 2.7, Constants.Auto.Start.SUB2.getY(), null)
+          ));
+          chooser.addOption("Sub3", new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB3))),
+            new SwerveDriveMoveAuto(m_driveTrain, 2.5, Constants.Auto.Start.SUB3.getY(), null)
+          ));
+          chooser.addOption("Wall", new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.WALL))),
+            new SwerveDriveMoveAuto(m_driveTrain, 2.7, Constants.Auto.Start.WALL.getY(), null)
+          ));
+          break;
+        case "Two Note":
+          chooser.addOption("Sub1", buildTwoNote(
+            Constants.Auto.Start.SUB1, 
+            new Translation2d(1.8, 7.0),
+            new Translation2d(2.7, 7.0)
+            ));
+          chooser.addOption("Sub2", buildTwoNote(
+            Constants.Auto.Start.SUB2, 
+            new Translation2d(2.0, 5.5),
+            new Translation2d(2.7, 5.5)
+            ));
+          chooser.addOption("Sub3", buildTwoNote(
+            Constants.Auto.Start.SUB3, 
+            new Translation2d(1.8, 4.0),
+            new Translation2d(2.5, 4.0)
+            ));
+          break;
+        case "Disruptor":
+          chooser.addOption("Wall", new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.WALL))),
+            new SwerveDriveMoveAuto(m_driveTrain, 8.6, 0.8, 135.0,
+            new TrapezoidProfile.Constraints(3.0, 5.0), 0.004),
+            new SwerveDriveMoveAuto(m_driveTrain, 8.6, 7.5,null,
+            new TrapezoidProfile.Constraints(3.0, 5.0), 0.004)
+          ));
+      }
+      return chooser;
+    }
+    public Command buildTwoNote(Pose2d start, Translation2d pos1, Translation2d pos2) {
+      return new ParallelCommandGroup(new WaitCommand(15.0),
+        new SequentialCommandGroup(
+          new InstantCommand(() -> m_driveTrain.resetPose(flipPose(start))),
+          new SwerveDriveMoveAuto(m_driveTrain, pos1.getX(), pos1.getY(), null),
+          new AimSpeakerAuto(m_driveTrain, m_shooter),
+          new WaitCommand(0.5),
+          new Shoot(m_shooter, m_transport),
+          new ParallelCommandGroup(
+            new IntakeAuto(m_intake, m_transport),
+            new SwerveDriveMoveAuto(m_driveTrain, pos2.getX(), pos2.getY(), 180.0)
+          ),
+          new AimSpeakerAuto(m_driveTrain, m_shooter),
+          new WaitCommand(0.5),
+          new Shoot(m_shooter, m_transport)
+          )
+        );
+      
     }
     
 }

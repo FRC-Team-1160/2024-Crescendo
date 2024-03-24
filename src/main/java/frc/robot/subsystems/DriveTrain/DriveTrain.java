@@ -91,6 +91,8 @@ public class DriveTrain extends SubsystemBase {
   private PIDController m_anglePID;
   double wkP, wkI, wkD;
   public SlewRateLimiter zlimiter;
+
+  public boolean isRed;
   //initializes the drive train
   
   public static DriveTrain getInstance(){
@@ -265,6 +267,7 @@ public class DriveTrain extends SubsystemBase {
     });
     
     sim_angle = 0;
+    isRed = DriverStation.getAlliance().get() == Alliance.Red;
   }
 
   public double getGyroAngle() {
@@ -470,10 +473,10 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("inY", y);
     SmartDashboard.putNumber("inA", a);
 
-    // if (DriverStation.getAlliance().get() == Alliance.Red){
-    //   x *= -1;
-    //   y *= -1;
-    // }
+    if (isRed){
+      x *= -1;
+      y *= -1;
+    }
     
     return new double[]{x, y, a};
 
