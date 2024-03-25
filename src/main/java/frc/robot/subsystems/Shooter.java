@@ -2,8 +2,12 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel;
 
@@ -67,6 +71,21 @@ public class Shooter extends SubsystemBase{
     // topPID.setFF(0.000177);
     // bottomPID.setP(0.0002);
     // bottomPID.setFF(0.000177);
+    var configs = new Slot0Configs();
+
+    configs.kP = 0.1;
+    configs.kV = 0.1;
+    configs.kI = 0.0;
+    configs.kD = 0.0;
+    configs.kS = 0.0;
+    configs.kA = 0.0;
+    configs.kG = 0.0;
+
+    topMotor.getConfigurator().apply(configs);
+    bottomMotor.getConfigurator().apply(configs);
+
+    topMotor.setNeutralMode(NeutralModeValue.Coast);
+    bottomMotor.setNeutralMode(NeutralModeValue.Coast);
 
     pitchMotor = new CANSparkMax(Port.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
     pitchPID = new PIDController(3.5, 20.0, 0);
@@ -89,11 +108,15 @@ public class Shooter extends SubsystemBase{
     if (speed == 0){
       // topPID.setReference(0, ControlType.kVoltage);
       // bottomPID.setReference(0, ControlType.kVoltage);
-      topMotor.setControl(new VelocityVoltage(0));
+      topMotor.setControl(new CoastOut());
+      bottomMotor.setControl(new CoastOut());
     } else {
       // topPID.setReference(speed * 5500, ControlType.kVelocity);
       // bottomPID.setReference(-speed * 5500, ControlType.kVelocity);
-      bottomMotor.setControl(new VelocityVoltage(speed));
+      bottomMotor.set(s);
+      topMotor.set(s);
+      // topMotor.setControl(new VelocityVoltage(s));
+      // bottomMotor.setControl(new VelocityVoltage(s));
     }
   }
 
@@ -139,15 +162,13 @@ public class Shooter extends SubsystemBase{
     v += 0.092 * Math.sqrt(position);
     SmartDashboard.putNumber("PIDwithFF", v);
     manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
-    pitchMotor.set(-v);
+    pitchMotor.set(-manual);
 
     SmartDashboard.putNumber("ManualWrist", manual);
 
     aimed = Math.abs(setpoint - position) < 0.008;
     SmartDashboard.putBoolean("Aimed", aimed);
 
-
-    
   }
 
 }

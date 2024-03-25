@@ -37,7 +37,7 @@ public class OuttakeNote extends Command{
     @Override
     public void execute(){
         if (m_timer.hasElapsed(1.0)){
-            m_intake.m_feedMotor.set(-0.9);
+            m_intake.m_feedMotor.set(-0.6);
             m_transport.setWheels(-1);
             m_transport.belt.set(0.25);
             m_shooter.setSpeed(-0.25);

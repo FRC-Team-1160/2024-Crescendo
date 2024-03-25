@@ -58,8 +58,8 @@ public final class Constants {
     public static final int BACK_LEFT_CODER = 5;
     public static final int BACK_RIGHT_CODER = 7;
 
-    public static final int SHOOTER_TOP_MOTOR = 9;
-    public static final int SHOOTER_BOTTOM_MOTOR = 2;
+    public static final int SHOOTER_TOP_MOTOR = 10;
+    public static final int SHOOTER_BOTTOM_MOTOR = 9;
     public static final int SHOOTER_PITCH_MOTOR = 7;
 
     public static final int INTAKE_MOTOR = 4;

@@ -96,7 +96,7 @@ public class RobotContainer {
 
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
       m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));
-      m_shooter.setDefaultCommand(new InstantCommand(() -> m_shooter.setSpeed(0.0), m_shooter));
+      // m_shooter.setDefaultCommand(new InstantCommand(() -> m_shooter.setSpeed(0.0), m_shooter));
 
     }
     
@@ -153,7 +153,7 @@ public class RobotContainer {
         new JoystickButton(m_codriverSimpStick, 3)
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0.0)));
         new JoystickButton(m_codriverSimpStick, 5)
-            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(1000)));
+            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.5)));
         new JoystickButton(m_codriverSimpStick, 5)
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0.0)));
         // new JoystickButton(m_mainStick, 8)

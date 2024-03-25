@@ -22,7 +22,7 @@ public class IntakeAuto extends Command{
     @Override
     public void initialize(){
         m_intake.m_solenoid.set(DoubleSolenoid.Value.kForward);
-        m_intake.m_feedMotor.set(0.9);
+        m_intake.m_feedMotor.set(0.6);
         m_transport.setWheels(1);
         m_transport.belt.set(-0.25);
         m_timer = new Timer();
