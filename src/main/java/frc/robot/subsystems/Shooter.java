@@ -115,8 +115,9 @@ public class Shooter extends SubsystemBase{
       // bottomPID.setReference(-speed * 5500, ControlType.kVelocity);
       bottomMotor.set(s);
       topMotor.set(s);
-      // topMotor.setControl(new VelocityVoltage(s));
-      // bottomMotor.setControl(new VelocityVoltage(s));
+      // 
+      // topMotor.setControl(new VelocityVoltage(s).withSlot(0));
+      // bottomMotor.setControl(new VelocityVoltage(s).withSlot(0));
     }
   }
 
@@ -150,7 +151,9 @@ public class Shooter extends SubsystemBase{
     revved = (Math.min(t_rpm, b_rpm) > 5500 * rpm_speed - 200 && Math.min(t_rpm, b_rpm) > 100);
     SmartDashboard.putBoolean("Shooter Revved", revved);
     SmartDashboard.putNumber("Shooter RPM Top", t_rpm);
+    SmartDashboard.putNumber("Shooter Raw RPM Top", topMotor.getRotorVelocity().getValue());
     SmartDashboard.putNumber("Shooter RPM Bottom", b_rpm);
+    SmartDashboard.putNumber("Shooter Raw RPM Bottom", bottomMotor.getRotorVelocity().getValue());
     SmartDashboard.putNumber("Shooter Offset", offset);
     SmartDashboard.putNumber("Shooter Speed", speed);
     double position = pitchMotor.getAlternateEncoder(8192).getPosition();
