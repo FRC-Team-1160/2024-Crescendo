@@ -28,6 +28,8 @@ public class Transport extends SubsystemBase {
 
     public ColorSensorV3 m_colorSensor;
 
+    public int prox;
+
     public static Transport getInstance(){
         if (m_instance == null){
             m_instance = new Transport();
@@ -44,6 +46,7 @@ public class Transport extends SubsystemBase {
         noteStored = false;
         refresh = new Timer();
         refresh.start();
+        prox = 50;
     }
     
     public void setWheels(int state){
@@ -53,9 +56,9 @@ public class Transport extends SubsystemBase {
 
     @Override
     public void periodic(){
-        if (refresh.hasElapsed(0.1)) {
+        if (refresh.hasElapsed(0.1) && prox != 0) {
             refresh.restart();
-            int prox = m_colorSensor.getProximity();
+            prox = m_colorSensor.getProximity();
             SmartDashboard.putNumber("Color Sensor Prox", prox);
             noteStored = (prox > 200.0); //nothing ~100, note ~350
             SmartDashboard.putBoolean("Note Stored", noteStored);

@@ -129,22 +129,22 @@ public class DriveTrain extends SubsystemBase {
 
     //directional motors
 
-    m_frontLeftDriveMotor = new TalonFX(Constants.Port.FRONT_LEFT_DRIVE_MOTOR);
-    m_frontRightDriveMotor = new TalonFX(Constants.Port.FRONT_RIGHT_DRIVE_MOTOR);
-    m_backLeftDriveMotor = new TalonFX(Constants.Port.BACK_LEFT_DRIVE_MOTOR);
-    m_backRightDriveMotor = new TalonFX(Constants.Port.BACK_RIGHT_DRIVE_MOTOR);
+    m_frontLeftDriveMotor = new TalonFX(Constants.Port.FRONT_LEFT_DRIVE_MOTOR, "*");
+    m_frontRightDriveMotor = new TalonFX(Constants.Port.FRONT_RIGHT_DRIVE_MOTOR, "*");
+    m_backLeftDriveMotor = new TalonFX(Constants.Port.BACK_LEFT_DRIVE_MOTOR, "*");
+    m_backRightDriveMotor = new TalonFX(Constants.Port.BACK_RIGHT_DRIVE_MOTOR, "*");
 
     //rotational motors
-    m_frontLeftSteerMotor = new TalonFX(Constants.Port.FRONT_LEFT_STEER_MOTOR);
-    m_frontRightSteerMotor = new TalonFX(Constants.Port.FRONT_RIGHT_STEER_MOTOR);
-    m_backLeftSteerMotor = new TalonFX(Constants.Port.BACK_LEFT_STEER_MOTOR);
-    m_backRightSteerMotor = new TalonFX(Constants.Port.BACK_RIGHT_STEER_MOTOR);
+    m_frontLeftSteerMotor = new TalonFX(Constants.Port.FRONT_LEFT_STEER_MOTOR, "*");
+    m_frontRightSteerMotor = new TalonFX(Constants.Port.FRONT_RIGHT_STEER_MOTOR, "*");
+    m_backLeftSteerMotor = new TalonFX(Constants.Port.BACK_LEFT_STEER_MOTOR, "*");
+    m_backRightSteerMotor = new TalonFX(Constants.Port.BACK_RIGHT_STEER_MOTOR, "*");
 
     //CAN coders
-    m_frontLeftCoder = new CANcoder(Constants.Port.FRONT_LEFT_CODER);
-    m_frontRightCoder = new CANcoder(Constants.Port.FRONT_RIGHT_CODER);
-    m_backLeftCoder = new CANcoder(Constants.Port.BACK_LEFT_CODER);
-    m_backRightCoder = new CANcoder(Constants.Port.BACK_RIGHT_CODER);
+    m_frontLeftCoder = new CANcoder(Constants.Port.FRONT_LEFT_CODER, "*");
+    m_frontRightCoder = new CANcoder(Constants.Port.FRONT_RIGHT_CODER, "*");
+    m_backLeftCoder = new CANcoder(Constants.Port.BACK_LEFT_CODER, "*");
+    m_backRightCoder = new CANcoder(Constants.Port.BACK_RIGHT_CODER, "*");
 
     // m_frontLeftCoder.setPosition(0);
     // m_frontRightCoder.setPosition(0);

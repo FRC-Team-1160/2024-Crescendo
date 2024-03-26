@@ -101,6 +101,7 @@ public class Shooter extends SubsystemBase{
     revved = false;
     aimed = false;
     offset = 0;
+    m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
   }
 
   public void setSpeed(double s) {
@@ -162,10 +163,12 @@ public class Shooter extends SubsystemBase{
     SmartDashboard.putNumber("Shooter Pitch", setpoint);
     double v = Math.max(-0.15, Math.min(0.15, pitchPID.calculate(position, setpoint)));
     SmartDashboard.putNumber("PitchPID", v);
-    v += 0.092 * Math.sqrt(position);
+    v += 0.092 * Math.sqrt(position); 
     SmartDashboard.putNumber("PIDwithFF", v);
-    manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
-    pitchMotor.set(-manual);
+    // manual = Math.max(-0.1, Math.min(0.1, SmartDashboard.getNumber("ManualWrist", 0)));
+    manual = m_rightBoard.getRawAxis(Constants.IO.Board.Right.RIGHT_CLIMB) * 0.03;
+    SmartDashboard.putNumber("MANUALWRIST", manual);
+    pitchMotor.set(manual);
 
     SmartDashboard.putNumber("ManualWrist", manual);
 

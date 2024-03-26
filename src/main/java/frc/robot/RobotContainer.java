@@ -119,7 +119,7 @@ public class RobotContainer {
             .toggleOnTrue(new AmpPreset(m_shooter));
 
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
-            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.8)));
+            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.6)));
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0)));
 
@@ -226,8 +226,9 @@ public class RobotContainer {
           ));
           break;
         case "Test":
-          chooser.addOption("Square", new PathPlannerAuto("Square"));
-          chooser.addOption("Spin", new PathPlannerAuto("Spin"));
+          // chooser.addOption("Square", new PathPlannerAuto("Square"));
+          // chooser.addOption("Spin", new PathPlannerAuto("Spin"));
+          break;
       }
       return chooser;
     }
