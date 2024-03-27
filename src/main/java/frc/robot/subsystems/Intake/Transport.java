@@ -56,9 +56,9 @@ public class Transport extends SubsystemBase {
 
     @Override
     public void periodic(){
-        if (refresh.hasElapsed(0.1)) {
+        if (refresh.hasElapsed(0.1) && prox != 0) {
             refresh.restart();
-            int prox = m_colorSensor.getProximity();
+            prox = m_colorSensor.getProximity();
             SmartDashboard.putNumber("Color Sensor Prox", prox);
             noteStored = (prox > 200.0) || !limit_switch.get(); //nothing ~100, note ~350
             SmartDashboard.putBoolean("limit", limit_switch.get());

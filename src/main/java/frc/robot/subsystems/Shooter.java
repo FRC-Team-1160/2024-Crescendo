@@ -97,6 +97,7 @@ public class Shooter extends SubsystemBase{
     revved = false;
     aimed = false;
     offset = 0;
+    m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
   }
 
   public void setSpeed(double s) {
