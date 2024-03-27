@@ -29,6 +29,7 @@ public class Transport extends SubsystemBase {
 
     public ColorSensorV3 m_colorSensor;
     public DigitalInput limit_switch;
+    public int prox;
 
     public static Transport getInstance(){
         if (m_instance == null){
@@ -46,7 +47,7 @@ public class Transport extends SubsystemBase {
         refresh = new Timer();
         refresh.start();
         limit_switch = new DigitalInput(Constants.Port.TRANSPORT_LIMIT);
-
+        prox = 100;
     }
     
     public void setWheels(int state){
