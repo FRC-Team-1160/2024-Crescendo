@@ -2,7 +2,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 import frc.robot.subsystems.Vision.Vision;
@@ -35,8 +34,6 @@ public class AimNote extends Command {
     x = inputs[0];
     y = inputs[1];
 
-    SmartDashboard.putNumber("Forward", x);
-    SmartDashboard.putNumber("Sideways", y);
     Pose3d note = m_vision.tracked_note;
     if (note != null){
       m_drive.aimReverse(x, y, note.getX(), note.getY());

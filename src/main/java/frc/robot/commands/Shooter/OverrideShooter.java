@@ -1,7 +1,6 @@
 package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
@@ -28,7 +27,6 @@ public class OverrideShooter extends Command {
         if (Math.abs(input) > 0.5){
             double a = Math.max(Math.min(m_shooter.setpoint - Math.signum(input) * 0.001, 0.16), 0.0);
             m_shooter.setpoint = a;
-            SmartDashboard.putNumber("Shooter Pitch", a);
         }
     }
 

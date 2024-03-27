@@ -1,15 +1,10 @@
 package frc.robot;
 
-import java.time.Instant;
-
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -20,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -29,7 +23,6 @@ import frc.robot.commands.AimSpeaker;
 import frc.robot.commands.AimSpeakerAuto;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
-import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
 import frc.robot.commands.Intake.IntakeAuto;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.OuttakeNote;
@@ -82,6 +75,7 @@ public class RobotContainer {
 
     public RobotContainer() {
       configureButtonBindings();
+      
 
       m_pathChooser = new SendableChooser<>();
       m_pathChooser.setDefaultOption("AFK", "AFK");

@@ -32,7 +32,6 @@ public class Shoot extends Command {
     @Override
     public void end(boolean interrupted){
         m_transport.belt.set(0);
-
     }
 
     @Override

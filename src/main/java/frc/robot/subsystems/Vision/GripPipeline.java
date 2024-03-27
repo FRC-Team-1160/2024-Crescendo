@@ -8,7 +8,6 @@ import org.opencv.core.*;
 import org.opencv.imgproc.*;
 
 import edu.wpi.first.vision.VisionPipeline;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
 * GripPipeline class.
@@ -261,10 +260,10 @@ public class GripPipeline implements VisionPipeline{
 			if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount)	continue;
 			final double ratio = bb.width / (double)bb.height;
 			if (ratio < minRatio || ratio > maxRatio) continue;
-			SmartDashboard.putNumber("Area", area);
-			SmartDashboard.putNumber("Solidity", solid);
-			SmartDashboard.putNumber("Vertices", contour.rows());
-			SmartDashboard.putNumber("Ratio", ratio);
+			// SmartDashboard.putNumber("Area", area);
+			// SmartDashboard.putNumber("Solidity", solid);
+			// SmartDashboard.putNumber("Vertices", contour.rows());
+			// SmartDashboard.putNumber("Ratio", ratio);
 
 			output.add(contour);
 		}

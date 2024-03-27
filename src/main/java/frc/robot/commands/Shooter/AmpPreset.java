@@ -1,6 +1,5 @@
 package frc.robot.commands.Shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake.Transport;
@@ -18,7 +17,6 @@ public class AmpPreset extends Command {
     @Override
     public void initialize(){
         m_shooter.setpoint = 0.16;
-        SmartDashboard.putNumber("Shooter Pitch", 0.16);
         m_shooter.setSpeed(0.3);
     }
 
@@ -30,7 +28,6 @@ public class AmpPreset extends Command {
     @Override
     public void end(boolean interrupted){
         m_shooter.setpoint = 0.0;
-        SmartDashboard.putNumber("Shooter Pitch", 0.0);
         m_shooter.setSpeed(0);
     }
 

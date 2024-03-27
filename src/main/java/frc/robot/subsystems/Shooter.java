@@ -3,19 +3,15 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 import frc.robot.Constants.Port;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 
@@ -88,8 +84,8 @@ public class Shooter extends SubsystemBase{
     bottomMotor.setNeutralMode(NeutralModeValue.Coast);
 
     pitchMotor = new CANSparkMax(Port.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchPID = new PIDController(3.5, 20.0, 0);
-    pitchPID.setIntegratorRange(-0.006, 0.006);
+    pitchPID = new PIDController(3.5, 50.0, 0);
+    pitchPID.setIntegratorRange(-0.005, 0.005);
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
     manual = 0;
@@ -138,7 +134,6 @@ public class Shooter extends SubsystemBase{
     // return s;
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
     double rpm_speed = Math.min(0.6 + dist/5.0, 1.0);
-    SmartDashboard.putNumber("Shooter Speed", rpm_speed);
     setSpeed(rpm_speed);
     return rpm_speed;
   }
@@ -150,22 +145,17 @@ public class Shooter extends SubsystemBase{
     double b_rpm = bottomMotor.getVelocity().getValue();
     revved = (Math.min(t_rpm, b_rpm) > 5500 * rpm_speed - 200 && Math.min(t_rpm, b_rpm) > 100);
     SmartDashboard.putBoolean("Shooter Revved", revved);
-    SmartDashboard.putNumber("Shooter RPM Top", t_rpm);
-    SmartDashboard.putNumber("Shooter Raw RPM Top", topMotor.getRotorVelocity().getValue());
-    SmartDashboard.putNumber("Shooter RPM Bottom", b_rpm);
-    SmartDashboard.putNumber("Shooter Raw RPM Bottom", bottomMotor.getRotorVelocity().getValue());
+    SmartDashboard.putNumber("Shooter RPM Top", topMotor.getRotorVelocity().getValue() * 60);
+    SmartDashboard.putNumber("Shooter RPM Bottom", bottomMotor.getRotorVelocity().getValue() * 60);
     SmartDashboard.putNumber("Shooter Offset", offset);
     SmartDashboard.putNumber("Shooter Speed", speed);
     double position = pitchMotor.getAlternateEncoder(8192).getPosition();
     position = Math.max(position, 0);
     SmartDashboard.putNumber("Pitch Encoder", position);
-    SmartDashboard.putNumber("Shooter Pitch", setpoint);
-    double v = Math.max(-0.15, Math.min(0.15, pitchPID.calculate(position, setpoint)));
+    double v = Math.max(-0.25, Math.min(0.2, pitchPID.calculate(position, setpoint)));
+    v += 0.064 * Math.sqrt(position);
     SmartDashboard.putNumber("PitchPID", v);
-    v += 0.092 * Math.sqrt(position);
-    SmartDashboard.putNumber("PIDwithFF", v);
-    manual = Math.min(0.2, Math.abs(SmartDashboard.getNumber("ManualWrist", 0)));
-    pitchMotor.set(-manual);
+    pitchMotor.set(-v);
 
     SmartDashboard.putNumber("ManualWrist", manual);
 

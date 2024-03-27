@@ -30,7 +30,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.struct.Rotation2dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -40,9 +39,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -82,7 +79,6 @@ public class DriveTrain extends SubsystemBase {
   private Translation2d m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation;
   public SwerveDriveKinematics m_kinematics;
   public SwerveDrivePoseEstimator m_poseEstimator;
-  private Solenoid m_gate;
   public SwerveModuleState[] m_moduleStates;
   public SwerveModulePosition[] m_modulePositions;
   public Pose2d odomPose;
@@ -94,7 +90,6 @@ public class DriveTrain extends SubsystemBase {
   public double sim_angle;
   private PIDController m_anglePID;
   double wkP, wkI, wkD;
-  public SlewRateLimiter zlimiter;
 
   public boolean isRed;
   //initializes the drive train
@@ -125,26 +120,25 @@ public class DriveTrain extends SubsystemBase {
 
     PPHolonomicDriveController.setRotationTargetOverride(this::speakerAngle);
 
-    zlimiter = new SlewRateLimiter(5);
 
     //directional motors
 
-    m_frontLeftDriveMotor = new TalonFX(Constants.Port.FRONT_LEFT_DRIVE_MOTOR);
-    m_frontRightDriveMotor = new TalonFX(Constants.Port.FRONT_RIGHT_DRIVE_MOTOR);
-    m_backLeftDriveMotor = new TalonFX(Constants.Port.BACK_LEFT_DRIVE_MOTOR);
-    m_backRightDriveMotor = new TalonFX(Constants.Port.BACK_RIGHT_DRIVE_MOTOR);
+    m_frontLeftDriveMotor = new TalonFX(Constants.Port.FRONT_LEFT_DRIVE_MOTOR, "*");
+    m_frontRightDriveMotor = new TalonFX(Constants.Port.FRONT_RIGHT_DRIVE_MOTOR, "*");
+    m_backLeftDriveMotor = new TalonFX(Constants.Port.BACK_LEFT_DRIVE_MOTOR, "*");
+    m_backRightDriveMotor = new TalonFX(Constants.Port.BACK_RIGHT_DRIVE_MOTOR, "*");
 
     //rotational motors
-    m_frontLeftSteerMotor = new TalonFX(Constants.Port.FRONT_LEFT_STEER_MOTOR);
-    m_frontRightSteerMotor = new TalonFX(Constants.Port.FRONT_RIGHT_STEER_MOTOR);
-    m_backLeftSteerMotor = new TalonFX(Constants.Port.BACK_LEFT_STEER_MOTOR);
-    m_backRightSteerMotor = new TalonFX(Constants.Port.BACK_RIGHT_STEER_MOTOR);
+    m_frontLeftSteerMotor = new TalonFX(Constants.Port.FRONT_LEFT_STEER_MOTOR, "*");
+    m_frontRightSteerMotor = new TalonFX(Constants.Port.FRONT_RIGHT_STEER_MOTOR, "*");
+    m_backLeftSteerMotor = new TalonFX(Constants.Port.BACK_LEFT_STEER_MOTOR, "*");
+    m_backRightSteerMotor = new TalonFX(Constants.Port.BACK_RIGHT_STEER_MOTOR, "*");
 
     //CAN coders
-    m_frontLeftCoder = new CANcoder(Constants.Port.FRONT_LEFT_CODER);
-    m_frontRightCoder = new CANcoder(Constants.Port.FRONT_RIGHT_CODER);
-    m_backLeftCoder = new CANcoder(Constants.Port.BACK_LEFT_CODER);
-    m_backRightCoder = new CANcoder(Constants.Port.BACK_RIGHT_CODER);
+    m_frontLeftCoder = new CANcoder(Constants.Port.FRONT_LEFT_CODER, "*");
+    m_frontRightCoder = new CANcoder(Constants.Port.FRONT_RIGHT_CODER, "*");
+    m_backLeftCoder = new CANcoder(Constants.Port.BACK_LEFT_CODER, "*");
+    m_backRightCoder = new CANcoder(Constants.Port.BACK_RIGHT_CODER, "*");
 
     // m_frontLeftCoder.setPosition(0);
     // m_frontRightCoder.setPosition(0);
@@ -329,19 +323,14 @@ public class DriveTrain extends SubsystemBase {
    */
   public void setSwerveDrive(double xSpeed, double ySpeed, double angSpeed){
     sim_angle += angSpeed * 6 * 0.0254 * 4 / 23.75 * 360;
-    SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
-    //SmartDashboard.putNumber("OUTA", m_speeds.omegaRadiansPerSecond);
     setSwerveDrive(m_speeds);
   }
 
   public void setSwerveDrive(ChassisSpeeds speeds) {
-    SmartDashboard.putString("chassis", speeds.toString());
     sim_angle += speeds.omegaRadiansPerSecond;// * 20 * 0.0254 * 4 / 23.75 * 360 / 50;
     speeds = discretize(speeds);
     SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(speeds));
-
-    SmartDashboard.putNumber("m0", m_moduleStates[0].speedMetersPerSecond);
 
     m_moduleStates[0] = SwerveModuleState.optimize(m_moduleStates[0], Rotation2d.fromRotations(m_frontLeftWheel.getAngle()));
     m_moduleStates[1] = SwerveModuleState.optimize(m_moduleStates[1], Rotation2d.fromRotations(m_frontRightWheel.getAngle()));
@@ -431,11 +420,8 @@ public class DriveTrain extends SubsystemBase {
       angle += Math.PI * 2;
     }
 
-    SmartDashboard.putNumber("AIMANGLE", angle);
-    SmartDashboard.putNumber("AIMTARGET", target);
     double max = 0.15;
     double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
-    SmartDashboard.putNumber("angPID", angSpeed);
     if (Math.abs(angSpeed) < 0.01){
       angSpeed = 0;
     }
@@ -465,9 +451,6 @@ public class DriveTrain extends SubsystemBase {
       a = joystickA;
     }
 
-    a = zlimiter.calculate(a);
-    SmartDashboard.putNumber("zinputlimited", a);
-
     double dir = Math.atan2(y, x);
     double mag = Math.sqrt(x*x + y*y);
     if (mag > 1.0){
@@ -477,10 +460,6 @@ public class DriveTrain extends SubsystemBase {
     x = Math.cos(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     y = Math.sin(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     a = Math.signum(a) * 0.45 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
-
-    SmartDashboard.putNumber("inX", x);
-    SmartDashboard.putNumber("inY", y);
-    SmartDashboard.putNumber("inA", a);
 
     if (isRed){
       x *= -1;
@@ -493,8 +472,6 @@ public class DriveTrain extends SubsystemBase {
   
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Absolute", m_frontLeftCoder.getAbsolutePosition().getValue());
-    SmartDashboard.putNumber("regular", m_frontLeftCoder.getPosition().getValue());
-    SmartDashboard.putBoolean("Gyro Rotating", m_gyro.isRotating());
   }
+
 }

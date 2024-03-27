@@ -2,13 +2,8 @@ package frc.robot.commands.DriveTrain;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
@@ -92,10 +87,6 @@ public class SwerveDriveMoveAuto extends Command {
         double a = (target_a == null) ? 0 : a_pid.calculate(m_drive.getGyroAngle(), target_a);
 
         m_drive.setSwerveDrive(x, y, a);
-        if (target_a != null) SmartDashboard.putNumber("target_a", target_a); 
-        SmartDashboard.putNumber("a_pid", a);
-        SmartDashboard.putNumber("a_diff", a_pid.getPositionError());
-
     }
 
     @Override

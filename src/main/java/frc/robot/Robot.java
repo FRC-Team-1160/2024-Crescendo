@@ -6,18 +6,11 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.VideoSource;
-import edu.wpi.first.vision.VisionPipeline;
-import edu.wpi.first.vision.VisionRunner;
-import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
-import frc.robot.subsystems.Vision.GripPipeline;
-import frc.robot.subsystems.Vision.PipelineListener;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -80,7 +73,6 @@ public class Robot extends TimedRobot {
       m_robotContainer.m_posChooser.close();
       m_robotContainer.m_posChooser = m_robotContainer.buildAutoChooser(m_robotContainer.m_pathChooser.getSelected());
       SmartDashboard.putData("Auto Start Position", m_robotContainer.m_posChooser);
-
     }
 
   }

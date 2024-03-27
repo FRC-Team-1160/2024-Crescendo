@@ -72,6 +72,10 @@ public final class Constants {
     
     public static final int CLIMBER_LEFT_MOTOR = 8;
     public static final int CLIMBER_RIGHT_MOTOR = 3;
+    
+    public static final int LEFT_CLIMB_LIMIT = 0;
+    public static final int RIGHT_CLIMB_LIMIT = 1;
+    public static final int TRANSPORT_LIMIT = 2;
 
   }
 

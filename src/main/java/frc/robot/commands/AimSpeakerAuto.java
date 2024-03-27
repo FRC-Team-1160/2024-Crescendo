@@ -4,10 +4,7 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
@@ -41,9 +38,6 @@ public class AimSpeakerAuto extends Command {
     x = inputs[0];
     y = inputs[1];
 
-    SmartDashboard.putNumber("Forward", x);
-    SmartDashboard.putNumber("Sideways", y);
-
     double target_x = 0.5;
     double target_z = 2.25;
     double back_x = 0.0;
@@ -54,8 +48,8 @@ public class AimSpeakerAuto extends Command {
     }
     target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.5);
 
-    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x, 5.5, target_z));
-    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x, 5.5));
+    m_shooter.aimTarget(target_x, 5.5, target_z);
+    m_shooter.revTarget(back_x, 5.5);
 
   }
 

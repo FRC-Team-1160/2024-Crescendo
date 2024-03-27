@@ -10,7 +10,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public class SwerveDriveWheel {
@@ -44,7 +43,6 @@ public class SwerveDriveWheel {
     public void set(double angle, double speed)
     {
         double a = m_anglePID.calculate(getAngle(), angle);
-        SmartDashboard.putNumber("MANUAL TARGET", a);
         if (Math.abs(getAngle() - angle) > 0.005){
             steerMotor.set(-a);
         } else {

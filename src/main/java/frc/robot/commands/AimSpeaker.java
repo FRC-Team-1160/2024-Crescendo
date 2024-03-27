@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
@@ -39,17 +37,12 @@ public class AimSpeaker extends Command {
     x = inputs[0];
     y = inputs[1];
 
-    SmartDashboard.putNumber("Forward", x);
-    SmartDashboard.putNumber("Sideways", y);
-
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
     double step = 2.0;
 
     double target_x = 0.5;
     double target_z = 2.25;
     double back_x = 0;
-    // target_x = SmartDashboard.getNumber("GetX", 0.5);
-    // target_z = SmartDashboard.getNumber("GetZ", 2.2);
     SmartDashboard.putNumber("GetX", target_x);
     SmartDashboard.putNumber("GetZ", target_z);
     if (m_drive.odomPose.getX() > 8.25){
@@ -59,16 +52,13 @@ public class AimSpeaker extends Command {
 
     m_drive.aimSwerveDrive(x, y, back_x - x*step, 5.5 - y*step);
 
-    // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, target_z));
-    // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
-    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x - x*step, 5.5 - y*step, target_z + m_shooter.offset));
-    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x - x*step, 5.5 - y*step));
+    m_shooter.aimTarget(target_x - x*step, 5.5 - y*step, target_z + m_shooter.offset);
+    m_shooter.revTarget(back_x - x*step, 5.5 - y*step);
 
   }
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putNumber("Shooter Speed", 0);
     m_shooter.setSpeed(0);
   }
 

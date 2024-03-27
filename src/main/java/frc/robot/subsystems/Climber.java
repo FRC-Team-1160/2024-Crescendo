@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,7 +32,9 @@ public class Climber extends SubsystemBase {
   // private Joystick m_secondStick;
   private Joystick m_leftBoard;
   private Joystick m_rightBoard;
-  private Joystick m_simpStick;
+
+  public DigitalInput l_limit;
+  public DigitalInput r_limit;
   
   public static Climber getInstance(){
     if (m_instance == null){
@@ -52,7 +55,8 @@ public class Climber extends SubsystemBase {
     m_leftBoard = new Joystick(Constants.IO.LEFT_BOARD_PORT);
     m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
 
-    m_simpStick = new Joystick(Constants.IO.COPILOT_SIMP_PORT);
+    l_limit = new DigitalInput(0);
+    r_limit = new DigitalInput(1);
   }
 
 
@@ -62,8 +66,8 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putNumber("RClimber", right.getEncoder().getPosition());
     // double l_input = m_simpStick.getRawAxis(1);
     // double r_input = m_simpStick.getRawAxis(3);
-    double l_input = m_leftBoard.getRawAxis(Constants.IO.Board.Left.LEFT_CLIMB);
-    double r_input = m_rightBoard.getRawAxis(Constants.IO.Board.Right.RIGHT_CLIMB);
+    double l_input = Math.min(m_leftBoard.getRawAxis(Constants.IO.Board.Left.LEFT_CLIMB), l_limit.get() ? 0 : 1);
+    double r_input = Math.min(m_rightBoard.getRawAxis(Constants.IO.Board.Right.RIGHT_CLIMB), r_limit.get() ? 0 : 1);
     boolean override = new JoystickButton(m_rightBoard, Constants.IO.Board.Right.OVERRIDE).getAsBoolean();
 
     if (Math.abs(l_input) > 0.8){
