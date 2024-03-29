@@ -61,7 +61,7 @@ public class Transport extends SubsystemBase {
             refresh.restart();
             prox = m_colorSensor.getProximity();
             SmartDashboard.putNumber("Color Sensor Prox", prox);
-            noteStored = (prox > 200.0) || !limit_switch.get(); //nothing ~100, note ~350
+            noteStored = (prox > 200.0) || !limit_switch.get(); //nothing ~70, note ~300
             SmartDashboard.putBoolean("limit", limit_switch.get());
             SmartDashboard.putBoolean("Note Stored", noteStored);
         }

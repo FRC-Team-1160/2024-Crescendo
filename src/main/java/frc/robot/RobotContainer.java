@@ -220,8 +220,9 @@ public class RobotContainer {
           ));
           break;
         case "Test":
-          // chooser.addOption("Square", new PathPlannerAuto("Square"));
-          // chooser.addOption("Spin", new PathPlannerAuto("Spin"));
+          chooser.addOption("move", new PathPlannerAuto("move"));
+          chooser.addOption("Square", new PathPlannerAuto("Square"));
+          chooser.addOption("Spin", new PathPlannerAuto("Spin"));
           break;
       }
       return chooser;
