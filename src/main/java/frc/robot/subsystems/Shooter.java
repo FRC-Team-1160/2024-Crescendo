@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkLowLevel;
@@ -41,8 +42,6 @@ public class Shooter extends SubsystemBase{
   public boolean revved;
   public boolean aimed;
 
-  public double rpm_speed;
-
   public Joystick m_rightBoard;
 
   public double offset;
@@ -71,7 +70,7 @@ public class Shooter extends SubsystemBase{
     var configs = new Slot0Configs();
 
     configs.kP = 0.1;
-    configs.kV = 0.1;
+    configs.kV = 0.116;
     configs.kI = 0.0;
     configs.kD = 0.0;
     configs.kS = 0.0;
@@ -85,7 +84,7 @@ public class Shooter extends SubsystemBase{
     bottomMotor.setNeutralMode(NeutralModeValue.Coast);
 
     pitchMotor = new CANSparkMax(Port.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchPID = new PIDController(3.5, 50.0, 0);
+    pitchPID = new PIDController(3.0, 30.0, 0);
     pitchPID.setIntegratorRange(-0.005, 0.005);
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
     setpoint = pitchMotor.getAlternateEncoder(8192).getPosition();
@@ -98,11 +97,12 @@ public class Shooter extends SubsystemBase{
     revved = false;
     aimed = false;
     offset = 0;
+    speed = 0;
     m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
   }
 
   public void setSpeed(double s) {
-    speed = Math.max(-1, Math.min(1, s));
+    speed = Math.max(-1, Math.min(1, s)) * 50;
     if (speed == 0){
       // topPID.setReference(0, ControlType.kVoltage);
       // bottomPID.setReference(0, ControlType.kVoltage);
@@ -111,11 +111,11 @@ public class Shooter extends SubsystemBase{
     } else {
       // topPID.setReference(speed * 5500, ControlType.kVelocity);
       // bottomPID.setReference(-speed * 5500, ControlType.kVelocity);
-      bottomMotor.set(s);
-      topMotor.set(s);
-      // 
-      // topMotor.setControl(new VelocityVoltage(s).withSlot(0));
-      // bottomMotor.setControl(new VelocityVoltage(s).withSlot(0));
+      // bottomMotor.set(s);
+      // topMotor.set(s);
+      SmartDashboard.putNumber("ShooterTarget", speed * 60);
+      topMotor.setControl(new VelocityVoltage(speed).withSlot(0));
+      bottomMotor.setControl(new VelocityVoltage(speed).withSlot(0));
     }
   }
 
@@ -143,14 +143,14 @@ public class Shooter extends SubsystemBase{
   public void periodic(){
     // double t_rpm = topMotor.getEncoder().getVelocity();
     // double b_rpm = bottomMotor.getEncoder().getVelocity();
-    double t_rpm = topMotor.getVelocity().getValue();
-    double b_rpm = bottomMotor.getVelocity().getValue();
-    revved = (Math.min(t_rpm, b_rpm) > 5500 * rpm_speed - 200 && Math.min(t_rpm, b_rpm) > 100);
+    double t_rpm = topMotor.getRotorVelocity().getValue() * 60;
+    double b_rpm = bottomMotor.getRotorVelocity().getValue() * 60;
+    revved = Math.min(t_rpm, b_rpm) > speed * 60 - 200 && Math.min(t_rpm, b_rpm) > 100 && speed > 0;
     SmartDashboard.putBoolean("Shooter Revved", revved);
     SmartDashboard.putNumber("Shooter RPM Top", topMotor.getRotorVelocity().getValue() * 60);
     SmartDashboard.putNumber("Shooter RPM Bottom", bottomMotor.getRotorVelocity().getValue() * 60);
     SmartDashboard.putNumber("Shooter Offset", offset);
-    SmartDashboard.putNumber("Shooter Speed", speed);
+    SmartDashboard.putNumber("Shooter Speed", speed * 60);
     double position = pitchMotor.getAlternateEncoder(8192).getPosition();
     position = Math.max(position, 0);
     SmartDashboard.putNumber("Pitch Encoder", position);

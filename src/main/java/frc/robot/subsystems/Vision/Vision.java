@@ -52,7 +52,7 @@ public class Vision extends SubsystemBase{
     adv_targetPub = adv_vision.getStructArrayTopic("Target", Pose3d.struct).publish();
     adv_trackedPub = adv_vision.getStructTopic("Tracked", Pose3d.struct).publish();
 
-    m_shooterCamera = new PhotonCamera("Camera_Module_v1");//Camera_Module_v1
+    m_shooterCamera = new PhotonCamera("OV9281");//Camera_Module_v1
     m_backCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 

@@ -36,12 +36,12 @@ public class AimSpeaker extends Command {
     double[] inputs = m_drive.inputSpeeds();
     x = inputs[0];
     y = inputs[1];
-
+ 
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
     double step = 2.0;
 
-    double target_x = 0.5;
-    double target_z = 2.25;
+    double target_x = SmartDashboard.getNumber("GetX", 0.5);
+    double target_z = SmartDashboard.getNumber("GetZ", 2.15);
     double back_x = 0;
     SmartDashboard.putNumber("GetX", target_x);
     SmartDashboard.putNumber("GetZ", target_z);
