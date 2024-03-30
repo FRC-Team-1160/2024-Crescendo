@@ -106,7 +106,7 @@ public class DriveTrain extends SubsystemBase {
       () -> odomPose,
       (Pose2d pose) -> resetPose(pose),
       () -> m_kinematics.toChassisSpeeds( m_moduleStates),
-      (ChassisSpeeds speeds) -> setSwerveDrive(new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -speeds.omegaRadiansPerSecond)),
+      (ChassisSpeeds speeds) -> followAuto(speeds),
       new HolonomicPathFollowerConfig(
         new PIDConstants(0.5),
         new PIDConstants(3, 0, 0.00),
@@ -118,7 +118,7 @@ public class DriveTrain extends SubsystemBase {
       this
     );
 
-    // PPHolonomicDriveController.setRotationTargetOverride(this::speakerAngle);
+    PPHolonomicDriveController.setRotationTargetOverride(this::speakerAngle);
 
 
     //directional motors
@@ -396,6 +396,9 @@ public class DriveTrain extends SubsystemBase {
 
   }
 
+  public Optional<Rotation2d> speakerAngle(){
+    return Optional.of(Rotation2d.fromRadians(Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX())));
+  }
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
     double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
@@ -423,6 +426,28 @@ public class DriveTrain extends SubsystemBase {
       angSpeed = 0;
     }
     setSwerveDrive(xSpeed, ySpeed, angSpeed);
+    return target;
+  }
+
+  public double followAuto(ChassisSpeeds speeds){
+    ChassisSpeeds s = speeds;
+    double angle = getGyroAngle() * Math.PI / 180.0;
+    double target = Math.atan2(5.5 - odomPose.getY(), 0.0 - odomPose.getX());
+
+    if (target > Math.PI * 2){
+      target -= Math.PI * 2;
+    }
+    if (angle < 0){
+      angle += Math.PI * 2;
+    }
+
+    double max = 0.15;
+    double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
+    if (Math.abs(angSpeed) < 0.01){
+      angSpeed = 0;
+    }
+    s.omegaRadiansPerSecond = angSpeed;
+    setSwerveDrive(s);
     return target;
   }
 
@@ -469,9 +494,6 @@ public class DriveTrain extends SubsystemBase {
   
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Swerve Off", Math.abs((Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360));
-
-    SmartDashboard.putBoolean("Swerve Aimed", Math.abs(Math.abs(Math.abs((Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360 - 180)) - 180) < 5);
   }
 
 }
