@@ -113,7 +113,7 @@ public class RobotContainer {
             .toggleOnTrue(new AmpPreset(m_shooter));
 
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
-            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.6)));
+            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.8)));
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0)));
 

@@ -118,7 +118,7 @@ public class DriveTrain extends SubsystemBase {
       this
     );
 
-    PPHolonomicDriveController.setRotationTargetOverride(this::speakerAngle);
+    // PPHolonomicDriveController.setRotationTargetOverride(this::speakerAngle);
 
 
     //directional motors
@@ -396,9 +396,6 @@ public class DriveTrain extends SubsystemBase {
 
   }
 
-  public Optional<Rotation2d> speakerAngle(){
-    return Optional.of(Rotation2d.fromRadians(Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX())));
-  }
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
     double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
@@ -472,6 +469,9 @@ public class DriveTrain extends SubsystemBase {
   
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Swerve Off", Math.abs((Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360));
+
+    SmartDashboard.putBoolean("Swerve Aimed", Math.abs(Math.abs(Math.abs((Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360 - 180)) - 180) < 5);
   }
 
 }

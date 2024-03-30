@@ -99,6 +99,7 @@ public class Shooter extends SubsystemBase{
     offset = 0;
     speed = 0;
     m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
+    SmartDashboard.putNumber("TopMult", 1);
   }
 
   public void setSpeed(double s) {
@@ -114,7 +115,7 @@ public class Shooter extends SubsystemBase{
       // bottomMotor.set(s);
       // topMotor.set(s);
       SmartDashboard.putNumber("ShooterTarget", speed * 60);
-      topMotor.setControl(new VelocityVoltage(speed).withSlot(0));
+      topMotor.setControl(new VelocityVoltage(speed * SmartDashboard.getNumber("TopMult", 1)).withSlot(0));
       bottomMotor.setControl(new VelocityVoltage(speed).withSlot(0));
     }
   }
@@ -135,7 +136,7 @@ public class Shooter extends SubsystemBase{
     // setSpeed(s);
     // return s;
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
-    double rpm_speed = Math.min(0.6 + dist/5.0, 1.0);
+    double rpm_speed = Math.min(0.5 + dist/8.0, 1.0);
     setSpeed(rpm_speed);
     return rpm_speed;
   }
@@ -155,14 +156,17 @@ public class Shooter extends SubsystemBase{
     position = Math.max(position, 0);
     SmartDashboard.putNumber("Pitch Encoder", position);
     double v = Math.max(-0.25, Math.min(0.2, pitchPID.calculate(position, setpoint)));
-    v += 0.064 * Math.sqrt(position);
     SmartDashboard.putNumber("PitchPID", v);
+    v += 0.105 * Math.sqrt(position);
+    SmartDashboard.putNumber("PitchPIDwFF", v);
+    manual = SmartDashboard.getNumber("ManualWrist", manual);
+
     pitchMotor.set(-v);
 
     SmartDashboard.putNumber("ManualWrist", manual);
 
     aimed = Math.abs(setpoint - position) < 0.008;
-    SmartDashboard.putBoolean("Aimed", aimed);
+    SmartDashboard.putBoolean("Shooter Aimed", aimed);
 
   }
 
