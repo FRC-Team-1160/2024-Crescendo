@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
 
   public String path_choice;
 
-  public PowerDistribution m_pcm;
+  public PowerDistribution m_pdp;
 
 
   /**
@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
 
       path_choice = m_robotContainer.m_pathChooser.getSelected();
 
-      m_pcm = new PowerDistribution(0, ModuleType.kCTRE);
+      m_pdp = new PowerDistribution(1, ModuleType.kRev);
     }
   }
 
@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
       SmartDashboard.putData("Auto Start Position", m_robotContainer.m_posChooser);
     }
 
-
+    SmartDashboard.putData(m_pdp);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

@@ -80,7 +80,6 @@ public class SwerveDriveWheel {
             if (v > 0.5){
                 v -= 1.0;
             }
-
             return v;
         } else {
             return angle;

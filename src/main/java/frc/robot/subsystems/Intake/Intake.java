@@ -2,9 +2,11 @@ package frc.robot.subsystems.Intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Port;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
@@ -18,6 +20,8 @@ public class Intake extends SubsystemBase{
     public CANSparkMax m_feedMotor;
 
     public Transport m_transport;
+
+    public Spark blinkin;
 
     public DoubleSolenoid.Value solenoid_default;
 
@@ -36,6 +40,7 @@ public class Intake extends SubsystemBase{
         // solenoid_default = new JoystickButton(new Joystick(Constants.IO.RIGHT_BOARD_PORT), Constants.IO.Board.Right.UP_DOWN_INTAKE).getAsBoolean() ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse;
         solenoid_default = DoubleSolenoid.Value.kOff;
         m_solenoid.set(solenoid_default);
+        blinkin = Shooter.getInstance().blinkin;
     }
 
     public void setSolenoid(DoubleSolenoid.Value state){

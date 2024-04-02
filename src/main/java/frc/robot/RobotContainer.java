@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.fasterxml.jackson.core.sym.Name;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +14,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -21,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AimSpeaker;
 import frc.robot.commands.AimSpeakerAuto;
+import frc.robot.commands.ResetLEDs;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
 import frc.robot.commands.Intake.IntakeAuto;
@@ -57,7 +61,7 @@ public class RobotContainer {
 
     private Joystick m_mainStick = new Joystick(Constants.IO.MAIN_PORT);
     private Joystick m_codriverStick = new Joystick(Constants.IO.COPILOT_PORT);
-    private Joystick m_codriverSimpStick = new Joystick(Constants.IO.COPILOT_SIMP_PORT);
+    // private Joystick m_codriverSimpStick = new Joystick(Constants.IO.COPILOT_SIMP_PORT);
     private Joystick m_leftBoard = new Joystick(Constants.IO.LEFT_BOARD_PORT);
     private Joystick m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
 
@@ -90,7 +94,10 @@ public class RobotContainer {
 
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
       m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));
-      // m_shooter.setDefaultCommand(new InstantCommand(() -> m_shooter.setSpeed(0.0), m_shooter));
+
+      NamedCommands.registerCommand("AimSpeakerAuto", new AimSpeakerAuto(m_driveTrain, m_shooter));
+      NamedCommands.registerCommand("Shoot", new Shoot(m_shooter, m_transport));
+      NamedCommands.registerCommand("IntakeAuto", new IntakeAuto(m_intake, m_transport));
 
     }
     
@@ -107,7 +114,7 @@ public class RobotContainer {
             .onTrue(new Shoot(m_shooter, m_transport));
         
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.AIM)
-            .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
+            .whileTrue(new AimSpeaker(m_driveTrain, m_shooter, m_transport));
 
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.AMP)
             .toggleOnTrue(new AmpPreset(m_shooter));
@@ -133,23 +140,30 @@ public class RobotContainer {
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.MOVE_TAR)
             .onTrue(new InstantCommand(() -> m_shooter.offset += m_rightBoard.getRawButton(Constants.IO.Board.Right.INC_OR_DEC_TAR) ? 0.04 : -0.04));
 
-        new JoystickButton(m_codriverSimpStick, 1)
-            .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
+        // new JoystickButton(m_codriverSimpStick, 1)
+        //     .whileTrue(new AimSpeaker(m_driveTrain, m_shooter, m_transport));
 
-        new JoystickButton(m_codriverSimpStick, 2)
-            .onTrue(new Shoot(m_shooter, m_transport));
+        // new JoystickButton(m_codriverSimpStick, 2)
+        //     .onTrue(new Shoot(m_shooter, m_transport));
 
-        new JoystickButton(m_codriverSimpStick, 4)
-            .onTrue(new IntakeNote(m_intake, m_transport));
+        // new JoystickButton(m_codriverSimpStick, 4)
+        //     .onTrue(new IntakeNote(m_intake, m_transport));
 
-        new JoystickButton(m_codriverSimpStick, 3)
-            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.25)));
-        new JoystickButton(m_codriverSimpStick, 3)
-            .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0.0)));
-        new JoystickButton(m_codriverSimpStick, 5)
-            .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.5)));
-        new JoystickButton(m_codriverSimpStick, 5)
-            .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0.0)));
+        // new JoystickButton(m_codriverSimpStick, 3)
+        //     .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.25)));
+        // new JoystickButton(m_codriverSimpStick, 3)
+        //     .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0.0)));
+        // new JoystickButton(m_codriverSimpStick, 5)
+        //     .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.5)));
+        // new JoystickButton(m_codriverSimpStick, 5)
+        //     .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0.0)));
+        new JoystickButton(m_leftBoard, 4)
+              .onTrue(new ResetLEDs(m_shooter));
+        // new JoystickButton(m_leftBoard, 4)
+        //     .onTrue(new InstantCommand(() -> m_shooter.setSolidColor(Color.kWhite)));
+        // new JoystickButton(m_leftBoard, 4)
+        //     .onFalse(new InstantCommand(() -> m_shooter.setSolidColor(Color.kBlack)));
+
         // new JoystickButton(m_mainStick, 8)
         //     .toggleOnTrue(new SwerveDriveSpeaker(m_driveTrain));
     }
@@ -221,8 +235,9 @@ public class RobotContainer {
           break;
         case "Test":
           chooser.addOption("move", new PathPlannerAuto("move"));
-          chooser.addOption("Square", new PathPlannerAuto("Square"));
-          chooser.addOption("Spin", new PathPlannerAuto("Spin"));
+          chooser.addOption("3note", new PathPlannerAuto("3 Note Mid"));
+          // chooser.addOption("Square", new PathPlannerAuto("Square"));
+          // chooser.addOption("Spin", new PathPlannerAuto("Spin"));
           break;
       }
       return chooser;
@@ -235,13 +250,15 @@ public class RobotContainer {
           new AimSpeakerAuto(m_driveTrain, m_shooter),
           new WaitCommand(0.5),
           new Shoot(m_shooter, m_transport),
+          new InstantCommand(() -> m_shooter.setSpeed(0.0)),
           new ParallelCommandGroup(
             new IntakeAuto(m_intake, m_transport),
             new SwerveDriveMoveAuto(m_driveTrain, pos2.getX(), pos2.getY(), 180.0)
           ),
           new AimSpeakerAuto(m_driveTrain, m_shooter),
           new WaitCommand(0.5),
-          new Shoot(m_shooter, m_transport)
+          new Shoot(m_shooter, m_transport),
+          new InstantCommand(() -> m_shooter.setSpeed(0.0))
           )
         );
       

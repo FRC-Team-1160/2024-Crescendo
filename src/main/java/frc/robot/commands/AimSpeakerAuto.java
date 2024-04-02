@@ -38,18 +38,18 @@ public class AimSpeakerAuto extends Command {
     x = inputs[0];
     y = inputs[1];
 
-    double target_x = 0.5;
-    double target_z = 2.25;
+    double target_x = 0.3;
+    double target_z = 1.95;
     double back_x = 0.0;
 
     if (m_drive.odomPose.getX() > 8.25){
       target_x = 16.54 - target_x;
       back_x = 16.54 - back_x;
     }
-    target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.5);
+    target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.7);
 
-    m_shooter.aimTarget(target_x, 5.5, target_z);
-    m_shooter.revTarget(back_x, 5.5);
+    m_shooter.aimTarget(target_x, 5.7, target_z);
+    m_shooter.revTarget(back_x, 5.7);
 
   }
 
@@ -64,7 +64,7 @@ public class AimSpeakerAuto extends Command {
   @Override
   public boolean isFinished() {
     
-    return Math.abs(target_a - m_drive.getGyroAngle()/180.0*Math.PI) <= 0.05 && ((m_shooter.revved && m_shooter.aimed) || RobotBase.isSimulation());
+    return m_drive.aimed && ((m_shooter.revved && m_shooter.aimed) || RobotBase.isSimulation());
   }
 }
     

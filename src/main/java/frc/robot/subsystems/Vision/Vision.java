@@ -80,6 +80,7 @@ public class Vision extends SubsystemBase{
         }
         if (m_drive != null){
           m_drive.m_poseEstimator.addVisionMeasurement(m_pose.toPose2d(), Timer.getFPGATimestamp());
+          // System.out.println(m_pose.getX());
         }
       }
     }

@@ -80,6 +80,7 @@ public class DriveTrain extends SubsystemBase {
   public SwerveDriveKinematics m_kinematics;
   public SwerveDrivePoseEstimator m_poseEstimator;
   public SwerveModuleState[] m_moduleStates;
+  public SwerveModuleState[] m_realStates;
   public SwerveModulePosition[] m_modulePositions;
   public Pose2d odomPose;
   public Field2d m_field;
@@ -92,6 +93,8 @@ public class DriveTrain extends SubsystemBase {
   double wkP, wkI, wkD;
 
   public boolean isRed;
+
+  public boolean aimed;
   //initializes the drive train
   
   public static DriveTrain getInstance(){
@@ -105,20 +108,20 @@ public class DriveTrain extends SubsystemBase {
     AutoBuilder.configureHolonomic(
       () -> odomPose,
       (Pose2d pose) -> resetPose(pose),
-      () -> m_kinematics.toChassisSpeeds( m_moduleStates),
+      () -> m_kinematics.toChassisSpeeds(m_realStates),
       (ChassisSpeeds speeds) -> followAuto(speeds),
       new HolonomicPathFollowerConfig(
-        new PIDConstants(0.5),
-        new PIDConstants(3, 0, 0.00),
-        1,
+        new PIDConstants(0.1),
+        new PIDConstants(0, 0, 0.00),
+        5,
         0.426562167,
-        new ReplanningConfig()
+        new ReplanningConfig(true, true, 0.5, 0.2)
       ),
       () -> false,
       this
     );
 
-    PPHolonomicDriveController.setRotationTargetOverride(this::speakerAngle);
+    // PPHolonomicDriveController.setRotationTargetOverride(this::speakerAngle);
 
 
     //directional motors
@@ -197,6 +200,12 @@ public class DriveTrain extends SubsystemBase {
       new SwerveModuleState(),
       new SwerveModuleState(),
     };
+    m_realStates = new SwerveModuleState[]{
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+    };
 
     m_modulePositions = new SwerveModulePosition[] {
       new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
@@ -211,7 +220,7 @@ public class DriveTrain extends SubsystemBase {
     m_field = new Field2d();
 
     if (RobotBase.isReal()){
-      m_anglePID = new PIDController(0.4, 0, 0.01);
+      m_anglePID = new PIDController(0.5, 0, 0.01);
     } else {
       m_anglePID = new PIDController(0.2, 0 , 0.01);
     }
@@ -268,6 +277,7 @@ public class DriveTrain extends SubsystemBase {
     
     sim_angle = 0;
     isRed = DriverStation.getAlliance().get() == Alliance.Red;
+    aimed = false;
   }
 
   public double getGyroAngle() {
@@ -328,7 +338,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void setSwerveDrive(ChassisSpeeds speeds) {
-    sim_angle += speeds.omegaRadiansPerSecond;// * 20 * 0.0254 * 4 / 23.75 * 360 / 50;
+    sim_angle += speeds.omegaRadiansPerSecond; // * 20 * 0.0254 * 4 / 23.75 * 360 / 50;
     speeds = discretize(speeds);
     SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(speeds));
 
@@ -346,6 +356,13 @@ public class DriveTrain extends SubsystemBase {
     m_backLeftWheel.set(m_moduleStates[2].angle.getRotations(), m_moduleStates[2].speedMetersPerSecond);
     m_backRightWheel.set(m_moduleStates[3].angle.getRotations(), m_moduleStates[3].speedMetersPerSecond);
 
+    m_realStates = new SwerveModuleState[]{
+      new SwerveModuleState(m_frontLeftWheel.getSpeed() * Math.PI * 0.1, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
+      new SwerveModuleState(m_frontRightWheel.getSpeed() * Math.PI * 0.1, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
+      new SwerveModuleState(m_backLeftWheel.getSpeed() * Math.PI * 0.1, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
+      new SwerveModuleState(m_backRightWheel.getSpeed() * Math.PI * 0.1, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
+    };
+
     m_modulePositions = new SwerveModulePosition[] {
       new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
       new SwerveModulePosition(m_frontRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_frontRightWheel.getAngle())),
@@ -354,6 +371,7 @@ public class DriveTrain extends SubsystemBase {
     };
 
     odomPose = m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
+    // System.out.println(odomPose.getX());
     SmartDashboard.putData("Gyro", m_gyro);
 
     adv_statesPub.set(new SwerveModuleState[]{
@@ -396,9 +414,9 @@ public class DriveTrain extends SubsystemBase {
 
   }
 
-  public Optional<Rotation2d> speakerAngle(){
-    return Optional.of(Rotation2d.fromRadians(Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX())));
-  }
+  // public Optional<Rotation2d> speakerAngle(){
+  //   return Optional.of(Rotation2d.fromRadians(Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX())));
+  // }
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
     double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
@@ -420,7 +438,7 @@ public class DriveTrain extends SubsystemBase {
       angle += Math.PI * 2;
     }
 
-    double max = 0.15;
+    double max = 0.2;
     double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
     if (Math.abs(angSpeed) < 0.01){
       angSpeed = 0;
@@ -432,7 +450,7 @@ public class DriveTrain extends SubsystemBase {
   public double followAuto(ChassisSpeeds speeds){
     ChassisSpeeds s = speeds;
     double angle = getGyroAngle() * Math.PI / 180.0;
-    double target = Math.atan2(5.5 - odomPose.getY(), 0.0 - odomPose.getX());
+    double target = Math.atan2(5.7 - odomPose.getY(), 0.0 - odomPose.getX());
 
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
@@ -446,6 +464,14 @@ public class DriveTrain extends SubsystemBase {
     if (Math.abs(angSpeed) < 0.01){
       angSpeed = 0;
     }
+    double mag = Math.sqrt(Math.pow(s.vxMetersPerSecond, 2) + Math.pow(s.vyMetersPerSecond, 2));
+    if (mag > 0.8){
+      s.vxMetersPerSecond *= 0.8 / mag;
+      s.vyMetersPerSecond *= 0.8 / mag;
+    }
+
+    s.vxMetersPerSecond /= 5;
+    s.vyMetersPerSecond /= 5;
     s.omegaRadiansPerSecond = angSpeed;
     setSwerveDrive(s);
     return target;
@@ -494,6 +520,9 @@ public class DriveTrain extends SubsystemBase {
   
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Swerve Off", Math.abs((Math.atan2(5.7 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360));
+    aimed = Math.abs(Math.abs(Math.abs((Math.atan2(5.7 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360 - 180)) - 180) < 5;
+    SmartDashboard.putBoolean("Swerve Aimed", aimed);
   }
 
 }

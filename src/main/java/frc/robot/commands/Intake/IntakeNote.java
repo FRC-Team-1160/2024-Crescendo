@@ -21,15 +21,16 @@ public class IntakeNote extends Command{
     @Override
     public void initialize(){
         m_intake.m_solenoid.set(DoubleSolenoid.Value.kForward);
-        m_intake.m_feedMotor.set(0.75);
+        m_intake.m_feedMotor.set(0.75); //0.75
         m_transport.setWheels(1);
         m_transport.belt.set(-0.25);
         m_timer = new Timer();
+        m_intake.blinkin.set(0.15);
     }
 
     @Override
     public void execute(){
-        if ((m_transport.m_colorSensor.getProximity() > 200.0 || !m_transport.limit_switch.get()) && m_timer.get() == 0.0){
+        if (m_transport.noteStored){
             m_timer.start();
         }
     }
@@ -40,6 +41,11 @@ public class IntakeNote extends Command{
         m_intake.m_feedMotor.set(0);
         m_transport.setWheels(0);
         m_transport.belt.set(0);
+        if (m_transport.noteStored){
+            m_intake.blinkin.set(0.85);
+        } else {
+            m_intake.blinkin.set(0.93);
+        }
     }
 
     @Override

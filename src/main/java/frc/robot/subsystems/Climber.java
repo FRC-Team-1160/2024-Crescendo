@@ -80,5 +80,8 @@ public class Climber extends SubsystemBase {
     } else {
       right.set(0);
     }
+    SmartDashboard.putBoolean("limitL", l_limit.get());
+    SmartDashboard.putBoolean("limitR", r_limit.get());
+
   }
 }
