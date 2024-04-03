@@ -67,16 +67,16 @@ public class AimSpeaker extends Command {
       back_x = 16.54 - back_x;
     }
 
-    m_drive.aimSwerveDrive(x, y, back_x - x*step, 5.6 - y*step);
+    m_drive.aimSwerveDrive(x, y, back_x - x*step, Constants.Field.SPEAKER_Y - y*step);
 
-    m_shooter.aimTarget(target_x - x*step, 5.6 - y*step, target_z + m_shooter.offset);
-    m_shooter.revTarget(back_x - x*step, 5.6 - y*step);
+    m_shooter.aimTarget(target_x - x*step, Constants.Field.SPEAKER_Y - y*step, target_z + m_shooter.offset);
+    m_shooter.revTarget(back_x - x*step, Constants.Field.SPEAKER_Y - y*step);
     if (m_drive.aimed && m_shooter.revved && m_shooter.aimed){
       m_shooter.blinkin.set(0.93);
     } else {
       m_shooter.blinkin.set(-0.09);
     }
-    adv_targetPub.set(new Pose3d(target_x, 5.6, target_z, new Rotation3d()));
+    adv_targetPub.set(new Pose3d(target_x, Constants.Field.SPEAKER_Y, target_z, new Rotation3d()));
 
   }
   // Called once the command ends or is interrupted.

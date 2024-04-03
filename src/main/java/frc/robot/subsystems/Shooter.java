@@ -63,6 +63,9 @@ public class Shooter extends SubsystemBase{
   public Spark blinkin;
   public PWM m_pwm;
 
+  public double topSpeedMod;
+  public double bottomSpeedMod;
+
 
   public static Shooter getInstance(){
     if (m_instance == null){
@@ -118,8 +121,10 @@ public class Shooter extends SubsystemBase{
     offset = 0;
     speed = 0;
     m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
-    SmartDashboard.putNumber("TopMult", 1);
-    SmartDashboard.putNumber("BottomMult", 1);
+    topSpeedMod = 1.1;
+    bottomSpeedMod = 1.0;
+    SmartDashboard.putNumber("TopMult", topSpeedMod);
+    SmartDashboard.putNumber("BottomMult", bottomSpeedMod);
 
     blinkin = new Spark(0);
     blinkin.set(0.93);
@@ -140,8 +145,8 @@ public class Shooter extends SubsystemBase{
       // bottomMotor.set(s);
       // topMotor.set(s);
       SmartDashboard.putNumber("ShooterTarget", speed * 60);
-      topMotor.setControl(new VelocityVoltage(speed * SmartDashboard.getNumber("TopMult", 1)).withSlot(0));
-      bottomMotor.setControl(new VelocityVoltage(speed * SmartDashboard.getNumber("BottomMult", 1)).withSlot(0));
+      topMotor.setControl(new VelocityVoltage(speed * topSpeedMod).withSlot(0));
+      bottomMotor.setControl(new VelocityVoltage(speed * bottomSpeedMod).withSlot(0));
     }
   }
 
@@ -168,10 +173,13 @@ public class Shooter extends SubsystemBase{
 
 
   public void periodic(){
-
+    bottomSpeedMod = SmartDashboard.getNumber("TopMult", topSpeedMod);
+    topSpeedMod = SmartDashboard.getNumber("BottomMult", bottomSpeedMod);
+    SmartDashboard.putNumber("TopMult", topSpeedMod);
+    SmartDashboard.putNumber("BottomMult", bottomSpeedMod);
     double t_rpm = topMotor.getRotorVelocity().getValue() * 60;
     double b_rpm = bottomMotor.getRotorVelocity().getValue() * 60;
-    revved = Math.min(t_rpm, b_rpm) > speed * 60 - 200 && Math.min(t_rpm, b_rpm) > 100 && speed > 0;
+    revved = Math.min(t_rpm / topSpeedMod, b_rpm / bottomSpeedMod) > speed * 60 - 200 && Math.min(t_rpm / topSpeedMod, b_rpm / bottomSpeedMod) > 100 && speed > 0;
     SmartDashboard.putBoolean("Shooter Revved", revved);
     SmartDashboard.putNumber("Shooter RPM Top", topMotor.getRotorVelocity().getValue() * 60);
     SmartDashboard.putNumber("Shooter RPM Bottom", bottomMotor.getRotorVelocity().getValue() * 60);

@@ -26,6 +26,11 @@ public final class Constants {
     public static final double MAX_ANG_SPEED = MAX_MODULE_SPEED / BASE_RADIUS;
   }
 
+  public static final class Field {
+    public static final double FIELD_LENGTH = 16.54;
+    public static final double SPEAKER_Y = 5.6;
+  }
+
   public static final class Auto {
     public static final double MAX_VEL = 1.0;
     public static final double MAX_ACEL = 1.5;

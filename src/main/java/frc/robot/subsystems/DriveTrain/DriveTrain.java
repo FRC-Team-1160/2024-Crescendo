@@ -195,7 +195,7 @@ public class DriveTrain extends SubsystemBase {
     m_field = new Field2d();
 
     if (RobotBase.isReal()){
-      m_anglePID = new PIDController(0.5, 0, 0.01);
+      m_anglePID = new PIDController(3.0, 0, 0.01);
     } else {
       m_anglePID = new PIDController(0.2, 0 , 0.01);
     }
@@ -405,7 +405,7 @@ public class DriveTrain extends SubsystemBase {
       angle += Math.PI * 2;
     }
 
-    double max = 0.2;
+    double max = 2.5;
     double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
     if (Math.abs(angSpeed) < 0.01){
       angSpeed = 0;
@@ -417,7 +417,7 @@ public class DriveTrain extends SubsystemBase {
   public double followAuto(ChassisSpeeds speeds){
     ChassisSpeeds s = speeds;
     double angle = getGyroAngle() * Math.PI / 180.0;
-    double target = Math.atan2(5.7 - odomPose.getY(), 0.0 - odomPose.getX());
+    double target = Math.atan2(Constants.Field.SPEAKER_Y - odomPose.getY(), 0.0 - odomPose.getX());
 
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
@@ -426,13 +426,13 @@ public class DriveTrain extends SubsystemBase {
       angle += Math.PI * 2;
     }
 
-    double max = 0.15;
+    double max = 2;
     double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
     if (Math.abs(angSpeed) < 0.01){
       angSpeed = 0;
     }
     double mag = Math.sqrt(Math.pow(s.vxMetersPerSecond, 2) + Math.pow(s.vyMetersPerSecond, 2));
-    double max_v = 1.0;
+    double max_v = 3.0;
     if (mag > max_v){
       s.vxMetersPerSecond *= max_v / mag;
       s.vyMetersPerSecond *= max_v / mag;
@@ -485,8 +485,8 @@ public class DriveTrain extends SubsystemBase {
   
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Swerve Off", Math.abs((Math.atan2(5.7 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360));
-    aimed = Math.abs(Math.abs(Math.abs((Math.atan2(5.7 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360 - 180)) - 180) < 5;
+    SmartDashboard.putNumber("Swerve Off", Math.abs((Math.atan2(Constants.Field.SPEAKER_Y - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360));
+    aimed = Math.abs(Math.abs(Math.abs((Math.atan2(Constants.Field.SPEAKER_Y - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX()) * 180 / Math.PI - getGyroAngle()) % 360 - 180)) - 180) < 5;
     SmartDashboard.putBoolean("Swerve Aimed", aimed);
   }
 

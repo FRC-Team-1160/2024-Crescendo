@@ -86,6 +86,7 @@ public class RobotContainer {
       m_pathChooser.addOption("Park", "Park");
       m_pathChooser.addOption("Two Note", "Two Note");
       m_pathChooser.addOption("Disruptor", "Disruptor");
+      m_pathChooser.addOption("3 Note", "3 Note");
       m_pathChooser.addOption("Test", "Test");
 
       m_posChooser = buildAutoChooser(m_pathChooser.getSelected());
@@ -233,11 +234,13 @@ public class RobotContainer {
             new TrapezoidProfile.Constraints(3.0, 5.0), 0.004)
           ));
           break;
+        case "3 Note":
+          chooser.addOption("Sub2", new PathPlannerAuto("3 Note Mid"));
+          chooser.addOption("Sub3", new PathPlannerAuto("3 Note Bottom"));
+          break;
         case "Test":
           chooser.addOption("move", new PathPlannerAuto("move"));
-          chooser.addOption("3note", new PathPlannerAuto("3 Note Mid"));
-          // chooser.addOption("Square", new PathPlannerAuto("Square"));
-          // chooser.addOption("Spin", new PathPlannerAuto("Spin"));
+
           break;
       }
       return chooser;

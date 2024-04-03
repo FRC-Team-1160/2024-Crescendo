@@ -15,6 +15,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Timer;
@@ -60,7 +61,7 @@ public class Vision extends SubsystemBase{
         
     m_pose = new Pose3d(12.5, 0, 0, new Rotation3d());
 
-    m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, new Transform3d());
+    m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, new Transform3d(new Translation3d(0.15 * 0.0254, 0.10 * 0.0254, 0.1), new Rotation3d(0, 20.0 * Math.PI / 180, 0)));
     m_photonPoseEstimator.setReferencePose(m_pose);
 
     tracked_note = null;

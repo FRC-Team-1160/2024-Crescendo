@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 
@@ -46,10 +47,10 @@ public class AimSpeakerAuto extends Command {
       target_x = 16.54 - target_x;
       back_x = 16.54 - back_x;
     }
-    target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.7);
+    target_a = m_drive.aimSwerveDrive(x, y, back_x, Constants.Field.SPEAKER_Y);
 
-    m_shooter.aimTarget(target_x, 5.7, target_z);
-    m_shooter.revTarget(back_x, 5.7);
+    m_shooter.aimTarget(target_x, Constants.Field.SPEAKER_Y, target_z);
+    m_shooter.revTarget(back_x, Constants.Field.SPEAKER_Y);
 
   }
 
