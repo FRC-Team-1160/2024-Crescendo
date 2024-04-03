@@ -123,7 +123,7 @@ public class Shooter extends SubsystemBase{
 
     blinkin = new Spark(0);
     blinkin.set(0.93);
-    m_pwm = new PWM(0);
+    // m_pwm = new PWM(0);
 
   }
 

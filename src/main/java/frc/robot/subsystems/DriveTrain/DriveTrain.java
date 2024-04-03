@@ -68,8 +68,6 @@ public class DriveTrain extends SubsystemBase {
   
   private static DriveTrain m_instance;
   private TalonFX m_frontLeftSteerMotor, m_frontRightSteerMotor, m_backLeftSteerMotor, m_backRightSteerMotor;
-  private Slot0Configs driveConfigs;
-  private Slot0Configs steerConfigs;
   //private TalonFXSensorCollection m_frontLeftRotationEncoder, m_frontRightRotationEncoder, m_backLeftRotationEncoder, m_backRightRotationEncoder;
   private TalonFX m_frontLeftDriveMotor, m_frontRightDriveMotor, m_backLeftDriveMotor, m_backRightDriveMotor;
   //private TalonFXSensorCollection m_frontLeftDirectionEncoder, m_frontRightDirectionEncoder, m_backLeftDirectionEncoder, m_backRightDirectionEncoder;
@@ -111,11 +109,11 @@ public class DriveTrain extends SubsystemBase {
       () -> m_kinematics.toChassisSpeeds(m_realStates),
       (ChassisSpeeds speeds) -> followAuto(speeds),
       new HolonomicPathFollowerConfig(
-        new PIDConstants(0.1),
-        new PIDConstants(0, 0, 0.00),
-        5,
-        0.426562167,
-        new ReplanningConfig(true, true, 0.5, 0.2)
+        new PIDConstants(3.0, 0, 0),
+        new PIDConstants(0, 0, 0),
+        Constants.Swerve.MAX_SPEED,
+        Constants.Swerve.BASE_RADIUS,
+        new ReplanningConfig()
       ),
       () -> false,
       this
@@ -148,29 +146,6 @@ public class DriveTrain extends SubsystemBase {
     // m_backLeftCoder.setPosition(0);
     // m_backRightCoder.setPosition(0);
 
-
-    driveConfigs = new Slot0Configs(); //TUNE VALUES
-    driveConfigs.kV = 2; 
-    driveConfigs.kP = 1;
-    driveConfigs.kI = 0;
-    driveConfigs.kD = 10;
-
-    steerConfigs = new Slot0Configs(); //TUNE VALUES
-    steerConfigs.kV = 0;
-    steerConfigs.kP = 0.05;
-    steerConfigs.kI = 0.01;
-    steerConfigs.kD = 0.005;
-
-    m_frontLeftDriveMotor.getConfigurator().apply(driveConfigs);
-    m_frontRightDriveMotor.getConfigurator().apply(driveConfigs);
-    m_backLeftDriveMotor.getConfigurator().apply(driveConfigs);
-    m_backRightDriveMotor.getConfigurator().apply(driveConfigs);
-
-    m_frontLeftSteerMotor.getConfigurator().apply(steerConfigs);
-    m_frontRightSteerMotor.getConfigurator().apply(steerConfigs);
-    m_backLeftSteerMotor.getConfigurator().apply(steerConfigs);
-    m_backRightSteerMotor.getConfigurator().apply(steerConfigs);
-
     //swerve wheels (controls the rotation and direction motors)
 
 
@@ -181,8 +156,8 @@ public class DriveTrain extends SubsystemBase {
 
     m_gyro = new AHRS(Port.kMXP);
 
-    double offset = 23.75 * 0.0254;
-    m_frontLeftLocation = new Translation2d(offset, offset); //might need changing
+    double offset = Constants.Swerve.SIDE_LENGTH/2;
+    m_frontLeftLocation = new Translation2d(offset, offset); 
     m_frontRightLocation = new Translation2d(offset, -offset); 
     m_backLeftLocation = new Translation2d(-offset, offset); 
     m_backRightLocation = new Translation2d(-offset, -offset);
@@ -208,10 +183,10 @@ public class DriveTrain extends SubsystemBase {
     };
 
     m_modulePositions = new SwerveModulePosition[] {
-      new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModulePosition(m_frontRightWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModulePosition(m_backLeftWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle()))
+      new SwerveModulePosition(m_frontLeftWheel.getPosition(), m_frontLeftWheel.getAngle()),
+      new SwerveModulePosition(m_frontRightWheel.getPosition(), m_frontRightWheel.getAngle()),
+      new SwerveModulePosition(m_backLeftWheel.getPosition(), m_backLeftWheel.getAngle()),
+      new SwerveModulePosition(m_backRightWheel.getPosition(), m_backRightWheel.getAngle())
     };
 
     odomPose = new Pose2d(new Translation2d(0, 0), new Rotation2d());
@@ -238,16 +213,16 @@ public class DriveTrain extends SubsystemBase {
       public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("SwerveDrive");
     
-        builder.addDoubleProperty("Front Left Angle", () -> m_frontLeftWheel.getAngle() * 360, null);
-        builder.addDoubleProperty("Front Left Velocity", () -> m_frontLeftWheel.getSpeed() * Math.PI * 0.2, null);
+        builder.addDoubleProperty("Front Left Angle", () -> m_frontLeftWheel.getAngle().getDegrees(), null);
+        builder.addDoubleProperty("Front Left Velocity", () -> m_frontLeftWheel.getSpeed(), null);
     
-        builder.addDoubleProperty("Front Right Angle", () -> m_frontRightWheel.getAngle() * 360, null);
+        builder.addDoubleProperty("Front Right Angle", () -> m_frontRightWheel.getAngle().getDegrees(), null);
         builder.addDoubleProperty("Front Right Velocity", () -> m_frontRightWheel.getSpeed() * Math.PI * 0.2, null);
     
-        builder.addDoubleProperty("Back Left Angle", () -> m_backLeftWheel.getAngle() * 360, null);
+        builder.addDoubleProperty("Back Left Angle", () -> m_backLeftWheel.getAngle().getDegrees(), null);
         builder.addDoubleProperty("Back Left Velocity", () -> m_backLeftWheel.getSpeed() * Math.PI * 0.2, null);
     
-        builder.addDoubleProperty("Back Right Angle", () -> m_backRightWheel.getAngle() * 360, null);
+        builder.addDoubleProperty("Back Right Angle", () -> m_backRightWheel.getAngle().getDegrees(), null);
         builder.addDoubleProperty("Back Right Velocity", () -> m_backRightWheel.getSpeed() * Math.PI * 0.2, null);
     
         builder.addDoubleProperty("Robot Angle", () -> getGyroAngle(), null);
@@ -332,7 +307,7 @@ public class DriveTrain extends SubsystemBase {
    * @param angSpeed
    */
   public void setSwerveDrive(double xSpeed, double ySpeed, double angSpeed){
-    sim_angle += angSpeed * 6 * 0.0254 * 4 / 23.75 * 360;
+    sim_angle += angSpeed;
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
     setSwerveDrive(m_speeds);
   }
@@ -340,46 +315,42 @@ public class DriveTrain extends SubsystemBase {
   public void setSwerveDrive(ChassisSpeeds speeds) {
     sim_angle += speeds.omegaRadiansPerSecond; // * 20 * 0.0254 * 4 / 23.75 * 360 / 50;
     speeds = discretize(speeds);
+    SmartDashboard.putNumber("InA", speeds.omegaRadiansPerSecond);
     SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(speeds));
-
-    m_moduleStates[0] = SwerveModuleState.optimize(m_moduleStates[0], Rotation2d.fromRotations(m_frontLeftWheel.getAngle()));
-    m_moduleStates[1] = SwerveModuleState.optimize(m_moduleStates[1], Rotation2d.fromRotations(m_frontRightWheel.getAngle()));
-    m_moduleStates[2] = SwerveModuleState.optimize(m_moduleStates[2], Rotation2d.fromRotations(m_backLeftWheel.getAngle()));
-    m_moduleStates[3] = SwerveModuleState.optimize(m_moduleStates[3], Rotation2d.fromRotations(m_backRightWheel.getAngle()));
-
-    SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, 1);
 
     adv_targetStatesPub.set(m_moduleStates);
 
-    m_frontLeftWheel.set(m_moduleStates[0].angle.getRotations(), m_moduleStates[0].speedMetersPerSecond);
-    m_frontRightWheel.set(m_moduleStates[1].angle.getRotations(), m_moduleStates[1].speedMetersPerSecond);
-    m_backLeftWheel.set(m_moduleStates[2].angle.getRotations(), m_moduleStates[2].speedMetersPerSecond);
-    m_backRightWheel.set(m_moduleStates[3].angle.getRotations(), m_moduleStates[3].speedMetersPerSecond);
+    m_moduleStates[0] = SwerveModuleState.optimize(m_moduleStates[0], m_frontLeftWheel.getAngle());
+    m_moduleStates[1] = SwerveModuleState.optimize(m_moduleStates[1], m_frontRightWheel.getAngle());
+    m_moduleStates[2] = SwerveModuleState.optimize(m_moduleStates[2], m_backLeftWheel.getAngle());
+    m_moduleStates[3] = SwerveModuleState.optimize(m_moduleStates[3], m_backRightWheel.getAngle());
+
+    SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, 1);
+
+    m_frontLeftWheel.set(m_moduleStates[0]);
+    m_frontRightWheel.set(m_moduleStates[1]);
+    m_backLeftWheel.set(m_moduleStates[2]);
+    m_backRightWheel.set(m_moduleStates[3]);
 
     m_realStates = new SwerveModuleState[]{
-      new SwerveModuleState(m_frontLeftWheel.getSpeed() * Math.PI * 0.1, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModuleState(m_frontRightWheel.getSpeed() * Math.PI * 0.1, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModuleState(m_backLeftWheel.getSpeed() * Math.PI * 0.1, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModuleState(m_backRightWheel.getSpeed() * Math.PI * 0.1, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
+      m_frontLeftWheel.getModuleState(),
+      m_frontRightWheel.getModuleState(),
+      m_backLeftWheel.getModuleState(),
+      m_backRightWheel.getModuleState()
     };
 
     m_modulePositions = new SwerveModulePosition[] {
-      new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModulePosition(m_frontRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_frontRightWheel.getAngle())),
-      new SwerveModulePosition(m_backLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_backLeftWheel.getAngle())),
-      new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_backRightWheel.getAngle()))
+      m_frontLeftWheel.getModulePosition(),
+      m_frontRightWheel.getModulePosition(),
+      m_backLeftWheel.getModulePosition(),
+      m_backRightWheel.getModulePosition()
     };
 
     odomPose = m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
     // System.out.println(odomPose.getX());
     SmartDashboard.putData("Gyro", m_gyro);
 
-    adv_statesPub.set(new SwerveModuleState[]{
-      new SwerveModuleState(m_frontLeftWheel.getSpeed(), Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModuleState(m_frontRightWheel.getSpeed(), Rotation2d.fromRotations(m_frontRightWheel.getAngle())),
-      new SwerveModuleState(m_backLeftWheel.getSpeed(), Rotation2d.fromRotations(m_backLeftWheel.getAngle())),
-      new SwerveModuleState(m_backRightWheel.getSpeed(), Rotation2d.fromRotations(m_backRightWheel.getAngle()))
-    });
+    adv_statesPub.set(m_realStates);
 
     m_field.setRobotPose(odomPose);
 
@@ -413,10 +384,6 @@ public class DriveTrain extends SubsystemBase {
 
 
   }
-
-  // public Optional<Rotation2d> speakerAngle(){
-  //   return Optional.of(Rotation2d.fromRadians(Math.atan2(5.5 - odomPose.getY(), (isRed ? 16.54 : 0.0) - odomPose.getX())));
-  // }
 
   public double aimSwerveDrive(double xSpeed, double ySpeed, double targetX, double targetY){
     double target = Math.atan2(targetY - odomPose.getY(), targetX - odomPose.getX());
@@ -465,13 +432,11 @@ public class DriveTrain extends SubsystemBase {
       angSpeed = 0;
     }
     double mag = Math.sqrt(Math.pow(s.vxMetersPerSecond, 2) + Math.pow(s.vyMetersPerSecond, 2));
-    if (mag > 0.8){
-      s.vxMetersPerSecond *= 0.8 / mag;
-      s.vyMetersPerSecond *= 0.8 / mag;
+    double max_v = 1.0;
+    if (mag > max_v){
+      s.vxMetersPerSecond *= max_v / mag;
+      s.vyMetersPerSecond *= max_v / mag;
     }
-
-    s.vxMetersPerSecond /= 5;
-    s.vyMetersPerSecond /= 5;
     s.omegaRadiansPerSecond = angSpeed;
     setSwerveDrive(s);
     return target;
@@ -481,8 +446,8 @@ public class DriveTrain extends SubsystemBase {
     // double joystickX = m_mainStick.getRawAxis(1);
     // double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = m_mainStick.getRawAxis(4);
-    double joystickX = -m_mainStick.getRawAxis(1);
-    double joystickY = -m_mainStick.getRawAxis(0);
+    double joystickX = m_mainStick.getRawAxis(1);
+    double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = -m_mainStick.getRawAxis(2);
     double joystickA = -m_secondStick.getRawAxis(0);
     double x = 0.0;
@@ -504,16 +469,16 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    double spd = m_mainStick.getRawButton(1) ? 0.5 : 0.90;
+    double spd = m_mainStick.getRawButton(1) ? 0.5 : 1.0;
     x = Math.cos(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     y = Math.sin(dir) * Math.abs(Math.pow(mag, 3)) * spd;
-    a = Math.signum(a) * 0.45 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
+    a = Math.signum(a) * Math.abs(Math.pow(a, 3));
 
     if (isRed){
       x *= -1;
       y *= -1;
     }
-    
+
     return new double[]{x, y, a};
 
   }
