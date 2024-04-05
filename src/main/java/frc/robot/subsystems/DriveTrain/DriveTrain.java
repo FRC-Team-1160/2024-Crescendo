@@ -14,15 +14,11 @@ package frc.robot.subsystems.DriveTrain;
 //SWITCH TO PHOENIX6
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import java.util.Optional;
-
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -104,8 +100,8 @@ public class DriveTrain extends SubsystemBase {
 
   public DriveTrain() {
     AutoBuilder.configureHolonomic(
-      () -> odomPose,
-      (Pose2d pose) -> resetPose(pose),
+      () -> new Pose2d(odomPose.getTranslation(), new Rotation2d().minus(odomPose.getRotation())),
+      (Pose2d pose) -> resetPose(new Pose2d(pose.getTranslation(), new Rotation2d().minus(pose.getRotation()))),
       () -> m_kinematics.toChassisSpeeds(m_realStates),
       (ChassisSpeeds speeds) -> followAuto(speeds),
       new HolonomicPathFollowerConfig(
