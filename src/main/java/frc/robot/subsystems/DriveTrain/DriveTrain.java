@@ -479,7 +479,7 @@ public class DriveTrain extends SubsystemBase {
       y *= -1;
     }
 
-    return new double[]{x, y, a};
+    return new double[]{x*Constants.Swerve.MAX_SPEED, y*Constants.Swerve.MAX_SPEED, a*Constants.Swerve.MAX_ANG_SPEED};
 
   }
   
