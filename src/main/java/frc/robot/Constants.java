@@ -23,7 +23,7 @@ public final class Constants {
     public static final double MAX_MODULE_SPEED = 5.0;
     public static final double SIDE_LENGTH = 23.5 * 0.0254;
     public static final double BASE_RADIUS = SIDE_LENGTH / Math.sqrt(2);
-    public static final double MAX_ANG_SPEED = MAX_MODULE_SPEED / BASE_RADIUS;
+    public static final double MAX_ANG_SPEED = 3.0;
   }
 
   public static final class Field {

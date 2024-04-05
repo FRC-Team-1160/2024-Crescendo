@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -14,7 +13,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -73,7 +71,7 @@ public class RobotContainer {
     /**
      * The container for the robot.  Contains subsystems, OI devices, and commands.
      */
-    public Pose2d flipPose(Pose2d pose){
+    public Pose2d flipPoseToCorrect(Pose2d pose){
       return (isRedAlliance ? new Pose2d(16.54 - pose.getX(), pose.getY(), Rotation2d.fromDegrees(180 - pose.getRotation().getDegrees())) : pose);
     }
 
@@ -184,27 +182,27 @@ public class RobotContainer {
       SendableChooser<Command> chooser = new SendableChooser<>();
       switch(path){
         case "AFK":
-          chooser.addOption("Sub1", new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB1))));
-          chooser.addOption("Sub2", new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB2))));
-          chooser.addOption("Sub3", new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB3))));
-          chooser.addOption("Wall", new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.WALL))));
+          chooser.addOption("Sub1", new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.SUB1))));
+          chooser.addOption("Sub2", new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.SUB2))));
+          chooser.addOption("Sub3", new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.SUB3))));
+          chooser.addOption("Wall", new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.WALL))));
           break;
         case "Park":
           chooser.addOption("Sub1", new SequentialCommandGroup(
-            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB1))),
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.SUB1))),
             new SwerveDriveMoveAuto(m_driveTrain, 2.7, Constants.Auto.Start.SUB1.getY(), null)
 
           ));
           chooser.addOption("Sub2", new SequentialCommandGroup(
-            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB2))),
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.SUB2))),
             new SwerveDriveMoveAuto(m_driveTrain, 2.7, Constants.Auto.Start.SUB2.getY(), null)
           ));
           chooser.addOption("Sub3", new SequentialCommandGroup(
-            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.SUB3))),
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.SUB3))),
             new SwerveDriveMoveAuto(m_driveTrain, 2.5, Constants.Auto.Start.SUB3.getY(), null)
           ));
           chooser.addOption("Wall", new SequentialCommandGroup(
-            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.WALL))),
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.WALL))),
             new SwerveDriveMoveAuto(m_driveTrain, 2.7, Constants.Auto.Start.WALL.getY(), null)
           ));
           break;
@@ -227,7 +225,7 @@ public class RobotContainer {
           break;
         case "Disruptor":
           chooser.addOption("Wall", new SequentialCommandGroup(
-            new InstantCommand(() -> m_driveTrain.resetPose(flipPose(Constants.Auto.Start.WALL))),
+            new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(Constants.Auto.Start.WALL))),
             new SwerveDriveMoveAuto(m_driveTrain, 8.6, 0.8, 135.0,
             new TrapezoidProfile.Constraints(3.0, 5.0), 0.004),
             new SwerveDriveMoveAuto(m_driveTrain, 8.6, 7.5,null,
@@ -248,7 +246,7 @@ public class RobotContainer {
     public Command buildTwoNote(Pose2d start, Translation2d pos1, Translation2d pos2) {
       return new ParallelCommandGroup(new WaitCommand(15.0),
         new SequentialCommandGroup(
-          new InstantCommand(() -> m_driveTrain.resetPose(flipPose(start))),
+          new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(start))),
           new SwerveDriveMoveAuto(m_driveTrain, pos1.getX(), pos1.getY(), null),
           new AimSpeakerAuto(m_driveTrain, m_shooter),
           new WaitCommand(0.5),
