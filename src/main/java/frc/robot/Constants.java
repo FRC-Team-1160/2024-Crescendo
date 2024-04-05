@@ -19,11 +19,11 @@ public final class Constants {
   public static final class Swerve {
     public static final double WHEEL_DIAMETER = 4 * 0.0254 * Math.PI;
     public static final double GEAR_RATIO = 6.75;
-    public static final double MAX_SPEED = 3.0;
+    public static final double MAX_SPEED = 5.0;
     public static final double MAX_MODULE_SPEED = 5.0;
     public static final double SIDE_LENGTH = 23.5 * 0.0254;
     public static final double BASE_RADIUS = SIDE_LENGTH / Math.sqrt(2);
-    public static final double MAX_ANG_SPEED = 3.0;
+    public static final double MAX_ANG_SPEED = 5.0;
   }
 
   public static final class Field {

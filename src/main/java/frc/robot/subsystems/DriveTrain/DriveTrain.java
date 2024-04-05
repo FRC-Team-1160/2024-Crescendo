@@ -321,7 +321,7 @@ public class DriveTrain extends SubsystemBase {
     m_moduleStates[2] = SwerveModuleState.optimize(m_moduleStates[2], m_backLeftWheel.getAngle());
     m_moduleStates[3] = SwerveModuleState.optimize(m_moduleStates[3], m_backRightWheel.getAngle());
 
-    SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, 1);
+    SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, Constants.Swerve.MAX_MODULE_SPEED);
 
     m_frontLeftWheel.set(m_moduleStates[0]);
     m_frontRightWheel.set(m_moduleStates[1]);
@@ -392,8 +392,9 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public double aimAngle(double xSpeed, double ySpeed, double target){
+    SmartDashboard.putNumber("target", target);
     double angle = getGyroAngle() * Math.PI / 180.0;
-
+    target += Math.PI;
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
     }
@@ -442,7 +443,7 @@ public class DriveTrain extends SubsystemBase {
     // double joystickX = m_mainStick.getRawAxis(1);
     // double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = m_mainStick.getRawAxis(4);
-    double joystickX = m_mainStick.getRawAxis(1);
+    double joystickX = -m_mainStick.getRawAxis(1);
     double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = -m_mainStick.getRawAxis(2);
     double joystickA = -m_secondStick.getRawAxis(0);
