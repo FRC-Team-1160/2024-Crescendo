@@ -394,9 +394,9 @@ public class DriveTrain extends SubsystemBase {
   public double aimAngle(double xSpeed, double ySpeed, double target){
     SmartDashboard.putNumber("target", target);
     double angle = getGyroAngle() * Math.PI / 180.0;
-    // changed
-    target += Math.PI;
-    if (target > Math.PI * 2){
+    SmartDashboard.putNumber("angle", angle);
+    if (odomPose.getX() > 8.25) target += Math.PI; // added pi bc of weird error
+    if (target > Math.PI * 2) {
       target -= Math.PI * 2;
     }
     if (angle < 0){
@@ -417,6 +417,8 @@ public class DriveTrain extends SubsystemBase {
     double angle = getGyroAngle() * Math.PI / 180.0;
     double target = Math.atan2(Constants.Field.SPEAKER_Y - odomPose.getY(), 0.0 - odomPose.getX());
 
+    if (odomPose.getX() > 8.25) target += Math.PI; // added pi bc of weird error
+    
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
     }
@@ -444,7 +446,7 @@ public class DriveTrain extends SubsystemBase {
     // double joystickX = m_mainStick.getRawAxis(1);
     // double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = m_mainStick.getRawAxis(4);
-    double joystickX = -m_mainStick.getRawAxis(1); // changed from neg to pos to fix inv
+    double joystickX = m_mainStick.getRawAxis(1); // changed from neg to pos to fix inv
     double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = -m_mainStick.getRawAxis(2);
     double joystickA = -m_secondStick.getRawAxis(0);

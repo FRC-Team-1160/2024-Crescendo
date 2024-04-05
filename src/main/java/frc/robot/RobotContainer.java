@@ -210,17 +210,26 @@ public class RobotContainer {
           chooser.addOption("Sub1", buildTwoNote(
             Constants.Auto.Start.SUB1, 
             new Translation2d(1.8, 7.0),
-            new Translation2d(2.7, 7.0)
+            new Translation2d(2.7, 7.0),
+            0
             ));
           chooser.addOption("Sub2", buildTwoNote(
             Constants.Auto.Start.SUB2, 
             new Translation2d(2.0, 5.5),
-            new Translation2d(2.7, 5.5)
+            new Translation2d(2.7, 5.5),
+            0
             ));
           chooser.addOption("Sub3", buildTwoNote(
             Constants.Auto.Start.SUB3, 
             new Translation2d(1.8, 4.0),
-            new Translation2d(2.5, 4.0)
+            new Translation2d(2.5, 4.0),
+            0
+            ));
+          chooser.addOption("Sub3 with delay", buildTwoNote(
+            Constants.Auto.Start.SUB3, 
+            new Translation2d(1.8, 4.0),
+            new Translation2d(2.5, 4.0),
+            5
             ));
           break;
         case "Disruptor":
@@ -243,9 +252,10 @@ public class RobotContainer {
       }
       return chooser;
     }
-    public Command buildTwoNote(Pose2d start, Translation2d pos1, Translation2d pos2) {
+    public Command buildTwoNote(Pose2d start, Translation2d pos1, Translation2d pos2, double delay) {
       return new ParallelCommandGroup(new WaitCommand(15.0),
         new SequentialCommandGroup(
+          new WaitCommand(delay),
           new InstantCommand(() -> m_driveTrain.resetPose(flipPoseToCorrect(start))),
           new SwerveDriveMoveAuto(m_driveTrain, pos1.getX(), pos1.getY(), null),
           new AimSpeakerAuto(m_driveTrain, m_shooter),
