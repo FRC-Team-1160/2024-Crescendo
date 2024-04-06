@@ -123,7 +123,7 @@ public class RobotContainer {
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport),
-                new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, backward)
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, forward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),
@@ -142,7 +142,7 @@ public class RobotContainer {
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport),
-                new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, backward)
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, forward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),
@@ -159,7 +159,7 @@ public class RobotContainer {
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport), 
-                new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, backward)
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, forward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),
@@ -178,7 +178,7 @@ public class RobotContainer {
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport), 
-                new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, backward)
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, forward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),
@@ -197,7 +197,7 @@ public class RobotContainer {
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport),
-                new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, backward)
+                new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, forward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),
@@ -217,7 +217,7 @@ public class RobotContainer {
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport),
-                new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, backward)
+                new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, forward)
             ),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),

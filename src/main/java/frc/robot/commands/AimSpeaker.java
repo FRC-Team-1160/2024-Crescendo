@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
+import frc.robot.subsystems.Intake.Transport;
 
 public class AimSpeaker extends Command {
   /** Creates a new SwerveDrive. */
@@ -29,7 +30,7 @@ public class AimSpeaker extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    m_shooter.blinkin.set(-0.09);
   }
 
   @Override
@@ -46,7 +47,7 @@ public class AimSpeaker extends Command {
     double step = 2.0;
 
     double target_x = 0.5;
-    double target_z = 2.15;
+    double target_z = 2.05;
     double back_x = 0;
     // target_x = SmartDashboard.getNumber("GetX", 0.5);
     // target_z = SmartDashboard.getNumber("GetZ", 2.2);
@@ -63,13 +64,23 @@ public class AimSpeaker extends Command {
     // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
     SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x - x*step, 5.5 - y*step, target_z + m_shooter.offset));
     SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x - x*step, 5.5 - y*step));
-
+    
+    if (m_shooter.revved && m_shooter.aimed){
+      m_shooter.blinkin.set(0.93);
+    } else {
+      m_shooter.blinkin.set(-0.09);
+    }
   }
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     SmartDashboard.putNumber("Shooter Speed", 0);
     m_shooter.setSpeed(0);
+    if (Transport.getInstance().noteStored){
+      m_shooter.blinkin.set(0.85);
+    } else {
+      m_shooter.blinkin.set(0.93);
+    }
   }
 
   // Returns true when the command should end.

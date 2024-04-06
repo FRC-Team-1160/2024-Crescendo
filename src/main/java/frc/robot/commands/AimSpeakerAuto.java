@@ -47,7 +47,7 @@ public class AimSpeakerAuto extends Command {
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
 
     double target_x = 0.5;
-    double target_z = 2.25;
+    double target_z = 2.05;
     double back_x = 0.0;
 
     if (m_drive.odomPose.getX() > 8.25){

@@ -412,7 +412,6 @@ public class DriveTrain extends SubsystemBase {
 
   public double aimAngle(double xSpeed, double ySpeed, double target){
     double angle = getGyroAngle() * Math.PI / 180.0;
-    if (odomPose.getX() > 8.25 && DriverStation.isTeleop()) target += Math.PI;
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
     }
@@ -432,7 +431,7 @@ public class DriveTrain extends SubsystemBase {
     return target;
   }
 
-  public double[] inputSpeeds(){
+  public double[] inputSpeeds() {
     // double joystickX = m_mainStick.getRawAxis(1);
     // double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = m_mainStick.getRawAxis(4);

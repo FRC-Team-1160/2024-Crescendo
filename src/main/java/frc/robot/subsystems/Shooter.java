@@ -117,8 +117,8 @@ public class Shooter extends SubsystemBase{
     offset = 0;
     speed = 0;
     m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
-    topSpeedMod = 1.1;
-    bottomSpeedMod = 1.0;
+    topSpeedMod = 1.0;
+    bottomSpeedMod = 1.1; // these are flipped; topSpeed is applied to the bottom motor and vice versa
     SmartDashboard.putNumber("TopMult", topSpeedMod);
     SmartDashboard.putNumber("BottomMult", bottomSpeedMod);
 
@@ -168,11 +168,7 @@ public class Shooter extends SubsystemBase{
   }
 
 
-  public void periodic(){
-    bottomSpeedMod = SmartDashboard.getNumber("TopMult", topSpeedMod);
-    topSpeedMod = SmartDashboard.getNumber("BottomMult", bottomSpeedMod);
-    SmartDashboard.putNumber("TopMult", topSpeedMod);
-    SmartDashboard.putNumber("BottomMult", bottomSpeedMod);
+  public void periodic() {
     double t_rpm = topMotor.getRotorVelocity().getValue() * 60;
     double b_rpm = bottomMotor.getRotorVelocity().getValue() * 60;
     revved = Math.min(t_rpm / topSpeedMod, b_rpm / bottomSpeedMod) > speed * 60 - 200 && Math.min(t_rpm / topSpeedMod, b_rpm / bottomSpeedMod) > 100 && speed > 0;

@@ -33,7 +33,11 @@ public class Shoot extends Command {
     public void end(boolean interrupted){
         m_transport.belt.set(0);
         m_shooter.setSpeed(0);
-
+        if (m_transport.noteStored){
+            m_shooter.blinkin.set(0.85);
+        } else {
+            m_shooter.blinkin.set(0.93);
+        }
     }
 
     @Override

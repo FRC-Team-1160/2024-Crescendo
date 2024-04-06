@@ -6,7 +6,8 @@
       "/SmartDashboard/Command Scheduler": "Scheduler",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Gyro": "Gyro",
-      "/SmartDashboard/SendableChooser[0]": "String Chooser"
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/aimspeaker": "Command"
     }
   },
   "NetworkTables Info": {
