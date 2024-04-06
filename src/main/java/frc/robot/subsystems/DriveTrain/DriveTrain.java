@@ -121,22 +121,22 @@ public class DriveTrain extends SubsystemBase {
 
     //directional motors
 
-    m_frontLeftDriveMotor = new TalonFX(Constants.Port.FRONT_LEFT_DRIVE_MOTOR);
-    m_frontRightDriveMotor = new TalonFX(Constants.Port.FRONT_RIGHT_DRIVE_MOTOR);
-    m_backLeftDriveMotor = new TalonFX(Constants.Port.BACK_LEFT_DRIVE_MOTOR);
-    m_backRightDriveMotor = new TalonFX(Constants.Port.BACK_RIGHT_DRIVE_MOTOR);
+    m_frontLeftDriveMotor = new TalonFX(Constants.Port.FRONT_LEFT_DRIVE_MOTOR, "*");
+    m_frontRightDriveMotor = new TalonFX(Constants.Port.FRONT_RIGHT_DRIVE_MOTOR, "*");
+    m_backLeftDriveMotor = new TalonFX(Constants.Port.BACK_LEFT_DRIVE_MOTOR, "*");
+    m_backRightDriveMotor = new TalonFX(Constants.Port.BACK_RIGHT_DRIVE_MOTOR, "*");
 
     //rotational motors
-    m_frontLeftSteerMotor = new TalonFX(Constants.Port.FRONT_LEFT_STEER_MOTOR);
-    m_frontRightSteerMotor = new TalonFX(Constants.Port.FRONT_RIGHT_STEER_MOTOR);
-    m_backLeftSteerMotor = new TalonFX(Constants.Port.BACK_LEFT_STEER_MOTOR);
-    m_backRightSteerMotor = new TalonFX(Constants.Port.BACK_RIGHT_STEER_MOTOR);
+    m_frontLeftSteerMotor = new TalonFX(Constants.Port.FRONT_LEFT_STEER_MOTOR, "*");
+    m_frontRightSteerMotor = new TalonFX(Constants.Port.FRONT_RIGHT_STEER_MOTOR, "*");
+    m_backLeftSteerMotor = new TalonFX(Constants.Port.BACK_LEFT_STEER_MOTOR, "*");
+    m_backRightSteerMotor = new TalonFX(Constants.Port.BACK_RIGHT_STEER_MOTOR, "*");
 
     //CAN coders
-    m_frontLeftCoder = new CANcoder(Constants.Port.FRONT_LEFT_CODER);
-    m_frontRightCoder = new CANcoder(Constants.Port.FRONT_RIGHT_CODER);
-    m_backLeftCoder = new CANcoder(Constants.Port.BACK_LEFT_CODER);
-    m_backRightCoder = new CANcoder(Constants.Port.BACK_RIGHT_CODER);
+    m_frontLeftCoder = new CANcoder(Constants.Port.FRONT_LEFT_CODER, "*");
+    m_frontRightCoder = new CANcoder(Constants.Port.FRONT_RIGHT_CODER, "*");
+    m_backLeftCoder = new CANcoder(Constants.Port.BACK_LEFT_CODER, "*");
+    m_backRightCoder = new CANcoder(Constants.Port.BACK_RIGHT_CODER, "*");
 
     // m_frontLeftCoder.setPosition(0);
     // m_frontRightCoder.setPosition(0);
@@ -144,27 +144,27 @@ public class DriveTrain extends SubsystemBase {
     // m_backRightCoder.setPosition(0);
 
 
-    driveConfigs = new Slot0Configs(); //TUNE VALUES
-    driveConfigs.kV = 2; 
-    driveConfigs.kP = 1;
-    driveConfigs.kI = 0;
-    driveConfigs.kD = 10;
+    // driveConfigs = new Slot0Configs(); //TUNE VALUES
+    // driveConfigs.kV = 2; 
+    // driveConfigs.kP = 1;
+    // driveConfigs.kI = 0;
+    // driveConfigs.kD = 10;
 
-    steerConfigs = new Slot0Configs(); //TUNE VALUES
-    steerConfigs.kV = 0;
-    steerConfigs.kP = 0.05;
-    steerConfigs.kI = 0.01;
-    steerConfigs.kD = 0.005;
+    // steerConfigs = new Slot0Configs(); //TUNE VALUES
+    // steerConfigs.kV = 0;
+    // steerConfigs.kP = 0.05;
+    // steerConfigs.kI = 0.01;
+    // steerConfigs.kD = 0.005;
 
-    m_frontLeftDriveMotor.getConfigurator().apply(driveConfigs);
-    m_frontRightDriveMotor.getConfigurator().apply(driveConfigs);
-    m_backLeftDriveMotor.getConfigurator().apply(driveConfigs);
-    m_backRightDriveMotor.getConfigurator().apply(driveConfigs);
+    // m_frontLeftDriveMotor.getConfigurator().apply(driveConfigs);
+    // m_frontRightDriveMotor.getConfigurator().apply(driveConfigs);
+    // m_backLeftDriveMotor.getConfigurator().apply(driveConfigs);
+    // m_backRightDriveMotor.getConfigurator().apply(driveConfigs);
 
-    m_frontLeftSteerMotor.getConfigurator().apply(steerConfigs);
-    m_frontRightSteerMotor.getConfigurator().apply(steerConfigs);
-    m_backLeftSteerMotor.getConfigurator().apply(steerConfigs);
-    m_backRightSteerMotor.getConfigurator().apply(steerConfigs);
+    // m_frontLeftSteerMotor.getConfigurator().apply(steerConfigs);
+    // m_frontRightSteerMotor.getConfigurator().apply(steerConfigs);
+    // m_backLeftSteerMotor.getConfigurator().apply(steerConfigs);
+    // m_backRightSteerMotor.getConfigurator().apply(steerConfigs);
 
     //swerve wheels (controls the rotation and direction motors)
 
