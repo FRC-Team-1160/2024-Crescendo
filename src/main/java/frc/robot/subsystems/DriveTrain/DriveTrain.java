@@ -435,8 +435,8 @@ public class DriveTrain extends SubsystemBase {
     // double joystickX = m_mainStick.getRawAxis(1);
     // double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = m_mainStick.getRawAxis(4);
-    double joystickX = -m_mainStick.getRawAxis(1);
-    double joystickY = -m_mainStick.getRawAxis(0);
+    double joystickX = m_mainStick.getRawAxis(1);
+    double joystickY = m_mainStick.getRawAxis(0);
     // double joystickA = -m_mainStick.getRawAxis(2);
     double joystickA = -m_secondStick.getRawAxis(0);
     double x = 0.0;

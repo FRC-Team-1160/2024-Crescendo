@@ -28,7 +28,11 @@ public class AimSpeakerAuto extends Command {
     
   }
 
-  // Called when the command is initially scheduled.
+  public AimSpeakerAuto(DriveTrain m_driveTrain, Shooter m_shooter2, double d) {
+    //TODO Auto-generated constructor stub
+}
+
+// Called when the command is initially scheduled.
   @Override
   public void initialize() {
 
@@ -36,31 +40,21 @@ public class AimSpeakerAuto extends Command {
 
   @Override
   public void execute(){
-
-    double[] inputs = m_drive.inputSpeeds();
-    x = inputs[0];
-    y = inputs[1];
-
-    SmartDashboard.putNumber("Forward", x);
-    SmartDashboard.putNumber("Sideways", y);
-
-    // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
-
     double target_x = 0.5;
-    double target_z = 2.05;
+    double target_z = 2.15;
     double back_x = 0.0;
 
-    if (m_drive.odomPose.getX() > 8.25){
+    if (m_drive.odomPose.getX() > 8.25) {
       target_x = 16.5 - target_x;
       back_x = 16.5 - back_x;
     }
+    
     target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.5);
 
     // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));
     // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
-    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x, 5.5, target_z));
+    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x, 5.5, target_z + m_shooter.offset));
     SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x, 5.5));
-
   }
 
 

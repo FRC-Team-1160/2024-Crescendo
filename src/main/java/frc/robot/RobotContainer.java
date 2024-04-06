@@ -67,8 +67,8 @@ public class RobotContainer {
     private Joystick m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
 
     public boolean isRedAlliance;
-    final double forward = 180;
-    final double backward = 0;
+    final double forward = 0;
+    final double backward = 180;
 
 
     /**
@@ -137,7 +137,7 @@ public class RobotContainer {
             new WaitCommand(5),
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 6.7, Rotation2d.fromDegrees(flipAngle(120))))),
             new SwerveDriveMoveAuto(m_driveTrain, x1, 7.0),
-            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new AimSpeakerAuto(m_driveTrain, m_shooter, 2.20),
             new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
@@ -267,6 +267,15 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.8)));
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0)));
+
+        new JoystickButton(m_leftBoard, 4)
+            .onTrue(new SequentialCommandGroup(
+              new InstantCommand(() -> m_shooter.setpoint = 0.13),
+              new InstantCommand(() -> m_shooter.setSpeed(0.60))
+            ))
+            .onFalse(new SequentialCommandGroup(
+              new InstantCommand(() -> m_shooter.setSpeed(0))
+            ));
 
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.INTAKE)
             .toggleOnTrue(new IntakeNote(m_intake, m_transport));

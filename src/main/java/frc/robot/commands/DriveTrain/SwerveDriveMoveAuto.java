@@ -97,5 +97,4 @@ public class SwerveDriveMoveAuto extends Command {
     public boolean isFinished(){
         return (Math.sqrt(Math.pow(m_drive.odomPose.getX() - target_x, 2) + Math.pow(m_drive.odomPose.getY() - target_y, 2)) < 0.15);
     }
-
 }
