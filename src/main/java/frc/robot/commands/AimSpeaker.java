@@ -46,7 +46,7 @@ public class AimSpeaker extends Command {
     double step = 2.0;
 
     double target_x = 0.5;
-    double target_z = 2.25;
+    double target_z = 2.15;
     double back_x = 0;
     // target_x = SmartDashboard.getNumber("GetX", 0.5);
     // target_z = SmartDashboard.getNumber("GetZ", 2.2);
@@ -57,7 +57,7 @@ public class AimSpeaker extends Command {
       back_x = 16.5 - back_x;
     }
     
-    m_drive.aimSwerveDrive(x, y, back_x - x*step, 5.5 - y*step);
+    m_drive.aimSwerveDrive(x, y, (back_x - x*step), (5.5 - y*step));
 
     // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, target_z));
     // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));

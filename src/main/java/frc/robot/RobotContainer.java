@@ -66,9 +66,9 @@ public class RobotContainer {
     private Joystick m_leftBoard = new Joystick(Constants.IO.LEFT_BOARD_PORT);
     private Joystick m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
 
-    public boolean isRedAlliance = (DriverStation.getAlliance().get() == Alliance.Red);
-    final double forward = isRedAlliance ? 180 : 0;
-    final double backward = isRedAlliance ? 0 : 180;
+    public boolean isRedAlliance;
+    final double forward = 180;
+    final double backward = 0;
 
 
     /**
@@ -80,6 +80,7 @@ public class RobotContainer {
     }
 
     public RobotContainer() {
+      isRedAlliance = DriverStation.getAlliance().get() == Alliance.Red;
       configureButtonBindings();
     //   autoChooser = AutoBuilder.buildAutoChooser();
     //   SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -129,6 +130,25 @@ public class RobotContainer {
             new Shoot(m_shooter, m_transport)
       ))
         .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
+        
+
+      m_chooser.addOption("Pos1 with delay", new ParallelRaceGroup(new WaitCommand(15.0),
+        new SequentialCommandGroup(
+            new WaitCommand(5),
+            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 6.7, Rotation2d.fromDegrees(flipAngle(120))))),
+            new SwerveDriveMoveAuto(m_driveTrain, x1, 7.0),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
+            new Shoot(m_shooter, m_transport),
+            new ParallelCommandGroup(
+                new IntakeAuto(m_intake, m_transport),
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, backward)
+            ),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
+            new Shoot(m_shooter, m_transport)
+      ))
+        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
 
       m_chooser.addOption("Pos2", new ParallelRaceGroup(new WaitCommand(15.0),
         new SequentialCommandGroup(
@@ -147,8 +167,47 @@ public class RobotContainer {
       ))
         .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
 
+        
+      m_chooser.addOption("Pos2 with delay", new ParallelRaceGroup(new WaitCommand(15.0),
+        new SequentialCommandGroup(
+            new WaitCommand(5),
+            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x_sub, 5.5, Rotation2d.fromDegrees(flipAngle(180))))),
+            new SwerveDriveMoveAuto(m_driveTrain, x1, 5.5),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
+            new Shoot(m_shooter, m_transport),
+            new ParallelCommandGroup(
+                new IntakeAuto(m_intake, m_transport), 
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, backward)
+            ),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
+            new Shoot(m_shooter, m_transport)
+      ))
+        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
+
       m_chooser.addOption("Pos3", new ParallelRaceGroup(new WaitCommand(15.0),
         new SequentialCommandGroup(
+            new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 4.5, Rotation2d.fromDegrees(flipAngle(-120))))),
+            new InstantCommand(() -> System.out.println(m_driveTrain.odomPose.getRotation().getDegrees())),
+            new InstantCommand(() -> System.out.println(m_driveTrain.getGyroAngle())),
+            new SwerveDriveMoveAuto(m_driveTrain, x1, 4.0),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
+            new Shoot(m_shooter, m_transport),
+            new ParallelCommandGroup(
+                new IntakeAuto(m_intake, m_transport),
+                new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, backward)
+            ),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
+            new WaitCommand(0.5),
+            new Shoot(m_shooter, m_transport)
+      ))
+        .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
+
+      m_chooser.addOption("Pos3 with delay", new ParallelRaceGroup(new WaitCommand(15.0),
+        new SequentialCommandGroup(
+            new WaitCommand(5),
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 4.5, Rotation2d.fromDegrees(flipAngle(-120))))),
             new InstantCommand(() -> System.out.println(m_driveTrain.odomPose.getRotation().getDegrees())),
             new InstantCommand(() -> System.out.println(m_driveTrain.getGyroAngle())),
@@ -223,7 +282,7 @@ public class RobotContainer {
             .whileTrue(new OverrideShooter(m_shooter));
         
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.MOVE_TAR)
-            .onTrue(new InstantCommand(() -> m_shooter.offset += m_rightBoard.getRawButton(Constants.IO.Board.Right.INC_OR_DEC_TAR) ? 0.04 : -0.04));
+            .onTrue(new InstantCommand(() -> m_shooter.offset += m_rightBoard.getRawButton(Constants.IO.Board.Right.INC_OR_DEC_TAR) ? 0.07 : -0.07));
 
         new JoystickButton(m_codriverSimpStick, 1)
         .whileTrue(new AimSpeaker(m_driveTrain, m_shooter));
@@ -236,6 +295,10 @@ public class RobotContainer {
 
         new JoystickButton(m_codriverSimpStick, 3)
             .onTrue(new InstantCommand(() -> m_shooter.setSpeed(0.25)));
+
+        // new JoystickButton(m_mainStick, 15)
+        //     .onTrue(new InstantCommand(() -> m_driveTrain.multiplier *= -1));
+
         
         // new JoystickButton(m_mainStick, 8)
         //     .toggleOnTrue(new SwerveDriveSpeaker(m_driveTrain));

@@ -92,6 +92,7 @@ public class DriveTrain extends SubsystemBase {
   double wkP, wkI, wkD;
   public SlewRateLimiter zlimiter;
   //initializes the drive train
+  public int multiplier;
   
   public static DriveTrain getInstance(){
     if (m_instance == null){
@@ -411,7 +412,7 @@ public class DriveTrain extends SubsystemBase {
 
   public double aimAngle(double xSpeed, double ySpeed, double target){
     double angle = getGyroAngle() * Math.PI / 180.0;
-    // if (odomPose.getX() > 8.25) target += Math.PI;
+    if (odomPose.getX() > 8.25 && DriverStation.isTeleop()) target += Math.PI;
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
     }
@@ -461,7 +462,7 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    double spd = m_mainStick.getRawButton(1) ? 0.5 : 0.90;
+    double spd = m_mainStick.getRawButton(1) ? 0.5 : 0.95;
     x = Math.cos(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     y = Math.sin(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     a = Math.signum(a) * 0.45 * (Math.abs(Math.pow(a, 3)) / (1 + Math.sqrt(mag) / 2));
