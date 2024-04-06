@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 /**
@@ -14,12 +16,26 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  */
 public final class Constants {
   // Units are m kg s unless otherwise specified
+  public static final class Swerve {
+    public static final double WHEEL_DIAMETER = 4 * 0.0254 * Math.PI;
+    public static final double GEAR_RATIO = 6.75;
+    public static final double MAX_SPEED = 5.0;
+    public static final double MAX_MODULE_SPEED = 5.0;
+    public static final double SIDE_LENGTH = 23.5 * 0.0254;
+    public static final double BASE_RADIUS = SIDE_LENGTH / Math.sqrt(2);
+    public static final double MAX_ANG_SPEED = 5.0;
+  }
+
+  public static final class Field {
+    public static final double FIELD_LENGTH = 16.54;
+    public static final double SPEAKER_Y = 5.6;
+  }
 
   public static final class Auto {
     public static final double MAX_VEL = 1.0;
     public static final double MAX_ACEL = 1.5;
-    public static final double MAX_ANG_VEL = 0.2;
-    public static final double MAX_ANG_ACEL = 0.3;
+    public static final double MAX_ANG_VEL = 90;
+    public static final double MAX_ANG_ACEL = 90;
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(
         MAX_ANG_VEL,
@@ -30,6 +46,13 @@ public final class Constants {
         MAX_VEL,
         MAX_ACEL
       );
+
+    public static final class Start {
+      public static final Pose2d SUB1 = new Pose2d(0.8, 6.7, Rotation2d.fromDegrees(120));
+      public static final Pose2d SUB2 = new Pose2d(1.3, 5.5, Rotation2d.fromDegrees(180));
+      public static final Pose2d SUB3 = new Pose2d(0.8, 4.5, Rotation2d.fromDegrees(-120));
+      public static final Pose2d WALL = new Pose2d(0.5, 1.5, Rotation2d.fromDegrees(180));
+    }
   }
 
   public static final class Port {
@@ -49,8 +72,8 @@ public final class Constants {
     public static final int BACK_LEFT_CODER = 5;
     public static final int BACK_RIGHT_CODER = 7;
 
-    public static final int SHOOTER_TOP_MOTOR = 9;
-    public static final int SHOOTER_BOTTOM_MOTOR = 2;
+    public static final int SHOOTER_TOP_MOTOR = 10;
+    public static final int SHOOTER_BOTTOM_MOTOR = 9;
     public static final int SHOOTER_PITCH_MOTOR = 7;
 
     public static final int INTAKE_MOTOR = 4;
@@ -63,6 +86,10 @@ public final class Constants {
     
     public static final int CLIMBER_LEFT_MOTOR = 8;
     public static final int CLIMBER_RIGHT_MOTOR = 3;
+    
+    public static final int LEFT_CLIMB_LIMIT = 0;
+    public static final int RIGHT_CLIMB_LIMIT = 1;
+    public static final int TRANSPORT_LIMIT = 2;
 
   }
 

@@ -4,7 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
 import frc.robot.Constants.Port;
 
 import com.revrobotics.ColorSensorV3;
@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Transport extends SubsystemBase {
 
@@ -27,6 +28,8 @@ public class Transport extends SubsystemBase {
     public Timer refresh;
 
     public ColorSensorV3 m_colorSensor;
+    public DigitalInput limit_switch;
+    public int prox;
 
     public static Transport getInstance(){
         if (m_instance == null){
@@ -36,7 +39,6 @@ public class Transport extends SubsystemBase {
     }
 
     public Transport(){
-
         leftWheel = new CANSparkMax(Port.TRANSPORT_LEFT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
         rightWheel = new CANSparkMax(Port.TRANSPORT_RIGHT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
         belt = new CANSparkMax(Port.TRANSPORT_BELT_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
@@ -44,6 +46,8 @@ public class Transport extends SubsystemBase {
         noteStored = false;
         refresh = new Timer();
         refresh.start();
+        limit_switch = new DigitalInput(Constants.Port.TRANSPORT_LIMIT);
+        prox = 100;
     }
     
     public void setWheels(int state){
@@ -53,12 +57,13 @@ public class Transport extends SubsystemBase {
 
     @Override
     public void periodic(){
-        if (refresh.hasElapsed(0.1)) {
+        if (refresh.hasElapsed(0.1) && prox != 0) {
             refresh.restart();
-            int prox = m_colorSensor.getProximity();
+            prox = m_colorSensor.getProximity();
             SmartDashboard.putNumber("Color Sensor Prox", prox);
-            noteStored = (prox > 200.0); //nothing ~100, note ~350
-            SmartDashboard.putBoolean("Note Stored", noteStored);
         }
+        noteStored = (prox > 200.0) || !limit_switch.get(); //nothing ~70, note ~300
+        SmartDashboard.putBoolean("limit", limit_switch.get());
+        SmartDashboard.putBoolean("Note Stored", noteStored);
     }
 }

@@ -25,7 +25,7 @@ public class Vision extends SubsystemBase{
     
   private static Vision m_instance;
   public PhotonCamera m_shooterCamera;
-  public PhotonCamera m_backCamera;
+  // public PhotonCamera m_backCamera;
   public Pose3d m_pose;
   public DriveTrain m_drive;
 
@@ -53,7 +53,7 @@ public class Vision extends SubsystemBase{
     adv_trackedPub = adv_vision.getStructTopic("Tracked", Pose3d.struct).publish();
 
     m_shooterCamera = new PhotonCamera("Camera_Module_v1");//Camera_Module_v1
-    m_backCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
+    // m_backCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     m_drive = DriveTrain.getInstance();

@@ -144,27 +144,27 @@ public class DriveTrain extends SubsystemBase {
     // m_backRightCoder.setPosition(0);
 
 
-    // driveConfigs = new Slot0Configs(); //TUNE VALUES
-    // driveConfigs.kV = 2; 
-    // driveConfigs.kP = 1;
-    // driveConfigs.kI = 0;
-    // driveConfigs.kD = 10;
+    driveConfigs = new Slot0Configs(); //TUNE VALUES
+    driveConfigs.kV = 2; 
+    driveConfigs.kP = 1;
+    driveConfigs.kI = 0;
+    driveConfigs.kD = 10;
 
-    // steerConfigs = new Slot0Configs(); //TUNE VALUES
-    // steerConfigs.kV = 0;
-    // steerConfigs.kP = 0.05;
-    // steerConfigs.kI = 0.01;
-    // steerConfigs.kD = 0.005;
+    steerConfigs = new Slot0Configs(); //TUNE VALUES
+    steerConfigs.kV = 0;
+    steerConfigs.kP = 0.05;
+    steerConfigs.kI = 0.01;
+    steerConfigs.kD = 0.005;
 
-    // m_frontLeftDriveMotor.getConfigurator().apply(driveConfigs);
-    // m_frontRightDriveMotor.getConfigurator().apply(driveConfigs);
-    // m_backLeftDriveMotor.getConfigurator().apply(driveConfigs);
-    // m_backRightDriveMotor.getConfigurator().apply(driveConfigs);
+    m_frontLeftDriveMotor.getConfigurator().apply(driveConfigs);
+    m_frontRightDriveMotor.getConfigurator().apply(driveConfigs);
+    m_backLeftDriveMotor.getConfigurator().apply(driveConfigs);
+    m_backRightDriveMotor.getConfigurator().apply(driveConfigs);
 
-    // m_frontLeftSteerMotor.getConfigurator().apply(steerConfigs);
-    // m_frontRightSteerMotor.getConfigurator().apply(steerConfigs);
-    // m_backLeftSteerMotor.getConfigurator().apply(steerConfigs);
-    // m_backRightSteerMotor.getConfigurator().apply(steerConfigs);
+    m_frontLeftSteerMotor.getConfigurator().apply(steerConfigs);
+    m_frontRightSteerMotor.getConfigurator().apply(steerConfigs);
+    m_backLeftSteerMotor.getConfigurator().apply(steerConfigs);
+    m_backRightSteerMotor.getConfigurator().apply(steerConfigs);
 
     //swerve wheels (controls the rotation and direction motors)
 
@@ -411,7 +411,7 @@ public class DriveTrain extends SubsystemBase {
 
   public double aimAngle(double xSpeed, double ySpeed, double target){
     double angle = getGyroAngle() * Math.PI / 180.0;
-
+    if (odomPose.getX() > 8.25) target += Math.PI;
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
     }
