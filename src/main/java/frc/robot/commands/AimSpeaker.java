@@ -71,7 +71,7 @@ public class AimSpeaker extends Command {
 
     m_shooter.aimTarget(target_x - x*step, Constants.Field.SPEAKER_Y - y*step, target_z + m_shooter.offset);
     m_shooter.revTarget(back_x - x*step, Constants.Field.SPEAKER_Y - y*step);
-    if (m_drive.aimed && m_shooter.revved && m_shooter.aimed){
+    if (m_shooter.revved && m_shooter.aimed){
       m_shooter.blinkin.set(0.93);
     } else {
       m_shooter.blinkin.set(-0.09);

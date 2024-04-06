@@ -65,7 +65,7 @@ public class AimSpeakerAuto extends Command {
   @Override
   public boolean isFinished() {
     
-    return m_drive.aimed && ((m_shooter.revved && m_shooter.aimed) || RobotBase.isSimulation());
+    return ((m_shooter.revved && m_shooter.aimed) || RobotBase.isSimulation());
   }
 }
     
