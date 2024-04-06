@@ -411,7 +411,7 @@ public class DriveTrain extends SubsystemBase {
 
   public double aimAngle(double xSpeed, double ySpeed, double target){
     double angle = getGyroAngle() * Math.PI / 180.0;
-    if (odomPose.getX() > 8.25) target += Math.PI;
+    // if (odomPose.getX() > 8.25) target += Math.PI;
     if (target > Math.PI * 2){
       target -= Math.PI * 2;
     }

@@ -84,6 +84,8 @@ public class RobotContainer {
     //   autoChooser = AutoBuilder.buildAutoChooser();
     //   SmartDashboard.putData("Auto Chooser", autoChooser);
 
+      SmartDashboard.putBoolean("isRed", isRedAlliance);
+
       final double x0 = isRedAlliance ? 16.5 - 0.8 : 0.8;
       final double x_sub = isRedAlliance ? 16.5 - 1.3 : 1.3;
       final double x1 = isRedAlliance ? 16.5 - 1.8 : 1.8;
@@ -184,6 +186,7 @@ public class RobotContainer {
     }
     
     private void configureButtonBindings() {
+      SmartDashboard.putData("aimspeaker", new AimSpeaker(m_driveTrain, m_shooter));
 
         new JoystickButton(m_mainStick, 14)
             .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro()));
