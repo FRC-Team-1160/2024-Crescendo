@@ -29,7 +29,6 @@ public class AmpPreset extends Command {
 
     @Override
     public void end(boolean interrupted){
-        m_shooter.setpoint = 0.0;
         SmartDashboard.putNumber("Shooter Pitch", 0.0);
         m_shooter.setSpeed(0);
     }

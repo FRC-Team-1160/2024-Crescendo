@@ -64,7 +64,7 @@ public class AimSpeakerAuto extends Command {
   @Override
   public boolean isFinished() {
     
-    return Math.abs(target_a - m_drive.getGyroAngle()/180.0*Math.PI) <= 0.05 && ((m_shooter.revved && m_shooter.aimed) || RobotBase.isSimulation());
+    return Math.abs(Math.floorMod((int) (m_drive.getGyroAngle() - target_a * 180 / Math.PI), 360)) <= 5 && ((m_shooter.revved && m_shooter.aimed) || RobotBase.isSimulation());
   }
 }
     
