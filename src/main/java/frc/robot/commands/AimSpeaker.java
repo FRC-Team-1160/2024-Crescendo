@@ -18,6 +18,8 @@ public class AimSpeaker extends Command {
   private double y;
   DriveTrain m_drive;
   Shooter m_shooter;
+  double target_x;
+  double target_z;
 
   public AimSpeaker(DriveTrain m_drive, Shooter m_shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -31,6 +33,8 @@ public class AimSpeaker extends Command {
   @Override
   public void initialize() {
     m_shooter.blinkin.set(-0.09);
+    target_x = -0.5;
+    target_z = 1.9;
   }
 
   @Override
@@ -46,14 +50,8 @@ public class AimSpeaker extends Command {
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
     double step = 2.0;
 
-    double target_x = 0.5;
-    double target_z = 2.05;
     double back_x = 0;
-    // target_x = SmartDashboard.getNumber("GetX", 0.5);
-    // target_z = SmartDashboard.getNumber("GetZ", 2.2);
-    SmartDashboard.putNumber("GetX", target_x);
-    SmartDashboard.putNumber("GetZ", target_z);
-    if (m_drive.odomPose.getX() > 8.25){
+    if (m_drive.odomPose.getX() > 8.25) {
       target_x = 16.5 - target_x;
       back_x = 16.5 - back_x;
     }

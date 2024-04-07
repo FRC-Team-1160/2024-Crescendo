@@ -67,8 +67,8 @@ public class RobotContainer {
     private Joystick m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
 
     public boolean isRedAlliance;
-    final double forward = 0;
-    final double backward = 180;
+    public double forward;
+    public double backward;
 
 
     /**
@@ -81,6 +81,8 @@ public class RobotContainer {
 
     public RobotContainer() {
       isRedAlliance = DriverStation.getAlliance().get() == Alliance.Red;
+      forward = isRedAlliance ? 0 : 180;
+      backward = isRedAlliance ? 180 : 0;
       configureButtonBindings();
     //   autoChooser = AutoBuilder.buildAutoChooser();
     //   SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -137,7 +139,7 @@ public class RobotContainer {
             new WaitCommand(5),
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 6.7, Rotation2d.fromDegrees(flipAngle(120))))),
             new SwerveDriveMoveAuto(m_driveTrain, x1, 7.0),
-            new AimSpeakerAuto(m_driveTrain, m_shooter, 2.20),
+            new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(

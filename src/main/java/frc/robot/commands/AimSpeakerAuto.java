@@ -28,10 +28,6 @@ public class AimSpeakerAuto extends Command {
     
   }
 
-  public AimSpeakerAuto(DriveTrain m_driveTrain, Shooter m_shooter2, double d) {
-    //TODO Auto-generated constructor stub
-}
-
 // Called when the command is initially scheduled.
   @Override
   public void initialize() {
