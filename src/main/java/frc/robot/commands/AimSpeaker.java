@@ -21,27 +21,18 @@ public class AimSpeaker extends Command {
   Shooter m_shooter;
   double target_x;
   double target_z;
-  int whereToAim;
 
   public AimSpeaker(DriveTrain m_drive, Shooter m_shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_drive, m_shooter);
     this.m_drive = m_drive;
     this.m_shooter = m_shooter;
-    this.whereToAim = 0;
   }
   
   /**
    * @param m_drive
    * @param m_shooter
-   * @param whereToAim -1 = red
    */
-  public AimSpeaker(DriveTrain m_drive, Shooter m_shooter, int whereToAim) {
-    addRequirements(m_drive, m_shooter);
-    this.m_drive = m_drive;
-    this.m_shooter = m_shooter;
-    this.whereToAim = whereToAim;
-  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -62,22 +53,20 @@ public class AimSpeaker extends Command {
     SmartDashboard.putNumber("Sideways", y);
 
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
-    double step = 2.0;
+    double step = 3.0;
 
     double back_x = 0;
-    if ((m_drive.odomPose.getX() > 8.25 && this.whereToAim == 0) || (this.whereToAim == -1)) {
+    
+    if (m_drive.isRed) {
       target_x = Constants.Field.FIELD_LENGTH - target_x;
       back_x = Constants.Field.FIELD_LENGTH - back_x;
     }
     
     m_drive.aimSwerveDrive(x, y, (back_x - x*step), (Constants.Field.SPEAKER_Y - y*step));
 
-    if (Math.abs(this.whereToAim) == 0) {
-      // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, target_z));
-      // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
-      SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x - x*step, Constants.Field.SPEAKER_Y - y*step, target_z + m_shooter.offset));
-      SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x - x*step, Constants.Field.SPEAKER_Y - y*step));
-    }
+    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x - x*step, Constants.Field.SPEAKER_Y - y*step, target_z + m_shooter.offset));
+    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x - x*step, Constants.Field.SPEAKER_Y - y*step));
+  
 
     if (m_shooter.revved && m_shooter.aimed){
       m_shooter.blinkin.set(0.93);

@@ -93,7 +93,7 @@ public class DriveTrain extends SubsystemBase {
   public SlewRateLimiter zlimiter;
   //initializes the drive train
   public int multiplier;
-  public boolean
+  public boolean isRed;
   
   public static DriveTrain getInstance(){
     if (m_instance == null){
@@ -276,6 +276,9 @@ public class DriveTrain extends SubsystemBase {
     });
     
     sim_angle = 0;
+
+    isRed = DriverStation.getAlliance().get() == Alliance.Red;
+
   }
 
   public double getGyroAngle() {

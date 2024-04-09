@@ -128,8 +128,9 @@ public class Shooter extends SubsystemBase{
 
   }
 
-  public void setSpeed(double s) {
-    speed = Math.max(-1, Math.min(1, s)) * 50;
+  public double setSpeed(double s) {
+    s = Math.max(-1, Math.min(1, s));
+    speed = s * 50;
     if (speed == 0){
       // topPID.setReference(0, ControlType.kVoltage);
       // bottomPID.setReference(0, ControlType.kVoltage);
@@ -144,6 +145,7 @@ public class Shooter extends SubsystemBase{
       topMotor.setControl(new VelocityVoltage(speed * topSpeedMod).withSlot(0));
       bottomMotor.setControl(new VelocityVoltage(speed * bottomSpeedMod).withSlot(0));
     }
+    return s;
   }
 
   public double aimTarget(double x, double y, double z){
@@ -162,8 +164,7 @@ public class Shooter extends SubsystemBase{
     // return s;
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
     double rpm_speed = Math.min(0.6 + dist/8.0, 1.0);
-    setSpeed(rpm_speed);
-    return rpm_speed;
+    return setSpeed(rpm_speed);
   }
 
 

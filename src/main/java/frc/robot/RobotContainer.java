@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AimSpeaker;
 import frc.robot.commands.AimSpeakerAuto;
+import frc.robot.commands.Shuttle;
 import frc.robot.commands.DriveTrain.SwerveDrive;
 import frc.robot.commands.DriveTrain.SwerveDriveMoveAuto;
 import frc.robot.commands.DriveTrain.SwerveDriveSpeakerAuto;
@@ -266,24 +267,19 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0)));
 
           new JoystickButton(m_leftBoard, 4)
-              .whileTrue(new SequentialCommandGroup(
-                new InstantCommand(() -> m_shooter.setpoint = 0.13),
-                new InstantCommand(() -> m_shooter.setSpeed(0.65)),
-                new AimSpeaker(m_driveTrain, m_shooter, isRedAlliance ? -1 : 1)
-              ))
+              .whileTrue(new Shuttle(m_driveTrain, m_shooter, true)
+              )
               .onFalse(new SequentialCommandGroup(
                 new InstantCommand(() -> m_shooter.setSpeed(0))
               ));
             
 
         new JoystickButton(m_leftBoard, 3)
-            .whileTrue(new SequentialCommandGroup(
-              new InstantCommand(() -> m_shooter.setpoint = 0.13),
-              new InstantCommand(() -> m_shooter.setSpeed(0.65))
-            ))
-            .onFalse(new SequentialCommandGroup(
-              new InstantCommand(() -> m_shooter.setSpeed(0))
-            ));
+              .whileTrue(new Shuttle(m_driveTrain, m_shooter, false)
+              )
+              .onFalse(new SequentialCommandGroup(
+                new InstantCommand(() -> m_shooter.setSpeed(0))
+              ));
 
         new JoystickButton(m_rightBoard, Constants.IO.Board.Right.INTAKE)
             .toggleOnTrue(new IntakeNote(m_intake, m_transport));

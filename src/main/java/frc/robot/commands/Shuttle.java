@@ -21,13 +21,14 @@ public class Shuttle extends Command {
   Shooter m_shooter;
   double target_x;
   double target_z;
-  int whereToAim;
+  boolean aim;
 
-  public Shuttle(DriveTrain m_drive, Shooter m_shooter) {
+  public Shuttle(DriveTrain m_drive, Shooter m_shooter, boolean aim) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_drive, m_shooter);
     this.m_drive = m_drive;
     this.m_shooter = m_shooter;
+    this.aim = aim;
   }
   
   /**
@@ -54,22 +55,25 @@ public class Shuttle extends Command {
     SmartDashboard.putNumber("Sideways", y);
 
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
-    double step = 2.0;
+    double step = 4.0;
 
-    double back_x = 0;
-    if ((m_drive.isRed) || (this.whereToAim == -1)) {
+    double back_x = 1.0;
+    if (m_drive.isRed) {
       target_x = Constants.Field.FIELD_LENGTH - target_x;
       back_x = Constants.Field.FIELD_LENGTH - back_x;
     }
     
-    m_drive.aimSwerveDrive(x, y, (back_x - x*step), (Constants.Field.SPEAKER_Y - y*step));
+    double a = 0.13;
 
-    if (Math.abs(this.whereToAim) == 0) {
-      // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, target_z));
-      // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
-      SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x - x*step, Constants.Field.SPEAKER_Y - y*step, target_z + m_shooter.offset));
-      SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x - x*step, Constants.Field.SPEAKER_Y - y*step));
+    if (aim) {
+        m_drive.aimSwerveDrive(x, y, (back_x - x*step), (Constants.Field.SPEAKER_Y - y*step));
+        double d = Math.sqrt(Math.pow(m_drive.odomPose.getX() - (back_x - x*step), 2) + Math.pow(m_drive.odomPose.getY() - (Constants.Field.SPEAKER_Y - y*step), 2));
+        SmartDashboard.putNumber("Dist", d);
+        a = 0.17 - 0.005 * d;
     }
+    SmartDashboard.putNumber("Shooter Aim", a);
+    m_shooter.setpoint = Math.min(Math.max(0.12, a), 0.16);
+    SmartDashboard.putNumber("Shooter Rev", m_shooter.setSpeed(0.65));
 
     if (m_shooter.revved && m_shooter.aimed){
       m_shooter.blinkin.set(0.93);
