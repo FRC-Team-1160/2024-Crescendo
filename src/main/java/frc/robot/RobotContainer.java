@@ -265,15 +265,15 @@ public class RobotContainer {
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0)));
 
-        // new JoystickButton(m_leftBoard, 4)
-        //     .whileTrue(new SequentialCommandGroup(
-        //       new InstantCommand(() -> m_shooter.setpoint = 0.13),
-        //       new InstantCommand(() -> m_shooter.setSpeed(0.65)),
-        //       new AimSpeaker(m_driveTrain, m_shooter, isRedAlliance ? -1 : 1)
-        //     ))
-        //     .onFalse(new SequentialCommandGroup(
-        //       new InstantCommand(() -> m_shooter.setSpeed(0))
-        //     ));
+          new JoystickButton(m_leftBoard, 4)
+              .whileTrue(new SequentialCommandGroup(
+                new InstantCommand(() -> m_shooter.setpoint = 0.13),
+                new InstantCommand(() -> m_shooter.setSpeed(0.65)),
+                new AimSpeaker(m_driveTrain, m_shooter, isRedAlliance ? -1 : 1)
+              ))
+              .onFalse(new SequentialCommandGroup(
+                new InstantCommand(() -> m_shooter.setSpeed(0))
+              ));
             
 
         new JoystickButton(m_leftBoard, 3)

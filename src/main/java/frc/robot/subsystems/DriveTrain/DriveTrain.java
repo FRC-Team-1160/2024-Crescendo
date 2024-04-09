@@ -93,6 +93,7 @@ public class DriveTrain extends SubsystemBase {
   public SlewRateLimiter zlimiter;
   //initializes the drive train
   public int multiplier;
+  public boolean
   
   public static DriveTrain getInstance(){
     if (m_instance == null){

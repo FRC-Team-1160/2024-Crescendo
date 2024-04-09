@@ -13,7 +13,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 import frc.robot.subsystems.Intake.Transport;
 
-public class AimSpeaker extends Command {
+public class Shuttle extends Command {
   /** Creates a new SwerveDrive. */
   private double x;
   private double y;
@@ -23,25 +23,17 @@ public class AimSpeaker extends Command {
   double target_z;
   int whereToAim;
 
-  public AimSpeaker(DriveTrain m_drive, Shooter m_shooter) {
+  public Shuttle(DriveTrain m_drive, Shooter m_shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_drive, m_shooter);
     this.m_drive = m_drive;
     this.m_shooter = m_shooter;
-    this.whereToAim = 0;
   }
   
   /**
    * @param m_drive
    * @param m_shooter
-   * @param whereToAim -1 = red
    */
-  public AimSpeaker(DriveTrain m_drive, Shooter m_shooter, int whereToAim) {
-    addRequirements(m_drive, m_shooter);
-    this.m_drive = m_drive;
-    this.m_shooter = m_shooter;
-    this.whereToAim = whereToAim;
-  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -65,7 +57,7 @@ public class AimSpeaker extends Command {
     double step = 2.0;
 
     double back_x = 0;
-    if ((m_drive.odomPose.getX() > 8.25 && this.whereToAim == 0) || (this.whereToAim == -1)) {
+    if ((m_drive.isRed) || (this.whereToAim == -1)) {
       target_x = Constants.Field.FIELD_LENGTH - target_x;
       back_x = Constants.Field.FIELD_LENGTH - back_x;
     }
