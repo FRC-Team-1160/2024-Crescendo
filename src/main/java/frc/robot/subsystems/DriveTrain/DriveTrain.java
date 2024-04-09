@@ -94,6 +94,7 @@ public class DriveTrain extends SubsystemBase {
   //initializes the drive train
   public int multiplier;
   public boolean isRed;
+  public boolean aimed;
   
   public static DriveTrain getInstance(){
     if (m_instance == null){
@@ -188,9 +189,9 @@ public class DriveTrain extends SubsystemBase {
     m_field = new Field2d();
 
     if (RobotBase.isReal()){
-      m_anglePID = new PIDController(3.0, 0, 0.1);
+      m_anglePID = new PIDController(5.0, 0, 0.1);
     } else {
-      m_anglePID = new PIDController(3.0, 0 , 0.1);
+      m_anglePID = new PIDController(5.0, 0 , 0.1);
     }
     m_anglePID.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -298,7 +299,6 @@ public class DriveTrain extends SubsystemBase {
   public void setSwerveDrive(double xSpeed, double ySpeed, double angSpeed){
     SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
-    //SmartDashboard.putNumber("OUTA", m_speeds.omegaRadiansPerSecond);
     setSwerveDrive(m_speeds);
   }
 
@@ -428,5 +428,7 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("Absolute", m_frontLeftCoder.getAbsolutePosition().getValue());
     SmartDashboard.putNumber("regular", m_frontLeftCoder.getPosition().getValue());
     SmartDashboard.putBoolean("Gyro Rotating", m_gyro.isRotating());
+    aimed = m_anglePID.getPositionError() < 0.1;
+    SmartDashboard.putBoolean("Swerve Aimed", aimed);
   }
 }

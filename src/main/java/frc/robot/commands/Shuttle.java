@@ -79,7 +79,7 @@ public class Shuttle extends Command {
     m_shooter.setpoint = Math.min(Math.max(0.12, pitch), 0.16);
     SmartDashboard.putNumber("Shooter Rev", m_shooter.setSpeed(0.65));
 
-    if (m_shooter.revved && m_shooter.aimed){
+    if (m_shooter.revved && m_shooter.aimed && m_drive.aimed){
       m_shooter.blinkin.set(0.93);
     } else {
       m_shooter.blinkin.set(-0.09);

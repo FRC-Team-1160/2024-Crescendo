@@ -66,7 +66,7 @@ public class AimSpeakerAuto extends Command {
   public boolean isFinished() {
     double ang_diff = m_drive.m_anglePID.getPositionError();
     
-    return Math.abs(ang_diff) < 5;
+    return Math.abs(ang_diff) < 0.1;
   }
 }
     
