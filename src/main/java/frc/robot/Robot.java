@@ -87,8 +87,6 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_robotContainer.isRed = DriverStation.getAlliance().get() == Alliance.Red;
-    m_robotContainer.m_driveTrain.isRed = m_robotContainer.isRed;
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 

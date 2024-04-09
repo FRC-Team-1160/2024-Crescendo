@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
 
@@ -41,16 +42,16 @@ public class AimSpeakerAuto extends Command {
     double back_x = 0.0;
 
     if (m_drive.odomPose.getX() > 8.25) {
-      target_x = 16.5 - target_x;
-      back_x = 16.5 - back_x;
+      target_x = Constants.Field.FIELD_LENGTH - target_x;
+      back_x = Constants.Field.FIELD_LENGTH - back_x;
     }
     
-    target_a = m_drive.aimSwerveDrive(x, y, back_x, 5.5);
+    target_a = m_drive.aimSwerveDrive(x, y, back_x, Constants.Field.SPEAKER_Y);
 
     // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));
     // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
-    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x, 5.5, target_z + m_shooter.offset));
-    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x, 5.5));
+    SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x, Constants.Field.SPEAKER_Y, target_z + m_shooter.offset));
+    SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x, Constants.Field.SPEAKER_Y));
   }
 
 

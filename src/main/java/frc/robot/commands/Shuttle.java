@@ -17,6 +17,7 @@ public class Shuttle extends Command {
   /** Creates a new SwerveDrive. */
   private double x;
   private double y;
+  double a;
   DriveTrain m_drive;
   Shooter m_shooter;
   double target_x;
@@ -50,29 +51,32 @@ public class Shuttle extends Command {
     double[] inputs = m_drive.inputSpeeds();
     x = inputs[0];
     y = inputs[1];
+    a = inputs[2];
 
     SmartDashboard.putNumber("Forward", x);
     SmartDashboard.putNumber("Sideways", y);
 
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
-    double step = 4.0;
+    double step = 2.0;
 
-    double back_x = 1.0;
+    double back_x = 2.0;
     if (m_drive.isRed) {
       target_x = Constants.Field.FIELD_LENGTH - target_x;
       back_x = Constants.Field.FIELD_LENGTH - back_x;
     }
     
-    double a = 0.13;
+    double pitch = 0.13;
 
     if (aim) {
         m_drive.aimSwerveDrive(x, y, (back_x - x*step), (Constants.Field.SPEAKER_Y - y*step));
         double d = Math.sqrt(Math.pow(m_drive.odomPose.getX() - (back_x - x*step), 2) + Math.pow(m_drive.odomPose.getY() - (Constants.Field.SPEAKER_Y - y*step), 2));
         SmartDashboard.putNumber("Dist", d);
-        a = 0.17 - 0.005 * d;
+        pitch = 0.16 - 0.004 * d;
+    } else {
+        m_drive.setSwerveDrive(x, y, a);
     }
-    SmartDashboard.putNumber("Shooter Aim", a);
-    m_shooter.setpoint = Math.min(Math.max(0.12, a), 0.16);
+    SmartDashboard.putNumber("Shooter Aim", pitch);
+    m_shooter.setpoint = Math.min(Math.max(0.12, pitch), 0.16);
     SmartDashboard.putNumber("Shooter Rev", m_shooter.setSpeed(0.65));
 
     if (m_shooter.revved && m_shooter.aimed){

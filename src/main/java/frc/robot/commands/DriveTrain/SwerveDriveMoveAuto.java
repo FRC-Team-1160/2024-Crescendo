@@ -58,8 +58,8 @@ public class SwerveDriveMoveAuto extends Command {
         start_x = m_drive.odomPose.getX();
         start_y = m_drive.odomPose.getY();
         dist = Math.sqrt(Math.pow(target_x - start_x, 2) + Math.pow(target_y - start_y, 2));
-        x_pid = new PIDController(0.25, 0, 0);
-        y_pid = new PIDController(0.25, 0, 0);
+        x_pid = new PIDController(1.0, 0, 0);
+        y_pid = new PIDController(1.0, 0, 0);
         // a_pid = new ProfiledPIDController(0.0001, 0, 0, Constants.Auto.kThetaControllerConstraints);
         // a_pid.enableContinuousInput(-180, 180);
         // a_pid.setTolerance(5);

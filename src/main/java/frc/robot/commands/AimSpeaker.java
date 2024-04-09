@@ -53,10 +53,10 @@ public class AimSpeaker extends Command {
     SmartDashboard.putNumber("Sideways", y);
 
     // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
-    double step = 3.0;
+    double step = 0.8;
 
     double back_x = 0;
-    
+
     if (m_drive.isRed) {
       target_x = Constants.Field.FIELD_LENGTH - target_x;
       back_x = Constants.Field.FIELD_LENGTH - back_x;
