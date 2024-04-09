@@ -67,7 +67,7 @@ public class RobotContainer {
     private Joystick m_leftBoard = new Joystick(Constants.IO.LEFT_BOARD_PORT);
     private Joystick m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
 
-    public boolean isRedAlliance;
+    public boolean isRed;
     public double forward;
     public double backward;
 
@@ -77,25 +77,25 @@ public class RobotContainer {
      */
     public double flipAngle(double ang){
         System.out.println(180 - ang);
-        return (isRedAlliance ? 180 - ang : ang);
+        return (isRed ? 180 - ang : ang);
     }
 
     public RobotContainer() {
-      isRedAlliance = DriverStation.getAlliance().get() == Alliance.Red;
-      forward = isRedAlliance ? 0 : 180;
-      backward = isRedAlliance ? 180 : 0;
+      isRed = m_driveTrain.isRed;
+      forward = isRed ? 0 : 180;
+      backward = isRed ? 180 : 0;
       configureButtonBindings();
     //   autoChooser = AutoBuilder.buildAutoChooser();
     //   SmartDashboard.putData("Auto Chooser", autoChooser);
 
-      SmartDashboard.putBoolean("isRed", isRedAlliance);
+      SmartDashboard.putBoolean("isRed", isRed);
 
-      final double x0 = isRedAlliance ? 16.5 - 0.8 : 0.8;
-      final double x_sub = isRedAlliance ? 16.5 - 1.3 : 1.3;
-      final double x1 = isRedAlliance ? 16.5 - 1.8 : 1.8;
-      final double x2 = isRedAlliance ? 16.5 - 2.7 : 2.7;
-      final double x3 = isRedAlliance ? 16.5 - 2.4 : 2.4;
-      final double x_mid = isRedAlliance ? 16.5 - 8.0 : 8.0;
+      final double x0 = isRed ? 16.5 - 0.8 : 0.8;
+      final double x_sub = isRed ? 16.5 - 1.3 : 1.3;
+      final double x1 = isRed ? 16.5 - 1.8 : 1.8;
+      final double x2 = isRed ? 16.5 - 2.7 : 2.7;
+      final double x3 = isRed ? 16.5 - 2.4 : 2.4;
+      final double x_mid = isRed ? 16.5 - 8.0 : 8.0;
 
       m_chooser = new SendableChooser<>();
 
@@ -214,8 +214,6 @@ public class RobotContainer {
         new SequentialCommandGroup(
             new WaitCommand(1),
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 4.5, Rotation2d.fromDegrees(flipAngle(-120))))),
-            new InstantCommand(() -> System.out.println(m_driveTrain.odomPose.getRotation().getDegrees())),
-            new InstantCommand(() -> System.out.println(m_driveTrain.getGyroAngle())),
             new SwerveDriveMoveAuto(m_driveTrain, x1, 4.0),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),

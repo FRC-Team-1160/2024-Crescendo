@@ -79,7 +79,6 @@ public class SwerveDriveMoveAuto extends Command {
 
         double x = x_pid.calculate(m_drive.odomPose.getX(), start_x + (target_x - start_x) * pos/dist);
         double y = y_pid.calculate(m_drive.odomPose.getY(), start_y + (target_y - start_y) * pos/dist);
-        // double a = -a_pid.calculate(m_drive.getGyroAngle(), target_a);
 
         // m_drive.setSwerveDrive(x, y, a);
         m_drive.aimAngle(x, y, target_a * Math.PI / 180.0);

@@ -7,10 +7,17 @@ package frc.robot.subsystems.DriveTrain;
 // import com.ctre.phoenix.sensors.CANCoder;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public class SwerveDriveWheel {
@@ -18,48 +25,63 @@ public class SwerveDriveWheel {
     public TalonFX steerMotor;
     public TalonFX driveMotor;
     public CANcoder steerSensor;
-    public double angle;
-    public double speed;
     public double distance;
     public PIDController m_anglePID;
     public PIDController m_speedPID;
-
-    //public TalonFXSensorCollection directionSensor;
-    double kFF, accumulator, maxA;
+    public SwerveModuleState desiredState;
 
     public SwerveDriveWheel(TalonFX steerMotor, CANcoder steerSensor, TalonFX driveMotor)
     {
         this.driveMotor = driveMotor;
         this.steerSensor = steerSensor;
         this.steerMotor = steerMotor;
-        maxA = 100;
-        accumulator = 0;
-        kFF = 0.05;
         distance = 0;
         m_anglePID = new PIDController(1.4, 0.0, 0.005);
 
         m_anglePID.enableContinuousInput(-0.5, 0.5);
+
+        Slot0Configs driveConfigs = new Slot0Configs();
+        driveConfigs.kP = 0.05;
+        driveConfigs.kV = 0.12;
+        driveConfigs.kS = 0.10;
+        
+        Slot0Configs steerConfigs = new Slot0Configs(); //TUNE VALUES
+        steerConfigs.kV = 0;
+        steerConfigs.kP = 0.05;
+        steerConfigs.kI = 0.01;
+        steerConfigs.kD = 0.005;
+
+        CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
+        limitConfigs.StatorCurrentLimit = 80;
+        limitConfigs.StatorCurrentLimitEnable = true;
+
+        driveMotor.getConfigurator().apply(driveConfigs);
+        driveMotor.getConfigurator().apply(limitConfigs);
+        steerMotor.getConfigurator().apply(steerConfigs);
+
+        desiredState = new SwerveModuleState();
+
     }
 
-    public void set(double angle, double speed)
+    public void set(SwerveModuleState state)
     {
-        double a = m_anglePID.calculate(getAngle(), angle);
+        double a = m_anglePID.calculate(state.angle.getRotations(), getAngle().getRotations());
         SmartDashboard.putNumber("MANUAL TARGET", a);
-        if (Math.abs(getAngle() - angle) > 0.005){
+        if (Math.abs(state.angle.getDegrees() - getAngle().getDegrees()) > 3){
             steerMotor.set(-a);
         } else {
             steerMotor.set(0);
         }
-        driveMotor.set(speed);
 
-        this.angle = angle;
-        this.speed = speed;
-        this.distance += speed;
+        driveMotor.setControl(new VelocityVoltage(state.speedMetersPerSecond / Constants.Swerve.METERS_PER_ROT));
+
+        distance += state.speedMetersPerSecond * 0.02;
+        desiredState = state;
     }
 
     public double getPosition(){
         if (RobotBase.isReal()){
-            return driveMotor.getRotorPosition().getValue();
+            return driveMotor.getRotorPosition().getValue() * Constants.Swerve.METERS_PER_ROT;
         } else {    
             return distance;
         }
@@ -67,13 +89,13 @@ public class SwerveDriveWheel {
 
     public double getSpeed(){
         if (RobotBase.isReal()){
-            return driveMotor.getRotorVelocity().getValue();
+            return driveMotor.getRotorVelocity().getValue() * Constants.Swerve.METERS_PER_ROT;
         } else {
-            return speed;
+            return desiredState.speedMetersPerSecond;
         }
     }
 
-    public double getAngle(){
+    public Rotation2d getAngle(){
         if (RobotBase.isReal()){
             double v = (steerSensor.getAbsolutePosition().getValue() % 1d);
             if (v < -0.5){
@@ -83,10 +105,18 @@ public class SwerveDriveWheel {
                 v -= 1.0;
             }
 
-            return v;
+            return Rotation2d.fromRotations(v);
         } else {
-            return angle;
+            return desiredState.angle;
         }
+    }
+
+    public SwerveModuleState getModuleState(){
+        return new SwerveModuleState(getSpeed(), getAngle());
+    }
+
+    public SwerveModulePosition getModulePosition(){
+        return new SwerveModulePosition(getPosition(), getAngle());
     }
     
 }
