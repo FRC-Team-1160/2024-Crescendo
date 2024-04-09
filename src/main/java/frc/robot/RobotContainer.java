@@ -92,7 +92,7 @@ public class RobotContainer {
       final double x0 = isRedAlliance ? 16.5 - 0.8 : 0.8;
       final double x_sub = isRedAlliance ? 16.5 - 1.3 : 1.3;
       final double x1 = isRedAlliance ? 16.5 - 1.8 : 1.8;
-      final double x2 = isRedAlliance ? 16.5 - 3.0 : 3.0;
+      final double x2 = isRedAlliance ? 16.5 - 2.7 : 2.7;
       final double x3 = isRedAlliance ? 16.5 - 2.4 : 2.4;
       final double x_mid = isRedAlliance ? 16.5 - 8.0 : 8.0;
 
@@ -136,12 +136,13 @@ public class RobotContainer {
 
       m_chooser.addOption("Pos1 with delay", new ParallelRaceGroup(new WaitCommand(15.0),
         new SequentialCommandGroup(
-            new WaitCommand(5),
+            new WaitCommand(6),
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 6.7, Rotation2d.fromDegrees(flipAngle(120))))),
             new SwerveDriveMoveAuto(m_driveTrain, x1, 7.0),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport),
+            new WaitCommand(15),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport),
                 new SwerveDriveMoveAuto(m_driveTrain, x2, 7.0, forward)
@@ -172,12 +173,13 @@ public class RobotContainer {
         
       m_chooser.addOption("Pos2 with delay", new ParallelRaceGroup(new WaitCommand(15.0),
         new SequentialCommandGroup(
-            new WaitCommand(5),
+            new WaitCommand(6),
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x_sub, 5.5, Rotation2d.fromDegrees(flipAngle(180))))),
             new SwerveDriveMoveAuto(m_driveTrain, x1, 5.5),
             new AimSpeakerAuto(m_driveTrain, m_shooter),
             new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport),
+            new WaitCommand(15),
             new ParallelCommandGroup(
                 new IntakeAuto(m_intake, m_transport), 
                 new SwerveDriveMoveAuto(m_driveTrain, x2, 5.5, forward)
@@ -209,7 +211,7 @@ public class RobotContainer {
 
       m_chooser.addOption("Pos3 with delay", new ParallelRaceGroup(new WaitCommand(15.0),
         new SequentialCommandGroup(
-            new WaitCommand(5),
+            new WaitCommand(1),
             new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 4.5, Rotation2d.fromDegrees(flipAngle(-120))))),
             new InstantCommand(() -> System.out.println(m_driveTrain.odomPose.getRotation().getDegrees())),
             new InstantCommand(() -> System.out.println(m_driveTrain.getGyroAngle())),
@@ -218,12 +220,8 @@ public class RobotContainer {
             new WaitCommand(0.5),
             new Shoot(m_shooter, m_transport),
             new ParallelCommandGroup(
-                new IntakeAuto(m_intake, m_transport),
-                new SwerveDriveMoveAuto(m_driveTrain, x3, 4.0, forward)
-            ),
-            new AimSpeakerAuto(m_driveTrain, m_shooter),
-            new WaitCommand(0.5),
-            new Shoot(m_shooter, m_transport)
+                new SwerveDriveMoveAuto(m_driveTrain, x2, 1.0, forward)
+            )
       ))
         .andThen(new InstantCommand(() -> m_shooter.setSpeed(0))));
 
@@ -267,21 +265,21 @@ public class RobotContainer {
         new JoystickButton(m_leftBoard, Constants.IO.Board.Left.REV)
             .onFalse(new InstantCommand(() -> m_shooter.setSpeed(0)));
 
-        new JoystickButton(m_leftBoard, 4)
-            .whileTrue(new SequentialCommandGroup(
-              new InstantCommand(() -> m_shooter.setpoint = 0.13),
-              new InstantCommand(() -> m_shooter.setSpeed(0.70)),
-              new AimSpeaker(m_driveTrain, m_shooter, isRedAlliance ? -1 : 1)
-            ))
-            .onFalse(new SequentialCommandGroup(
-              new InstantCommand(() -> m_shooter.setSpeed(0))
-            ));
+        // new JoystickButton(m_leftBoard, 4)
+        //     .whileTrue(new SequentialCommandGroup(
+        //       new InstantCommand(() -> m_shooter.setpoint = 0.13),
+        //       new InstantCommand(() -> m_shooter.setSpeed(0.65)),
+        //       new AimSpeaker(m_driveTrain, m_shooter, isRedAlliance ? -1 : 1)
+        //     ))
+        //     .onFalse(new SequentialCommandGroup(
+        //       new InstantCommand(() -> m_shooter.setSpeed(0))
+        //     ));
             
 
         new JoystickButton(m_leftBoard, 3)
             .whileTrue(new SequentialCommandGroup(
               new InstantCommand(() -> m_shooter.setpoint = 0.13),
-              new InstantCommand(() -> m_shooter.setSpeed(0.70))
+              new InstantCommand(() -> m_shooter.setSpeed(0.65))
             ))
             .onFalse(new SequentialCommandGroup(
               new InstantCommand(() -> m_shooter.setSpeed(0))

@@ -13,7 +13,7 @@ package frc.robot.subsystems.DriveTrain;
 // import com.ctre.phoenix.sensors.CANCoder; 
 //SWITCH TO PHOENIX6
 import com.ctre.phoenix6.hardware.TalonFX;
-
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.hardware.CANcoder;
 
@@ -151,6 +151,10 @@ public class DriveTrain extends SubsystemBase {
     driveConfigs.kI = 0;
     driveConfigs.kD = 10;
 
+    var limitConfigs = new CurrentLimitsConfigs();
+    limitConfigs.StatorCurrentLimit = 80;
+    limitConfigs.StatorCurrentLimitEnable = true;
+
     steerConfigs = new Slot0Configs(); //TUNE VALUES
     steerConfigs.kV = 0;
     steerConfigs.kP = 0.05;
@@ -161,6 +165,11 @@ public class DriveTrain extends SubsystemBase {
     m_frontRightDriveMotor.getConfigurator().apply(driveConfigs);
     m_backLeftDriveMotor.getConfigurator().apply(driveConfigs);
     m_backRightDriveMotor.getConfigurator().apply(driveConfigs);
+
+    m_frontLeftDriveMotor.getConfigurator().apply(limitConfigs);
+    m_frontRightDriveMotor.getConfigurator().apply(limitConfigs);
+    m_backLeftDriveMotor.getConfigurator().apply(limitConfigs);
+    m_backRightDriveMotor.getConfigurator().apply(limitConfigs);
 
     m_frontLeftSteerMotor.getConfigurator().apply(steerConfigs);
     m_frontRightSteerMotor.getConfigurator().apply(steerConfigs);
