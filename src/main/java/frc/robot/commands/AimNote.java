@@ -42,11 +42,6 @@ public class AimNote extends Command {
       m_drive.aimSwerveDrive(x, y, note.getX(), note.getY());
     }
 
-    // if (m_mainStick.getRawButton(1) || RobotBase.isSimulation()){
-    //   m_drive.aimSwerveDrive(x, y, 0.5, 5.5);
-    // } else {
-    //   m_drive.setSwerveDrive(0, 0, 0);
-    // }
   }
 
 

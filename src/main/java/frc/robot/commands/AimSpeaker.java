@@ -38,7 +38,7 @@ public class AimSpeaker extends Command {
   @Override
   public void initialize() {
     m_shooter.blinkin.set(-0.09);
-    target_x = 0.5;
+    target_x = m_drive.isRed ? Constants.Field.FIELD_LENGTH - 0.5 : 0.5;
     target_z = 2.05;
   }
 
@@ -52,15 +52,8 @@ public class AimSpeaker extends Command {
     SmartDashboard.putNumber("Forward", x);
     SmartDashboard.putNumber("Sideways", y);
 
-    // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
     double step = 0.8;
-
-    double back_x = 0;
-
-    if (m_drive.isRed) {
-      target_x = Constants.Field.FIELD_LENGTH - target_x;
-      back_x = Constants.Field.FIELD_LENGTH - back_x;
-    }
+    double back_x = m_drive.isRed ? Constants.Field.FIELD_LENGTH - 0 : 0;
     
     m_drive.aimSwerveDrive(x, y, (back_x - x*step), (Constants.Field.SPEAKER_Y - y*step));
 

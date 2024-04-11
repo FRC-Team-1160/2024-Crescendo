@@ -231,12 +231,6 @@ public class RobotContainer {
         new Shoot(m_shooter, m_transport)
       ));
 
-    //   m_chooser.addOption("Disruptor", new SequentialCommandGroup(
-    //     new InstantCommand(() -> m_driveTrain.resetPose(new Pose2d(x0, 2.0, Rotation2d.fromDegrees(forward)))),
-    //     new SwerveDriveSpeedAuto(m_driveTrain, x_mid, 2.0, 2.0, 2.5, 0.3),
-    //     new SwerveDriveSpeedAuto(m_driveTrain, x_mid, 7.0, 1.5, 2.0, 0.3)
-    //   ));
-
       SmartDashboard.putData("Auto Chooser", m_chooser);
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
       m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));

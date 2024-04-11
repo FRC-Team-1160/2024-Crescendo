@@ -259,7 +259,9 @@ public class DriveTrain extends SubsystemBase {
   public void resetGyro() {
     m_gyro.zeroYaw();
     m_gyro.reset();
+    m_gyro.setAngleAdjustment(0);
     sim_angle = 0;
+    m_poseEstimator.resetPosition(new Rotation2d(), m_modulePositions, new Pose2d(odomPose.getTranslation(), new Rotation2d()));
   }
 
   public void resetPose(Pose2d n_pose) {
@@ -297,13 +299,14 @@ public class DriveTrain extends SubsystemBase {
    * @param angSpeed
    */
   public void setSwerveDrive(double xSpeed, double ySpeed, double angSpeed){
-    SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
     ChassisSpeeds m_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, angSpeed, Rotation2d.fromDegrees(getGyroAngle()));
     setSwerveDrive(m_speeds);
   }
 
   public void setSwerveDrive(ChassisSpeeds speeds) {
     SmartDashboard.putString("chassis", speeds.toString());
+    SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
+
     sim_angle += speeds.omegaRadiansPerSecond * 0.02 * 180 / Math.PI;
     speeds = discretize(speeds);
     SwerveModuleState[] m_moduleStates = (m_kinematics.toSwerveModuleStates(speeds));
@@ -365,7 +368,7 @@ public class DriveTrain extends SubsystemBase {
 
     SmartDashboard.putNumber("AIMANGLE", angle);
     SmartDashboard.putNumber("AIMTARGET", target);
-    double max = 2.0;
+    double max = 1.5;
     double angSpeed = Math.max(Math.min(m_anglePID.calculate(angle, target), max), -max);
     SmartDashboard.putNumber("angPID", angSpeed);
     if (Math.abs(angSpeed) < 0.01){
@@ -430,5 +433,6 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putBoolean("Gyro Rotating", m_gyro.isRotating());
     aimed = m_anglePID.getPositionError() < 0.1;
     SmartDashboard.putBoolean("Swerve Aimed", aimed);
+    SmartDashboard.putNumber("FLAngle", m_frontLeftWheel.getAngle().getRotations());
   }
 }

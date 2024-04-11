@@ -10,7 +10,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Joystick;
@@ -101,7 +103,7 @@ public class Shooter extends SubsystemBase{
     bottomMotor.setNeutralMode(NeutralModeValue.Coast);
 
     pitchMotor = new CANSparkMax(Port.SHOOTER_PITCH_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
-    pitchPID = new PIDController(3.5, 50.0, 0);
+    pitchPID = new PIDController(3.5, 30.0, 0);
     pitchPID.setIntegratorRange(-0.005, 0.005);
     pitchPID.setIZone(0.02);
     // pitchMotor.getAlternateEncoder(8192).setPosition(0);
@@ -149,8 +151,8 @@ public class Shooter extends SubsystemBase{
   }
 
   public double aimTarget(double x, double y, double z){
-    double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2));
-    double angle = Math.min(0.17, Math.atan2(z, dist) * 0.107 / (Math.PI / 4)) - 0.001;
+    double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2)) - 10 * 0.0254;
+    double angle = MathUtil.clamp(degToSetpoint(new Rotation2d(dist, z).getDegrees()), 0.01, 0.17);
     setpoint = angle;
     return angle;
   }
@@ -167,6 +169,9 @@ public class Shooter extends SubsystemBase{
     return setSpeed(rpm_speed);
   }
 
+  public double degToSetpoint(double degrees){
+    return MathUtil.clamp((degrees - 3.0) * (0.1 / 36.0), 0.0, 0.16);
+  }
 
   public void periodic() {
     SmartDashboard.putNumber("Shooter Pitch", setpoint);

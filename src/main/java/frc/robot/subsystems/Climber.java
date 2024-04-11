@@ -55,8 +55,8 @@ public class Climber extends SubsystemBase {
     m_leftBoard = new Joystick(Constants.IO.LEFT_BOARD_PORT);
     m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
 
-    l_limit = new DigitalInput(0);
-    r_limit = new DigitalInput(1);
+    l_limit = new DigitalInput(Constants.Port.LEFT_CLIMB_LIMIT);
+    r_limit = new DigitalInput(Constants.Port.RIGHT_CLIMB_LIMIT);
   }
 
 

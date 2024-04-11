@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,7 +57,6 @@ public class Shuttle extends Command {
     SmartDashboard.putNumber("Forward", x);
     SmartDashboard.putNumber("Sideways", y);
 
-    // m_drive.aimSwerveDrive(x, y, 16.54 + 0.1, 5.5);
     double step = 2.0;
 
     double back_x = 2.0;
@@ -65,18 +65,19 @@ public class Shuttle extends Command {
       back_x = Constants.Field.FIELD_LENGTH - back_x;
     }
     
-    double pitch = 0.13;
+    double pitch = m_shooter.degToSetpoint(60);
 
+    
     if (aim) {
-        m_drive.aimSwerveDrive(x, y, (back_x - x*step), (Constants.Field.SPEAKER_Y - y*step));
-        double d = Math.sqrt(Math.pow(m_drive.odomPose.getX() - (back_x - x*step), 2) + Math.pow(m_drive.odomPose.getY() - (Constants.Field.SPEAKER_Y - y*step), 2));
+        m_drive.aimSwerveDrive(x, y, (back_x - x*step), (Constants.Field.SPEAKER_Y + 2 - y*step));
+        double d = Math.sqrt(Math.pow(m_drive.odomPose.getX() - (back_x - x*step), 2) + Math.pow(m_drive.odomPose.getY() - (Constants.Field.SPEAKER_Y + 2 - y*step), 2));
         SmartDashboard.putNumber("Dist", d);
         pitch = 0.16 - 0.004 * d;
     } else {
         m_drive.setSwerveDrive(x, y, a);
     }
     SmartDashboard.putNumber("Shooter Aim", pitch);
-    m_shooter.setpoint = Math.min(Math.max(0.12, pitch), 0.16);
+    m_shooter.setpoint = MathUtil.clamp(pitch, 0.11, 0.16);
     SmartDashboard.putNumber("Shooter Rev", m_shooter.setSpeed(0.65));
 
     if (m_shooter.revved && m_shooter.aimed && m_drive.aimed){

@@ -12,6 +12,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -36,9 +37,10 @@ public class SwerveDriveWheel {
         this.steerSensor = steerSensor;
         this.steerMotor = steerMotor;
         distance = 0;
-        m_anglePID = new PIDController(1.4, 0.0, 0.005);
+        m_anglePID = new PIDController(1.5, 0.0, 0.0);
 
         m_anglePID.enableContinuousInput(-0.5, 0.5);
+        m_anglePID.setTolerance(0.01);
 
         Slot0Configs driveConfigs = new Slot0Configs();
         driveConfigs.kP = 0.05;
@@ -67,10 +69,10 @@ public class SwerveDriveWheel {
     {
         double a = m_anglePID.calculate(state.angle.getRotations(), getAngle().getRotations());
         SmartDashboard.putNumber("MANUAL TARGET", a);
-        if (Math.abs(state.angle.getDegrees() - getAngle().getDegrees()) > 3){
-            steerMotor.set(-a);
-        } else {
+        if (m_anglePID.atSetpoint()){
             steerMotor.set(0);
+        } else {
+            steerMotor.set(a);
         }
 
         driveMotor.setControl(new VelocityVoltage(state.speedMetersPerSecond / Constants.Swerve.METERS_PER_ROT));
@@ -97,14 +99,7 @@ public class SwerveDriveWheel {
 
     public Rotation2d getAngle(){
         if (RobotBase.isReal()){
-            double v = (steerSensor.getAbsolutePosition().getValue() % 1d);
-            if (v < -0.5){
-                v += 1.0;
-            }
-            if (v > 0.5){
-                v -= 1.0;
-            }
-
+            double v = steerSensor.getAbsolutePosition().getValue();
             return Rotation2d.fromRotations(v);
         } else {
             return desiredState.angle;

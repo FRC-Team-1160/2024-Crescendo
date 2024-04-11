@@ -24,7 +24,6 @@ public class OverrideShooter extends Command {
     @Override
     public void execute(){
         double input = m_rightBoard.getRawAxis(Constants.IO.Board.Right.RIGHT_CLIMB);
-
         if (Math.abs(input) > 0.5){
             double a = Math.max(Math.min(m_shooter.setpoint - Math.signum(input) * 0.001, 0.16), 0.0);
             m_shooter.setpoint = a;

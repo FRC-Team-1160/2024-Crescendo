@@ -38,7 +38,7 @@ public class AimSpeakerAuto extends Command {
   @Override
   public void execute(){
     double target_x = 0.5;
-    double target_z = 2.15;
+    double target_z = 1.6; //2.15
     double back_x = 0.0;
 
     if (m_drive.odomPose.getX() > 8.25) {
@@ -48,8 +48,6 @@ public class AimSpeakerAuto extends Command {
     
     target_a = m_drive.aimSwerveDrive(x, y, back_x, Constants.Field.SPEAKER_Y);
 
-    // SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(x, 5.5, z));
-    // SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(16.54, 5.5));
     SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x, Constants.Field.SPEAKER_Y, target_z + m_shooter.offset));
     SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x, Constants.Field.SPEAKER_Y));
   }
@@ -64,9 +62,7 @@ public class AimSpeakerAuto extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double ang_diff = m_drive.m_anglePID.getPositionError();
-    
-    return Math.abs(ang_diff) < 0.1;
+    return m_drive.aimed;
   }
 }
     
