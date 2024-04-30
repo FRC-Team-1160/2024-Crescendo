@@ -431,7 +431,11 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("Absolute", m_frontLeftCoder.getAbsolutePosition().getValue());
     SmartDashboard.putNumber("regular", m_frontLeftCoder.getPosition().getValue());
     SmartDashboard.putBoolean("Gyro Rotating", m_gyro.isRotating());
-    aimed = m_anglePID.getPositionError() < 0.1;
+    SmartDashboard.putNumber("Swerve Error", m_anglePID.getPositionError());
+    aimed = Math.abs(m_anglePID.getPositionError()) < 0.1;
+    // if (aimed){
+    //   System.out.println(Math.abs(m_anglePID.getPositionError()));
+    // }
     SmartDashboard.putBoolean("Swerve Aimed", aimed);
     SmartDashboard.putNumber("FLAngle", m_frontLeftWheel.getAngle().getRotations());
   }

@@ -60,7 +60,13 @@ public class Vision extends SubsystemBase{
         
     m_pose = new Pose3d(12.5, 0, 0, new Rotation3d());
 
-    m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, new Transform3d(10 * 0.0254, 12 * 0.0254, 12 * 0.0254, new Rotation3d(0, 20 * Math.PI / 180, 0)));
+    // m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, 
+    //  new Transform3d(10 * 0.0254, 12 * 0.0254, 12 * 0.0254, new Rotation3d(0, 20 * Math.PI / 180, 0)));
+    m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, 
+      new Transform3d());
+    // m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, 
+    //   new Transform3d(-10 * 0.0254, 12 * 0.0254, 12 * 0.0254, new Rotation3d()));
+
     m_photonPoseEstimator.setReferencePose(m_pose);
 
     tracked_note = null;

@@ -57,20 +57,19 @@ public class Shuttle extends Command {
     SmartDashboard.putNumber("Forward", x);
     SmartDashboard.putNumber("Sideways", y);
 
-    double step = 2.0;
+    // double step = 2.0;
 
     double back_x = 2.0;
     if (m_drive.isRed) {
       target_x = Constants.Field.FIELD_LENGTH - target_x;
       back_x = Constants.Field.FIELD_LENGTH - back_x;
     }
-    
     double pitch = m_shooter.degToSetpoint(60);
-
+    SmartDashboard.putNumber("sixty deg in enc", pitch);
     
     if (aim) {
-        m_drive.aimSwerveDrive(x, y, (back_x - x*step), (Constants.Field.SPEAKER_Y + 2 - y*step));
-        double d = Math.sqrt(Math.pow(m_drive.odomPose.getX() - (back_x - x*step), 2) + Math.pow(m_drive.odomPose.getY() - (Constants.Field.SPEAKER_Y + 2 - y*step), 2));
+        m_drive.aimSwerveDrive(x, y, (back_x), (Constants.Field.SPEAKER_Y + 2));
+        double d = Math.sqrt(Math.pow(m_drive.odomPose.getX() - (back_x), 2) + Math.pow(m_drive.odomPose.getY() - (Constants.Field.SPEAKER_Y + 2), 2));
         SmartDashboard.putNumber("Dist", d);
         pitch = 0.16 - 0.004 * d;
     } else {

@@ -12,7 +12,12 @@ import com.revrobotics.CANSparkLowLevel;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Joystick;
@@ -63,6 +68,8 @@ public class Shooter extends SubsystemBase{
 
   public double topSpeedMod;
   public double bottomSpeedMod;
+
+  public StructPublisher<Pose3d> adv_targetPub;
 
 
   public static Shooter getInstance(){
@@ -128,6 +135,11 @@ public class Shooter extends SubsystemBase{
     blinkin.set(0.93);
     // m_pwm = new PWM(0);
 
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    NetworkTable adv_vision = inst.getTable("adv_vision");
+    adv_targetPub = adv_vision.getStructTopic("Shooter Target", Pose3d.struct).publish();
+    SmartDashboard.putNumber("GetX", 0.3);
+
   }
 
   public double setSpeed(double s) {
@@ -151,8 +163,12 @@ public class Shooter extends SubsystemBase{
   }
 
   public double aimTarget(double x, double y, double z){
+    adv_targetPub.set(new Pose3d(x, y, z + 16 * 0.0254, new Rotation3d()));
     double dist = Math.sqrt(Math.pow(m_drive.odomPose.getX() - x, 2) + Math.pow(m_drive.odomPose.getY() - y, 2)) - 10 * 0.0254;
     double angle = MathUtil.clamp(degToSetpoint(new Rotation2d(dist, z).getDegrees()), 0.01, 0.17);
+    SmartDashboard.putNumber("aimDist", dist);
+    SmartDashboard.putNumber("aimZ", z); 
+    SmartDashboard.putNumber("Shooter Angle", new Rotation2d(dist, z).getDegrees());
     setpoint = angle;
     return angle;
   }
@@ -170,7 +186,8 @@ public class Shooter extends SubsystemBase{
   }
 
   public double degToSetpoint(double degrees){
-    return MathUtil.clamp((degrees - 3.0) * (0.1 / 36.0), 0.0, 0.16);
+    // return MathUtil.clamp((degrees - 2.0) * (0.1 / 38.0), 0.0, 0.16);
+    return MathUtil.clamp(degrees * (0.126587/50.0), 0.0, 0.16);
   }
 
   public void periodic() {

@@ -20,13 +20,22 @@ public class AimSpeakerAuto extends Command {
   DriveTrain m_drive;
   Shooter m_shooter;
   public double target_a;
+  public boolean usedrivetrain;
 
   public AimSpeakerAuto(DriveTrain m_drive, Shooter m_shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_drive, m_shooter);
     this.m_drive = m_drive;
     this.m_shooter = m_shooter;
-    
+    this.usedrivetrain = true;
+  }
+
+  public AimSpeakerAuto(DriveTrain m_drive, Shooter m_shooter, boolean usedrivetrain) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(m_drive, m_shooter);
+    this.m_drive = m_drive;
+    this.m_shooter = m_shooter;
+    this.usedrivetrain = usedrivetrain;
   }
 
 // Called when the command is initially scheduled.
@@ -38,15 +47,15 @@ public class AimSpeakerAuto extends Command {
   @Override
   public void execute(){
     double target_x = 0.5;
-    double target_z = 1.6; //2.15
-    double back_x = 0.0;
+    double target_z = 2.075; //1.9
+    double back_x = 0.3;
 
     if (m_drive.odomPose.getX() > 8.25) {
       target_x = Constants.Field.FIELD_LENGTH - target_x;
       back_x = Constants.Field.FIELD_LENGTH - back_x;
     }
     
-    target_a = m_drive.aimSwerveDrive(x, y, back_x, Constants.Field.SPEAKER_Y);
+    if (usedrivetrain) target_a = m_drive.aimSwerveDrive(x, y, back_x, Constants.Field.SPEAKER_Y);
 
     SmartDashboard.putNumber("Shooter Aim", m_shooter.aimTarget(target_x, Constants.Field.SPEAKER_Y, target_z + m_shooter.offset));
     SmartDashboard.putNumber("Shooter Rev", m_shooter.revTarget(back_x, Constants.Field.SPEAKER_Y));
@@ -62,7 +71,7 @@ public class AimSpeakerAuto extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_drive.aimed;
+    
+    return Math.abs(m_drive.m_anglePID.getPositionError()) < 0.1;
   }
 }
-    

@@ -46,7 +46,7 @@ public class SwerveDriveWheel {
         driveConfigs.kP = 0.05;
         driveConfigs.kV = 0.12;
         driveConfigs.kS = 0.10;
-        
+
         Slot0Configs steerConfigs = new Slot0Configs(); //TUNE VALUES
         steerConfigs.kV = 0;
         steerConfigs.kP = 0.05;
