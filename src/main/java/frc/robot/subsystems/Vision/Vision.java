@@ -7,6 +7,13 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+// limelight lib
+import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.LimelightResults;
+
+
+
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -18,9 +25,12 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.DriveTrain.DriveTrain;
+import frc.robot.RobotContainer;
 
 public class Vision extends SubsystemBase{
     
@@ -71,20 +81,36 @@ public class Vision extends SubsystemBase{
 
   @Override
   public void periodic(){
-    var result1 = m_shooterCamera.getLatestResult();
-    if (result1.hasTargets()){
-      var update = m_photonPoseEstimator.update();
-      if (update.isPresent()){
-        m_pose = update.get().estimatedPose;
-        if (Math.abs(m_pose.getZ()) < 1){
-          m_photonPoseEstimator.setReferencePose(m_pose);
-        }
-        if (m_drive != null){
-          m_drive.m_poseEstimator.addVisionMeasurement(m_pose.toPose2d(), Timer.getFPGATimestamp());
-          // System.out.println(m_pose.getX());
-        }
+    // var result1 = m_shooterCamera.getLatestResult();
+    // if (result1.hasTargets()){
+    //   var update = m_photonPoseEstimator.update();
+    //   if (update.isPresent()){
+    //     m_pose = update.get().estimatedPose;
+    //     if (Math.abs(m_pose.getZ()) < 1){
+    //       m_photonPoseEstimator.setReferencePose(m_pose);
+    //     }
+    //     if (m_drive != null){
+    //       m_drive.m_poseEstimator.addVisionMeasurement(m_pose.toPose2d(), Timer.getFPGATimestamp());
+    //       // System.out.println(m_pose.getX());
+    //     }
+    //   }
+    // }
+
+    // smart cropping:
+    System.out.println(m_pose.getX());
+
+    LimelightResults result1 = LimelightHelpers.getLatestResults("limelight");
+    if (result1 != null && result1.valid){
+      if (DriverStation.getAlliance().get() == Alliance.Red){
+        m_pose = result1.getBotPose3d_wpiRed();
+      }else{
+        m_pose = result1.getBotPose3d_wpiBlue();
+      }
+      if (m_drive != null){
+        m_drive.m_poseEstimator.addVisionMeasurement(m_pose.toPose2d(), Timer.getFPGATimestamp());
       }
     }
+
     adv_posePub.set(m_pose);
 
     double min_dist = 99;

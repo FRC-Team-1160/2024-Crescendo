@@ -87,6 +87,7 @@ public class DriveTrain extends SubsystemBase {
   double wkP, wkI, wkD;
   public SlewRateLimiter zlimiter;
   //initializes the drive train
+  public boolean isRed;
   
   public static DriveTrain getInstance(){
     if (m_instance == null){
@@ -192,10 +193,10 @@ public class DriveTrain extends SubsystemBase {
     };
 
     m_modulePositions = new SwerveModulePosition[] {
-      new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModulePosition(m_frontRightWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModulePosition(m_backLeftWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle()))
+      new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, m_frontLeftWheel.getAngle()),
+      new SwerveModulePosition(m_frontRightWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, m_frontLeftWheel.getAngle()),
+      new SwerveModulePosition(m_backLeftWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, m_frontLeftWheel.getAngle()),
+      new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 0.0254 * 4 / 6.75, m_frontLeftWheel.getAngle())
     };
 
     odomPose = new Pose2d(new Translation2d(0, 0), new Rotation2d());
@@ -222,16 +223,16 @@ public class DriveTrain extends SubsystemBase {
       public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("SwerveDrive");
     
-        builder.addDoubleProperty("Front Left Angle", () -> m_frontLeftWheel.getAngle() * 360, null);
+        builder.addDoubleProperty("Front Left Angle", () -> m_frontLeftWheel.getAngle().getDegrees() * 360, null);
         builder.addDoubleProperty("Front Left Velocity", () -> m_frontLeftWheel.getSpeed() * Math.PI * 0.2, null);
     
-        builder.addDoubleProperty("Front Right Angle", () -> m_frontRightWheel.getAngle() * 360, null);
+        builder.addDoubleProperty("Front Right Angle", () -> m_frontRightWheel.getAngle().getDegrees() * 360, null);
         builder.addDoubleProperty("Front Right Velocity", () -> m_frontRightWheel.getSpeed() * Math.PI * 0.2, null);
     
-        builder.addDoubleProperty("Back Left Angle", () -> m_backLeftWheel.getAngle() * 360, null);
+        builder.addDoubleProperty("Back Left Angle", () -> m_backLeftWheel.getAngle().getDegrees() * 360, null);
         builder.addDoubleProperty("Back Left Velocity", () -> m_backLeftWheel.getSpeed() * Math.PI * 0.2, null);
     
-        builder.addDoubleProperty("Back Right Angle", () -> m_backRightWheel.getAngle() * 360, null);
+        builder.addDoubleProperty("Back Right Angle", () -> m_backRightWheel.getAngle().getDegrees() * 360, null);
         builder.addDoubleProperty("Back Right Velocity", () -> m_backRightWheel.getSpeed() * Math.PI * 0.2, null);
     
         builder.addDoubleProperty("Robot Angle", () -> getGyroAngle(), null);
@@ -330,10 +331,10 @@ public class DriveTrain extends SubsystemBase {
 
     SmartDashboard.putNumber("m0", m_moduleStates[0].speedMetersPerSecond);
 
-    m_moduleStates[0] = SwerveModuleState.optimize(m_moduleStates[0], Rotation2d.fromRotations(m_frontLeftWheel.getAngle()));
-    m_moduleStates[1] = SwerveModuleState.optimize(m_moduleStates[1], Rotation2d.fromRotations(m_frontRightWheel.getAngle()));
-    m_moduleStates[2] = SwerveModuleState.optimize(m_moduleStates[2], Rotation2d.fromRotations(m_backLeftWheel.getAngle()));
-    m_moduleStates[3] = SwerveModuleState.optimize(m_moduleStates[3], Rotation2d.fromRotations(m_backRightWheel.getAngle()));
+    m_moduleStates[0] = SwerveModuleState.optimize(m_moduleStates[0], m_frontLeftWheel.getAngle());
+    m_moduleStates[1] = SwerveModuleState.optimize(m_moduleStates[1], m_frontRightWheel.getAngle());
+    m_moduleStates[2] = SwerveModuleState.optimize(m_moduleStates[2],m_backLeftWheel.getAngle());
+    m_moduleStates[3] = SwerveModuleState.optimize(m_moduleStates[3], m_backRightWheel.getAngle());
 
     SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, 1);
 
@@ -345,20 +346,20 @@ public class DriveTrain extends SubsystemBase {
     m_backRightWheel.set(m_moduleStates[3].angle.getRotations(), m_moduleStates[3].speedMetersPerSecond);
 
     m_modulePositions = new SwerveModulePosition[] {
-      new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModulePosition(m_frontRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_frontRightWheel.getAngle())),
-      new SwerveModulePosition(m_backLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_backLeftWheel.getAngle())),
-      new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, Rotation2d.fromRotations(m_backRightWheel.getAngle()))
+      new SwerveModulePosition(m_frontLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, m_frontLeftWheel.getAngle()),
+      new SwerveModulePosition(m_frontRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, m_frontRightWheel.getAngle()),
+      new SwerveModulePosition(m_backLeftWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, m_backLeftWheel.getAngle()),
+      new SwerveModulePosition(m_backRightWheel.getPosition() * Math.PI * 4 * 0.0254 / 6.75, m_backRightWheel.getAngle())
     };
 
     odomPose = m_poseEstimator.update(Rotation2d.fromDegrees(getGyroAngle()), m_modulePositions);
     SmartDashboard.putData("Gyro", m_gyro);
 
     adv_statesPub.set(new SwerveModuleState[]{
-      new SwerveModuleState(m_frontLeftWheel.getSpeed(), Rotation2d.fromRotations(m_frontLeftWheel.getAngle())),
-      new SwerveModuleState(m_frontRightWheel.getSpeed(), Rotation2d.fromRotations(m_frontRightWheel.getAngle())),
-      new SwerveModuleState(m_backLeftWheel.getSpeed(), Rotation2d.fromRotations(m_backLeftWheel.getAngle())),
-      new SwerveModuleState(m_backRightWheel.getSpeed(), Rotation2d.fromRotations(m_backRightWheel.getAngle()))
+      new SwerveModuleState(m_frontLeftWheel.getSpeed(), m_frontLeftWheel.getAngle()),
+      new SwerveModuleState(m_frontRightWheel.getSpeed(), m_frontRightWheel.getAngle()),
+      new SwerveModuleState(m_backLeftWheel.getSpeed(), m_backLeftWheel.getAngle()),
+      new SwerveModuleState(m_backRightWheel.getSpeed(), m_backRightWheel.getAngle())
     });
 
     m_field.setRobotPose(odomPose);

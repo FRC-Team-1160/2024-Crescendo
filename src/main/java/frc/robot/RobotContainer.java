@@ -63,7 +63,8 @@ public class RobotContainer {
     private Joystick m_leftBoard = new Joystick(Constants.IO.LEFT_BOARD_PORT);
     private Joystick m_rightBoard = new Joystick(Constants.IO.RIGHT_BOARD_PORT);
 
-    public boolean isRedAlliance = (DriverStation.getAlliance().get() == Alliance.Red);
+    // public boolean isRedAlliance = (DriverStation.getAlliance().get() == Alliance.Red);
+    public boolean isRedAlliance = true;
     final double forward = isRedAlliance ? 180 : 0;
     final double backward = isRedAlliance ? 0 : 180;
 

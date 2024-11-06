@@ -24,7 +24,7 @@ public class SwerveDriveWheel {
     public TalonFX driveMotor;
     public CANcoder steerSensor;
     public double distance;
-    public SwerveModuleState sim_state;
+    public SwerveModuleState sim_state = new SwerveModuleState();
     public PIDController m_anglePID;
 
     //public TalonFXSensorCollection directionSensor;
@@ -103,6 +103,11 @@ public class SwerveDriveWheel {
 
     public SwerveModuleState getModuleState(){
         return new SwerveModuleState(getSpeed(), getAngle());
+    }
+
+    public void set(double rotations, double speedMetersPerSecond) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'set'");
     }
     
 }
