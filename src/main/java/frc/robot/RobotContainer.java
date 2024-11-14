@@ -71,7 +71,6 @@ public class RobotContainer {
     public double forward;
     public double backward;
 
-
     /**
      * The container for the robot.  Contains subsystems, OI devices, and commands.
      */

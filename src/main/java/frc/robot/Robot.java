@@ -45,15 +45,15 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();  
 
     if (RobotBase.isReal()){
-      VideoSource cam = CameraServer.startAutomaticCapture();
-      cam.setResolution(160, 120);
+      VideoSource cam1 = CameraServer.startAutomaticCapture();
+      cam1.setResolution(640, 480);
 
-      // GripPipeline pipeline = new GripPipeline();
-      // PipelineListener listener = new PipelineListener();
-      // VisionRunner<VisionPipeline> m_visionrunner = new VisionRunner<VisionPipeline>(cam, pipeline, listener);
-      // VisionThread thread = new VisionThread(m_visionrunner);
-      // thread.setDaemon(true);
-      // thread.start();
+      GripPipeline pipeline = new GripPipeline();
+      PipelineListener listener = new PipelineListener();
+      VisionRunner<VisionPipeline> m_visionrunner = new VisionRunner<VisionPipeline>(cam1, pipeline, listener);
+      VisionThread thread = new VisionThread(m_visionrunner);
+      thread.setDaemon(true);
+      thread.start();
     }
   }
 
@@ -106,7 +106,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    m_robotContainer.m_driveTrain.isRed = DriverStation.getAlliance().get() == Alliance.Red;
+    m_robotContainer.m_driveTrain.isRed = false;//DriverStation.getAlliance().get() == Alliance.Red;
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

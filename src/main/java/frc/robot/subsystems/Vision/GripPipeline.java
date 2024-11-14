@@ -8,6 +8,7 @@ import org.opencv.core.*;
 import org.opencv.imgproc.*;
 
 import edu.wpi.first.vision.VisionPipeline;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -33,16 +34,21 @@ public class GripPipeline implements VisionPipeline{
 	 * This is the primary method that runs the entire pipeline and updates the outputs.
 	 */
 	public void process(Mat source0) {
+		Timer timer = new Timer();
+		timer.start();
+		Mat resized = new Mat();
+		//Downsample
+		Imgproc.resize(source0, resized, new Size(160, 120));
 		// Step Blur0:
-		Mat blurInput = source0;
+		Mat blurInput = resized;
 		BlurType blurType = BlurType.get("Box Blur");
 		double blurRadius = 2;
 		blur(blurInput, blurType, blurRadius, blurOutput);
 
 		// Step HSV_Threshold0:
 		Mat hsvThresholdInput = blurOutput;
-		double[] hsvThresholdHue = {3.0, 23.0};
-		double[] hsvThresholdSaturation = {150.0, 255.0};
+		double[] hsvThresholdHue = {0.0, 30.0};
+		double[] hsvThresholdSaturation = {100.0, 255.0};
 		double[] hsvThresholdValue = {85.0, 255.0};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
@@ -56,26 +62,33 @@ public class GripPipeline implements VisionPipeline{
 		double filterContoursMinArea = 30.0;
 		double filterContoursMinPerimeter = 0;
 		double filterContoursMinWidth = 0;
-		double filterContoursMaxWidth = 50.0;
+		double filterContoursMaxWidth = 100.0;
 		double filterContoursMinHeight = 0;
 		double filterContoursMaxHeight = 30.0;
 		double[] filterContoursSolidity = {60, 100};
-		double filterContoursMaxVertices = 40.0;
+		double filterContoursMaxVertices = 100.0;
 		double filterContoursMinVertices = 5.0;
 		double filterContoursMinRatio = 1.5;
-		double filterContoursMaxRatio = 10.0;
+		double filterContoursMaxRatio = 20.0;
 		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
 		
 		ArrayList<Point> points = new ArrayList<Point>();
+		ArrayList<Double> widths = new ArrayList<Double>();
 
 		for (MatOfPoint c : filterContoursOutput){
 
 			Rect box = Imgproc.boundingRect(c);
+
+			Mat cropped = new Mat(source0, new Rect(box.x*4, box.y*4, box.width*4, box.height*4));
+			
 			double cx = box.x + box.width/2;
 			double cy = box.y + box.height + 2;
 			points.add(new Point(cx, cy));
+			widths.add((double)box.width);
 		}
 		Vision.getInstance().noteCenters = points;
+		Vision.getInstance().noteBoxWidths = widths;
+		SmartDashboard.putNumber("PipelineTime", timer.get());
 
 
 	}

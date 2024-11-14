@@ -54,7 +54,7 @@ public class Shuttle extends Command {
     y = inputs[1];
     a = inputs[2];
 
-    SmartDashboard.putNumber("Forward", x);
+    SmartDashboard.putNumber("Forward", x); 
     SmartDashboard.putNumber("Sideways", y);
 
     // double step = 2.0;

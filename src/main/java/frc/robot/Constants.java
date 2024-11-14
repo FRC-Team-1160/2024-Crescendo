@@ -143,6 +143,8 @@ public final class Constants {
         public static final int MOVE_TAR = 6;
 
         public static final int RIGHT_CLIMB = 0;
+
+        public static final int AUTO_INTAKE = 7;
       }
     }
   }
