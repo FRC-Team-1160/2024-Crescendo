@@ -408,7 +408,7 @@ public class DriveTrain extends SubsystemBase {
     if (mag > 1.0){
       mag = 1.0;
     }
-    double spd = Constants.Swerve.MAX_SPEED * (m_mainStick.getRawButton(1) ? 0.5 : 1.0);
+    double spd = 0.25 * Constants.Swerve.MAX_SPEED * (m_mainStick.getRawButton(1) ? 0.5 : 1.0);
     x = Math.cos(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     y = Math.sin(dir) * Math.abs(Math.pow(mag, 3)) * spd;
     a = Math.signum(a) * Math.abs(Math.pow(a, 3)) * Constants.Swerve.MAX_ANG_INPUT;

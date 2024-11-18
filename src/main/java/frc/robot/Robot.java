@@ -48,12 +48,12 @@ public class Robot extends TimedRobot {
       VideoSource cam1 = CameraServer.startAutomaticCapture();
       cam1.setResolution(640, 480);
 
-      GripPipeline pipeline = new GripPipeline();
-      PipelineListener listener = new PipelineListener();
-      VisionRunner<VisionPipeline> m_visionrunner = new VisionRunner<VisionPipeline>(cam1, pipeline, listener);
-      VisionThread thread = new VisionThread(m_visionrunner);
-      thread.setDaemon(true);
-      thread.start();
+      // GripPipeline pipeline = new GripPipeline();
+      // PipelineListener listener = new PipelineListener();
+      // VisionRunner<VisionPipeline> m_visionrunner = new VisionRunner<VisionPipeline>(cam1, pipeline, listener);
+      // VisionThread thread = new VisionThread(m_visionrunner);
+      // thread.setDaemon(true);
+      // thread.start();
     }
   }
 

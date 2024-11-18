@@ -280,6 +280,9 @@ public class RobotContainer {
         new JoystickButton(m_mainStick, 14)
             .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro()));
 
+        new JoystickButton(m_mainStick, 11)
+            .onTrue(new InstantCommand(() -> m_driveTrain.resetGyro()));
+            
         new JoystickButton(m_codriverStick, 1)
             .whileTrue(new RunCommand(() -> m_driveTrain.aimAngle(m_driveTrain.inputSpeeds()[0], m_driveTrain.inputSpeeds()[1], backward * Math.PI/180), m_driveTrain));
         
