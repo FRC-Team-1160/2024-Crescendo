@@ -106,8 +106,7 @@ public class SwerveDriveWheel {
     }
 
     public void set(double rotations, double speedMetersPerSecond) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'set'");
+        set(new SwerveModuleState(speedMetersPerSecond, Rotation2d.fromRotations(rotations)));
     }
     
 }

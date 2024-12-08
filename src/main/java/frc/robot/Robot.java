@@ -6,6 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.VideoSource;
+import edu.wpi.first.vision.VisionPipeline;
+import edu.wpi.first.vision.VisionRunner;
+import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -13,6 +16,8 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Vision.GripPipeline;
+import frc.robot.subsystems.Vision.PipelineListener;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -45,12 +50,13 @@ public class Robot extends TimedRobot {
       VideoSource cam = CameraServer.startAutomaticCapture();
       cam.setResolution(160, 120);
 
-      // GripPipeline pipeline = new GripPipeline();
-      // PipelineListener listener = new PipelineListener();
-      // VisionRunner<VisionPipeline> m_visionrunner = new VisionRunner<VisionPipeline>(cam, pipeline, listener);
-      // VisionThread thread = new VisionThread(m_visionrunner);
-      // thread.setDaemon(true);
-      // thread.start();
+      GripPipeline pipeline = new GripPipeline();
+      PipelineListener listener = new PipelineListener();
+
+      VisionRunner<VisionPipeline> m_visionrunner = new VisionRunner<VisionPipeline>(cam, pipeline, listener);
+      VisionThread thread = new VisionThread(m_visionrunner);
+      thread.setDaemon(true);
+      thread.start();
 
       path_choice = m_robotContainer.m_pathChooser.getSelected();
 
@@ -104,7 +110,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    
+  }
 
   @Override
   public void teleopInit() {

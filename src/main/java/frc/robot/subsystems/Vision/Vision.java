@@ -48,6 +48,7 @@ public class Vision extends SubsystemBase{
   StructPublisher<Pose3d> adv_posePub;
   StructArrayPublisher<Pose3d> adv_targetPub;
   StructPublisher<Pose3d> adv_trackedPub;
+  public int count;
 
   public static Vision getInstance(){
     if (m_instance == null){
@@ -81,6 +82,7 @@ public class Vision extends SubsystemBase{
 
   @Override
   public void periodic(){
+    count++;
     // var result1 = m_shooterCamera.getLatestResult();
     // if (result1.hasTargets()){
     //   var update = m_photonPoseEstimator.update();
@@ -97,15 +99,42 @@ public class Vision extends SubsystemBase{
     // }
 
     // smart cropping:
-    System.out.println(m_pose.getX());
+    LimelightResults result1 = LimelightHelpers.getLatestResults("");
+    if(result1.valid){
+      double tag_x = LimelightHelpers.getTX("");
+      double tag_y = LimelightHelpers.getTY("");
+      // dynamic cropping
+      // if(tag_x >=-0.83 && tag_x <=0.07){
+      //   LimelightHelpers.setPipelineIndex("", 1);
+      // }else if (tag_x >=-0.63 && tag_x <=0.27) {
+      //   LimelightHelpers.setPipelineIndex("", 2);
+      // }else if (tag_x >=-0.43 && tag_x <=0.47) {
+      //   LimelightHelpers.setPipelineIndex("", 3);
+      // }else if (tag_x >=-0.23 && tag_x <=0.67) {
+      //   LimelightHelpers.setPipelineIndex("", 4);
+      // }else if (tag_x >=-0.03 && tag_x <=0.87) {
+      //   LimelightHelpers.setPipelineIndex("", 5);
+      // }
 
-    LimelightResults result1 = LimelightHelpers.getLatestResults("limelight");
+      // non-dynamic
+      LimelightHelpers.setPipelineIndex("", 6);
+      count = 0;
+    }
+    
+    if(!result1.valid && count >=75){
+      LimelightHelpers.setPipelineIndex("", 0);
+    }
+
+
     if (result1 != null && result1.valid){
       if (DriverStation.getAlliance().get() == Alliance.Red){
-        m_pose = result1.getBotPose3d_wpiRed();
+        m_pose = LimelightHelpers.getBotPose3d_wpiRed("");
       }else{
-        m_pose = result1.getBotPose3d_wpiBlue();
+        m_pose = LimelightHelpers.getBotPose3d_wpiBlue("");
       }
+
+      System.out.println(m_pose.getX());
+
       if (m_drive != null){
         m_drive.m_poseEstimator.addVisionMeasurement(m_pose.toPose2d(), Timer.getFPGATimestamp());
       }

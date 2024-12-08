@@ -19,10 +19,10 @@ import com.ctre.phoenix6.hardware.CANcoder;
 
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+// import com.pathplanner.lib.auto.AutoBuilder;
+// import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+// import com.pathplanner.lib.util.PIDConstants;
+// import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -97,21 +97,21 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public DriveTrain() {
-    AutoBuilder.configureHolonomic(
-      () -> odomPose,
-      (Pose2d pose) -> odomPose = pose,
-      () -> m_kinematics.toChassisSpeeds(m_moduleStates),
-      this::setSwerveDrive,
-      new HolonomicPathFollowerConfig(
-        new PIDConstants(0.1),
-        new PIDConstants(0, 0.0, 0.00),
-        1,
-        0.426562167,
-        new ReplanningConfig()
-      ),
-      () -> false,
-      this
-    );
+    // AutoBuilder.configureHolonomic(
+    //   () -> odomPose,
+    //   (Pose2d pose) -> odomPose = pose,
+    //   () -> m_kinematics.toChassisSpeeds(m_moduleStates),
+    //   this::setSwerveDrive,
+    //   new HolonomicPathFollowerConfig(
+    //     new PIDConstants(0.1),
+    //     new PIDConstants(0, 0.0, 0.00),
+    //     1,
+    //     0.426562167,
+    //     new ReplanningConfig()
+    //   ),
+    //   () -> false,
+    //   this
+    // );
 
     zlimiter = new SlewRateLimiter(5);
 
