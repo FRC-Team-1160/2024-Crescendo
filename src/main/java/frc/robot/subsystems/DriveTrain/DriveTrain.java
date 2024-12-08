@@ -100,7 +100,6 @@ public class DriveTrain extends SubsystemBase {
     // AutoBuilder.configureHolonomic(
     //   () -> odomPose,
     //   (Pose2d pose) -> odomPose = pose,
-    //   () -> m_kinematics.toChassisS peeds(m_moduleStates),
     //   this::setSwerveDrive,
     //   new HolonomicPathFollowerConfig(
     //     new PIDConstants(0.1),
