@@ -1,7 +1,7 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
+// import com.pathplanner.lib.auto.NamedCommands;
+// import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -95,9 +95,9 @@ public class RobotContainer {
       m_driveTrain.setDefaultCommand(new SwerveDrive(m_driveTrain));
       m_intake.setDefaultCommand(new InstantCommand(() -> m_intake.m_solenoid.set(m_intake.solenoid_default), m_intake));
 
-      NamedCommands.registerCommand("AimSpeakerAuto", new AimSpeakerAuto(m_driveTrain, m_shooter));
-      NamedCommands.registerCommand("Shoot", new Shoot(m_shooter, m_transport));
-      NamedCommands.registerCommand("IntakeAuto", new IntakeAuto(m_intake, m_transport));
+      // NamedCommands.registerCommand("AimSpeakerAuto", new AimSpeakerAuto(m_driveTrain, m_shooter));
+      // NamedCommands.registerCommand("Shoot", new Shoot(m_shooter, m_transport));
+      // NamedCommands.registerCommand("IntakeAuto", new IntakeAuto(m_intake, m_transport));
 
     }
     
@@ -242,14 +242,14 @@ public class RobotContainer {
             new TrapezoidProfile.Constraints(3.0, 5.0), 0.004)
           ));
           break;
-        case "3 Note":
-          chooser.addOption("Sub2", new PathPlannerAuto("3 Note Mid"));
-          chooser.addOption("Sub3", new PathPlannerAuto("3 Note Bottom"));
-          break;
-        case "Test":
-          chooser.addOption("move", new PathPlannerAuto("move"));
+        // case "3 Note":
+        //   chooser.addOption("Sub2", new PathPlannerAuto("3 Note Mid"));
+        //   chooser.addOption("Sub3", new PathPlannerAuto("3 Note Bottom"));
+        //   break;
+        // case "Test":
+        //   chooser.addOption("move", new PathPlannerAuto("move"));
 
-          break;
+        //   break;
       }
       return chooser;
     }

@@ -3,9 +3,9 @@ package frc.robot.subsystems.Vision;
 import java.util.ArrayList;
 
 import org.opencv.core.Point;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+// import org.photonvision.PhotonCamera;
+// import org.photonvision.PhotonPoseEstimator;
+// import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 // limelight lib
 import frc.robot.LimelightHelpers.PoseEstimate;
@@ -35,8 +35,8 @@ import frc.robot.RobotContainer;
 public class Vision extends SubsystemBase{
     
   private static Vision m_instance;
-  public PhotonCamera m_shooterCamera;
-  public PhotonCamera m_backCamera;
+  // public PhotonCamera m_shooterCamera;
+  // public PhotonCamera m_backCamera;
   public Pose3d m_pose;
   public DriveTrain m_drive;
 
@@ -44,7 +44,7 @@ public class Vision extends SubsystemBase{
   public ArrayList<Point> noteCenters;
   Timer tracking_timeout;
 
-  PhotonPoseEstimator m_photonPoseEstimator;
+  // PhotonPoseEstimator m_photonPoseEstimator;
   StructPublisher<Pose3d> adv_posePub;
   StructArrayPublisher<Pose3d> adv_targetPub;
   StructPublisher<Pose3d> adv_trackedPub;
@@ -63,16 +63,16 @@ public class Vision extends SubsystemBase{
     adv_targetPub = adv_vision.getStructArrayTopic("Target", Pose3d.struct).publish();
     adv_trackedPub = adv_vision.getStructTopic("Tracked", Pose3d.struct).publish();
 
-    m_shooterCamera = new PhotonCamera("OV9281");//Camera_Module_v1
-    m_backCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
+    // m_shooterCamera = new PhotonCamera("OV9281");//Camera_Module_v1
+    // m_backCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     m_drive = DriveTrain.getInstance();
         
     m_pose = new Pose3d(12.5, 0, 0, new Rotation3d());
 
-    m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, new Transform3d(new Translation3d(0.15 * 0.0254, 0.10 * 0.0254, 0.1), new Rotation3d(0, 20.0 * Math.PI / 180, 0)));
-    m_photonPoseEstimator.setReferencePose(m_pose);
+    // m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_shooterCamera, new Transform3d(new Translation3d(0.15 * 0.0254, 0.10 * 0.0254, 0.1), new Rotation3d(0, 20.0 * Math.PI / 180, 0)));
+    // m_photonPoseEstimator.setReferencePose(m_pose);
 
     tracked_note = null;
     tracking_timeout = new Timer();
@@ -97,10 +97,10 @@ public class Vision extends SubsystemBase{
     // }
 
     // smart cropping:
-    System.out.println(m_pose.getX());
 
     LimelightResults result1 = LimelightHelpers.getLatestResults("limelight");
     if (result1 != null && result1.valid){
+      System.out.println(m_pose.getX());
       if (DriverStation.getAlliance().get() == Alliance.Red){
         m_pose = result1.getBotPose3d_wpiRed();
       }else{
