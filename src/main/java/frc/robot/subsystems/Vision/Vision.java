@@ -6,6 +6,7 @@ import org.opencv.core.Point;
 // import org.photonvision.PhotonCamera;
 // import org.photonvision.PhotonPoseEstimator;
 // import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.opencv.core.Rect;
 
 // limelight lib
 import frc.robot.LimelightHelpers.PoseEstimate;
@@ -42,6 +43,7 @@ public class Vision extends SubsystemBase{
 
   public Pose3d tracked_note;
   public ArrayList<Point> noteCenters;
+  public ArrayList<Rect> noteRects;
   Timer tracking_timeout;
 
   // PhotonPoseEstimator m_photonPoseEstimator;
@@ -78,6 +80,12 @@ public class Vision extends SubsystemBase{
     tracked_note = null;
     tracking_timeout = new Timer();
     tracking_timeout.start();
+
+    noteCenters = new ArrayList<Point>();
+  }
+
+  public double pos_to_sin(double target, double resolution, double fov){
+    return (target - resolution/2) / (resolution/2) * Math.sin(fov);
   }
 
   @Override
@@ -145,19 +153,26 @@ public class Vision extends SubsystemBase{
 
     double min_dist = 99;
 
-    if (m_drive.odomPose != null && noteCenters != null){
+    if (m_drive.odomPose != null && noteCenters.size() != 0){
       Pose2d odomPose = m_drive.odomPose;
       double rot = odomPose.getRotation().getRadians();
       ArrayList<Pose3d> poses3d = new ArrayList<Pose3d>();
-      for (Point p : noteCenters){
-        double f = 0.76 / (Math.tan(38 / 2 * Math.PI/180) * (p.y - 60)/60);
-        double h = -f * Math.tan(63 / 2 * Math.PI/180) * (p.x - 80)/80;
-        double x = f * Math.cos(rot) - h * Math.sin(rot);
-        double y = f * Math.sin(rot) + h * Math.cos(rot);
-        double dist = Math.sqrt(f*f + h*h);
+      for (int i = 0; i < noteCenters.size(); i++){
+        double v_fov = 40;
+        double h_fov = 60;
+        double x_res = 160;
+        double y_res = 120;
+
+        double f = 0.2 / Math.tan(Math.asin(pos_to_sin(noteCenters.get(i).y, y_res, v_fov)));
+        //double h = -f * Math.tan(63 / 2 * Math.PI/180) * (p.x - 80)/80;
+        //double x = f * Math.cos(rot) - h * Math.sin(rot);
+        //double y = f * Math.sin(rot) + h * Math.cos(rot);
+        double f_2 = pos_to_sin(noteRects.get(i).x, x_res, h_fov) - pos_to_sin(noteRects.get(i).width, x_res, h_fov);
+
+        //double dist = Math.sqrt(f*f + h*h);
         Pose3d pose = new Pose3d(
-          x + odomPose.getX(),
-          y + odomPose.getY(),
+          f,
+          , //JUST FOR COMPARING, NOT ACTUAL POSE
           0.04,
           new Rotation3d()
         );

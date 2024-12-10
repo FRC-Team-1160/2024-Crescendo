@@ -66,6 +66,7 @@ public class GripPipeline implements VisionPipeline{
 		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
 		
 		ArrayList<Point> points = new ArrayList<Point>();
+		ArrayList<Rect> rects = new ArrayList<Rect>();
 
 		for (MatOfPoint c : filterContoursOutput){
 
@@ -73,9 +74,11 @@ public class GripPipeline implements VisionPipeline{
 			double cx = box.x + box.width/2;
 			double cy = box.y + box.height + 2;
 			points.add(new Point(cx, cy));
+			rects.add(box);
+
 		}
 		Vision.getInstance().noteCenters = points;
-
+		Vision.getInstance().noteRects = rects;
 
 	}
 
